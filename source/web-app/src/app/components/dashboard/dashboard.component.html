@@ -1,0 +1,198 @@
+<app-header></app-header>
+<div class="map-container" *ngIf="batteries?.length && !selectedBattery">
+    <app-map [batteries]="batteries" (batterySelectionEmitter)="updateBatteryData($event)" (mapCreationEmitter)="showSpinner = !$event"></app-map>
+</div>
+<div class="dashboard-container" *ngIf="selectedBattery && battery">
+    <div class="battery-info-container">
+        <app-breadcrumb [text]="'Battery Digital Twin'" [clickHandler]="reset()"></app-breadcrumb>
+        <div class="battery-pack-info">
+            <div class="battery-info">
+                <div class="battery-details">
+                    <div class="battery">
+                        <span class="section-header">
+                            <img src="assets/icons/battery.png" alt="Battery icon">{{battery?.batteryName | uppercase}}
+                        </span>
+                        <span>{{battery?.batteryModel}} (Dimensions L x W x H)</span>
+                        <span>{{battery?.batteryClass}}</span>
+                        <span>{{battery?.batteryMaterial}}</span>
+                    </div>
+                    <div class="metrics">
+                        <div class="metrics-group">
+                            <div class="temperature">
+                                <h6>Temperature</h6>
+                                <span>
+                                    <img src="assets/icons/temperature.png" alt="Temperature icon">
+                                    {{battery?.temperature}}<span>°F</span>
+                                </span>
+                            </div>
+                            <div class="current">
+                                <h6>Current</h6>
+                                <span>
+                                    <img src="assets/icons/current.png" alt="Current icon">{{battery?.current}} <span>&nbsp;A</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="metrics-group">
+                            <div class="voltage">
+                                <h6>Voltage</h6>
+                                <span>
+                                    <img src="assets/icons/voltage.png" alt="Voltage icon">{{battery?.voltage}} <span>&nbsp;v</span>
+                                </span>
+                            </div>
+                            <div class="polarization">
+                                <h6>Polarization</h6>
+                                <span>
+                                    <img src="assets/icons/battery-alt.png" alt="Polarization icon">{{battery?.polarization}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="metrics-group">
+                            <div class="capacity">
+                                <h6>Capacity</h6>
+                                <span><img src="assets/icons/capacity.png" alt="Capacity icon">{{battery?.capacity}} <span>&nbsp;kWh</span></span>
+                            </div>
+                            <div class="impedance">
+                                <h6>Impedance</h6>
+                                <span><img src="assets/icons/impedance.png" alt="Impedance icon">{{battery?.impedance}} <span>&nbsp;ohms</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <h6>BMS Version</h6>
+                </div>
+                <div class="cell-details">
+                    <h3>{{battery?.numberOfModules}} Modules</h3>
+                    <div class="cell-info">
+                        <div *ngFor="let module of modules; let idx = index"
+                             [ngClass]="{'medium': battery?.modulesUnderWarning?.includes(idx + 1), 'low': battery?.modulesNeedAttention?.includes(module)}"></div>
+                    </div>
+                    <div class="charging-info" *ngIf="chargingChartOptions">
+                        <div class="charging-info-container">
+                            <div class="charging-chart">
+                                <highcharts-chart [Highcharts]="highcharts" [options]="chargingChartOptions" [callbackFunction]="chargingChartCallback"
+                                    style="width: 180px; height: 180px; display: block;"
+                                ></highcharts-chart>
+                                <span style="font-size: 10px; opacity: 0.6; margin: 0;">Charging Rate {{battery?.chargingDetails?.chargingRate}}</span>
+                            </div>
+                            <div class="charging-time">
+                                <h4>Charging Time</h4>
+                                <h4><img src="assets/icons/charging-time.png" alt="Charging Time"> &nbsp;{{battery?.chargingDetails?.lastChargingTime}}</h4>
+                                <span style="font-size: 10px; opacity: 0.6; margin: 0;">Charging Voltage {{battery?.chargingDetails?.chargingVoltage}}</span>
+                            </div>
+                        </div>
+                        <div class="charge-details">
+                            <h4>Charge Details</h4>
+                            <div class="detail-groups">
+                                <highcharts-chart [Highcharts]="highcharts" [options]="chargingChartOptions" [callbackFunction]="fastChargeChartCallback"
+                                    style="width: 130px; height: 130px; display: block;"
+                                ></highcharts-chart>
+                                <highcharts-chart [Highcharts]="highcharts" [options]="chargingChartOptions" [callbackFunction]="l1ChargeChartCallback"
+                                        style="width: 130px; height: 130px; display: block;"
+                                ></highcharts-chart>
+                                <highcharts-chart [Highcharts]="highcharts" [options]="chargingChartOptions" [callbackFunction]="l2ChargeChartCallback"
+                                        style="width: 130px; height: 130px; display: block;"
+                                ></highcharts-chart>
+                                <highcharts-chart [Highcharts]="highcharts" [options]="chargingChartOptions" [callbackFunction]="chargeCycleChartCallback"
+                                        style="width: 130px; height: 130px; display: block;"
+                                ></highcharts-chart>
+                            </div>
+                            <span style="font-size: 10px; opacity: 0.6; margin: 0;">Fast Charge Duration {{battery?.chargingDetails?.fastChargingDuration}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="battery-metrics">
+                <div class="driving-details">
+                    <h4><img src="assets/icons/steering-wheel.png" alt="Steering Wheel">Driving Details</h4>
+                    <div class="car-details">
+                        <div class="car-img">
+                            <img src="assets/icons/car.png">
+                        </div>
+                        <div class="car-details-group">
+                            <div class="driving-score">
+                                <h6>Driving Score</h6>
+                                <span>{{battery?.drivingDetails?.drivingScore}}<span>&nbsp;%</span></span>
+                            </div>
+                            <div class="travel-distance">
+                                <h6>Distance to Travel</h6>
+                                <span>{{battery?.drivingDetails?.distanceToTravel | number:'1.0':'en-US'}}<span>&nbsp;mi</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="safety-details">
+                    <div class="safety-control">
+                        <h4>Safety & Control</h4>
+                        <span style="font-size: 10px; opacity: 0.6">Select the control you would like to apply</span>
+                        <button class="upload-action-primary">State of Charge</button>
+                        <button class="upload-action-primary button-alt">Voltage</button>
+                        <button class="upload-action-primary button-alt">Capacity</button>
+                    </div>
+                    <div class="fault-detection">
+                        <h4 style="display: flex; justify-content: space-between"><span>Fault Detection</span>
+<!--                            <button class="upload-action-secondary" style="width: auto; font-size: 10px; height: 30px; border-radius: 14px;">Thermal</button>-->
+                        </h4>
+                        <div class="highchart-groups">
+                            <highcharts-chart [options]="gaugeOptions" [Highcharts]="highcharts" [callbackFunction]="temperatureChartCallback"
+                                    style="width: 150px; height: 150px; display: block;"></highcharts-chart>
+                            <highcharts-chart [options]="gaugeOptions" [Highcharts]="highcharts" [callbackFunction]="voltageChartCallback"
+                                    style="width: 150px; height: 150px; display: block;"></highcharts-chart>
+                            <highcharts-chart [options]="gaugeOptions" [Highcharts]="highcharts" [callbackFunction]="currentChartCallback"
+                                    style="width: 150px; height: 150px; display: block;"></highcharts-chart>
+                        </div>
+                        <h6 style="margin: 8px">SEI Growth <span style="padding-left: 1em; opacity: 0.6; font-weight: 300">Lithium Plating Degree: {{battery?.lithiumPlatingDegree}}</span></h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="battery-health-prediction">
+        <span>Battery Health Prediction</span>
+        <div class="charts-container">
+            <div class="chart-container" [ngClass]="{'popout-chart': popout}">
+                <div id="highchart-container" class="highchart-container">
+                    <highcharts-chart *ngIf="linechartDark"
+                            [Highcharts]="highcharts"
+                            [options]="linechartDark"
+                            [callbackFunction]="chartCallback"
+                            style="display: block"
+                    ></highcharts-chart>
+                </div>
+                <div class="chart-actions" [ngStyle]="{'top': popout ? '110px' : '10px', 'right': popout ? '10px' :  '-30px'}">
+                    <button class="upload-action-tertiary" (click)="startStreaming();">
+                        <fa-icon *ngIf="!startedStream" class="fa-lg" [icon]="faPlay"></fa-icon>
+                        <fa-icon *ngIf="startedStream" class="fa-lg"
+                                 [icon]="faPause"></fa-icon>
+                        <span style="padding: 0 0.5em">{{startedStream ? 'Pause' : 'Play'}}</span>
+                    </button>
+                </div>
+            </div>
+            <div class="battery-cell-info">
+                <div class="recommendations">
+                    <div class="expected-eol">
+                        <span>Expected End of Life</span>
+                        <span class="eol-rul">
+                            <img src="assets/icons/empty-battery.png" alt="Empty Battery Icon">{{battery?.expectedEOL | number: '1.0':'en-US'}} <span>&nbsp;Cycles</span>
+                        </span>
+                    </div>
+                    <div class="state-of-ap">
+                        <span>State of Available Power</span>
+                        <span class="eol-rul">
+                            <img src="assets/icons/power.png" alt="Power icon">{{battery?.availablePower}} <span>&nbsp;kWh</span>
+                        </span>
+                    </div>
+                    <div class="model-drift">
+                        <h4>Model Drift</h4>
+                        <span>{{drift | number:'1.0-2'}}%</span>
+                    </div>
+                </div>
+                <div class="projections">
+                    <app-indicator [metric]="'FSOH'" [mValue]="forecastedSOH"></app-indicator>
+                    <app-battery-charge [metric]="'FSOC'" [mValue]="forecastedStateOfCharge" [overrideCss]="'soc-predictions'"></app-battery-charge>
+                    <app-battery-charge [metric]="'FRUL'" [mValue]="forecastedRUL" [overrideCss]="'soc-predictions'"></app-battery-charge>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<app-footer></app-footer>
+<app-spinner [displayText]="displayText" *ngIf="showSpinner"></app-spinner>

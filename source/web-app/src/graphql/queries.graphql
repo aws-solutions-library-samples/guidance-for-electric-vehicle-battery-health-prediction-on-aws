@@ -1,0 +1,95 @@
+# this is an auto generated file. This will be overwritten
+query GetPipelinesByUser($UserId: String!) {
+  getPipelinesByUser(UserId: $UserId) {
+    Id
+    PipelineStatus
+    StatusUpdatedAt
+    UserId
+    DataUploadedAt
+    PluginUploadedAt
+    ProcFinishedAt
+    DataImportedAt
+    TrainingFinishedAt
+    ForecastGeneratedAt
+    PredictionsExportedAt
+    DataGroupArn
+    PreProcessingId
+    RawDataSize
+    RawDataUri
+    PluginScriptUri
+    TrainingDataUri
+    PredictorArn
+    ForecastArn
+    ModelDrift
+    ExportJobArn
+    PostProcessingId
+    OriginalDatasetName
+    OriginalPluginName
+  }
+}
+query GetPipelineById($Id: String!) {
+  getPipelineById(Id: $Id) {
+    Id
+    PipelineStatus
+    StatusUpdatedAt
+    UserId
+    DataUploadedAt
+    PluginUploadedAt
+    ProcFinishedAt
+    DataImportedAt
+    TrainingFinishedAt
+    ForecastGeneratedAt
+    PredictionsExportedAt
+    DataGroupArn
+    PreProcessingId
+    RawDataSize
+    RawDataUri
+    PluginScriptUri
+    TrainingDataUri
+    PredictorArn
+    ForecastArn
+    ModelDrift
+    ExportJobArn
+    PostProcessingId
+    OriginalDatasetName
+    OriginalPluginName
+  }
+}
+query GetPipelineByProcessingId($PostProcessingId: String!) {
+  getPipelineByProcessingId(PostProcessingId: $PostProcessingId) {
+    Id
+    PipelineStatus
+    StatusUpdatedAt
+    UserId
+    DataUploadedAt
+    PluginUploadedAt
+    ProcFinishedAt
+    DataImportedAt
+    TrainingFinishedAt
+    ForecastGeneratedAt
+    PredictionsExportedAt
+    DataGroupArn
+    PreProcessingId
+    RawDataSize
+    RawDataUri
+    PluginScriptUri
+    TrainingDataUri
+    PredictorArn
+    ForecastArn
+    ModelDrift
+    ExportJobArn
+    PostProcessingId
+    OriginalDatasetName
+    OriginalPluginName
+  }
+}
+query GetLocationData {
+  getLocationData {
+    BatteryId
+    Lng
+    Lat
+    Country
+    City
+    VIN
+  }
+}

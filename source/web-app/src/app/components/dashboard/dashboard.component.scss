@@ -1,0 +1,530 @@
+.map-container {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 60px;
+}
+
+.dashboard-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background: #2D343D;
+  padding-top: 2.5em;
+
+  .battery-info-container {
+    height: 100%;
+    flex: 2;
+
+    .battery-pack-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1em;
+      flex: 2;
+      height: 100%;
+
+      .battery-info {
+        width: 100%;
+        display: flex;
+        background: #1B1E20;
+        padding: 2em;
+
+        .battery-details {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          margin-right: 2em;
+          flex: 1;
+
+          .battery {
+            display: flex;
+            flex-direction: column;
+
+            .section-header {
+              font-size: 18px;
+              opacity: 1;
+              display: flex;
+              align-items: center;
+
+              img {
+                width: 10.43px;
+                height: 19.13px;
+                margin-right: 1em;
+              }
+            }
+
+            span:not(first-child) {
+              font-size: 10px;
+              color: #fff;
+              opacity: 0.6
+            }
+          }
+
+          .metrics {
+            display: flex;
+            flex-direction: column;
+
+            .metrics-group {
+              display: flex;
+              min-width: 200px;
+              max-width: 200px;
+
+              &:not(first-child):not(last-child) {
+                border-bottom: 1px solid #2D343D;
+              }
+
+              div {
+                width: 140px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100px;
+
+                h6 {
+                  margin: 4px;
+                  font-size: 10px;
+                }
+
+                span {
+                  display: flex;
+                  align-items: center;
+
+                  img {
+                    margin: 0 0.75em 0 0;
+                  }
+
+                  span {
+                    font-size: 12px;
+                    display: flex;
+                    align-items: flex-end;
+                    height: 94%;
+                  }
+                }
+              }
+
+              div:first-child {
+                border-right: 1px solid #2D343D;
+              }
+            }
+          }
+        }
+
+        .cell-details {
+          flex: 2;
+
+          h3 {
+            margin: 0 0 8px 0;
+          }
+
+          .cell-info {
+            position: relative;
+            height: 182px;
+            width: 98%;
+            background: #2D343D;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            &:after {
+              position: absolute;
+              height: 86px;
+              width: 32px;
+              border-radius: 0 8px 8px 0;
+              right: -32px;
+              top: 50px;
+              background: #2D343D;
+              content: "";
+            }
+
+            div {
+              width: 8%;
+              height: 93%;
+              background: linear-gradient(180deg, #1D8102 0%, #3EF00E 50%, #1D8102 100%);
+              margin: 3px;
+
+              &:first-child {
+                border-top-left-radius: 8px;
+                border-bottom-left-radius: 8px;
+                margin-left: 6px;
+              }
+
+              &:last-child {
+                border-top-right-radius: 8px;
+                border-bottom-right-radius: 8px;
+                margin-right: 6px;
+              }
+            }
+
+            div.medium {
+              background: linear-gradient(180deg, #FF9900 0%, #F3CE95 52.08%, #FF9900 100%);
+            }
+          }
+
+          .charging-info {
+            display: flex;
+
+            .charging-info-container {
+              display: flex;
+              border-right: 1px solid #2D343D;
+              padding-right: 1em;
+              margin: 1em 0;
+
+              .charging-chart {
+                text-align: center;
+
+                h6 {
+                  margin: 2px;
+                }
+              }
+
+              .charging-time {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                width: 120px;
+
+                h4 {
+                  margin-bottom: 0;
+                  display: flex;
+                  align-items: flex-end;
+                }
+              }
+            }
+
+            .charge-details {
+              padding: 0 1em;
+              margin: 1em;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+
+              h4 {
+                margin-bottom: 0;
+              }
+
+              .charge-detail-groups {
+                display: flex;
+                justify-content: space-between;
+
+                .charge-detail-group {
+                  margin: 0 1em;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+
+                  h6 {
+                    margin: 2px;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .battery-metrics {
+        display: flex;
+        width: 100%;
+        padding-top: 1em;
+
+        .driving-details {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-around;
+          width: 26%;
+          margin-right: 1em;
+          padding: 8px;
+          background: #1B1E20;
+
+          h4 {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            margin: 4px 4px 0 0;
+
+            img {
+              margin: 0 1em;
+            }
+          }
+
+          .car-details {
+            display: flex;
+            justify-content: space-around;
+
+            .car-img {
+              display: flex;
+              align-items: center;
+
+              img {
+                height: 60px;
+                width: 110px;
+              }
+            }
+
+            .car-details-group {
+              display: flex;
+              flex-direction: column;
+
+              & > div {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+
+                h6 {
+                  font-size: 10px;
+                  margin-bottom: 8px;
+                }
+
+                span {
+                  font-size: 18px;
+                }
+              }
+            }
+          }
+        }
+
+        .safety-details {
+          background: #1B1E20;
+          width: 74%;
+          display: flex;
+
+          .safety-control, .fault-detection {
+            padding: 1em;
+
+            h4 {
+              display: flex;
+              align-items: center;
+              font-size: 18px;
+              margin: 4px 4px 0 0;
+            }
+
+            .highchart-groups {
+              display: flex;
+              justify-content: space-between;
+            }
+          }
+
+          .safety-control {
+            border-right: 1px solid #2D343D;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30%;
+
+            button {
+              border-radius: 14px;
+              width: 100%;
+              margin: 8px 0;
+              height: 30px;
+              font-size: 10px;
+            }
+
+            button:first-child {
+              margin-top: 16px;
+            }
+
+            .button-alt {
+              background: #2D343D;
+            }
+          }
+
+          .fault-detection {
+            flex: 2;
+          }
+        }
+      }
+    }
+
+  }
+
+  .detail-groups {
+    display: flex;
+    justify-content: space-between;
+
+    .detail-group {
+      margin: 0 1em;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      h6 {
+        margin: 6px;
+      }
+
+      span {
+        display: flex;
+        align-items: center;
+
+        img {
+          margin: 0 0.75em 0 0;
+        }
+
+        span {
+          font-size: 12px;
+          display: flex;
+          align-items: flex-end;
+          height: 94%;
+        }
+      }
+    }
+  }
+
+  .battery-health-prediction {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+    padding: 1em;
+    background: #545B64;
+
+    span {
+      text-align: left;
+      margin: 0.7em 0;
+      width: 100%;
+      font-size: 24px;
+    }
+
+    .chart-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1em;
+      background: #2D343D;
+      position: relative;
+
+      & > fa-icon {
+        position: absolute;
+        z-index: 2;
+        cursor: pointer;
+
+        &:hover {
+          color: #ff9900;
+        }
+      }
+
+      .highchart-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1;
+      }
+
+      .chart-actions {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        z-index: 2;
+
+        button {
+          span {
+            font-size: 14px;
+          }
+
+          &:hover {
+            transform: scale(1);
+          }
+        }
+      }
+    }
+
+    .recommendations {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 8px;
+
+      .expected-eol, .state-of-ap, .model-drift {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+
+        span:first-child {
+          font-size: 10px;
+        }
+
+        span:last-child {
+          font-size: 24px;
+        }
+
+        .eol-rul {
+          display: flex;
+          align-items: center;
+          margin: 0;
+
+          img {
+            margin: 0 0.5em 0 0;
+          }
+
+          span {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            height: 75%;
+          }
+        }
+      }
+
+      .model-drift {
+        background: #434A54;
+        padding: 8px;
+        width: 100px;
+        align-items: center;
+        justify-content: center;
+
+        h4 {
+          font-size: 10px;
+          margin: 0;
+        }
+
+        span:last-child {
+          text-align: center;
+          margin: 0;
+        }
+      }
+    }
+
+    .battery-cell-info {
+      padding: 0 2em 1em 2em;
+      background: #2D343D;
+
+      .projections {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+      }
+    }
+
+    .popout-chart {
+      position: fixed;
+      margin: auto;
+      bottom: 0;
+      right: 0;
+      width: 100% !important;
+      height: 100% !important;
+      background-color: rgba(0, 0, 0, .5);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      display: flex !important;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+
+      highcharts-chart {
+        padding: 2em;
+      }
+    }
+
+  }
+
+}

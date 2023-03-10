@@ -1,0 +1,12 @@
+<div class="login-container">
+    <amplify-authenticator>
+        <ng-template amplifySlot="authenticated"
+            let-user="user"
+            let-signOut="signOut">
+            <router-outlet></router-outlet>
+        </ng-template>
+    </amplify-authenticator>
+    <div class="copyright">
+        <h4>Copyright © 2023 Amazon Web Services, Inc. or its affiliates. All rights reserved.</h4>
+    </div>
+</div>

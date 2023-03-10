@@ -1,0 +1,8 @@
+<div class="tabs-container">
+    <div class="tabs">
+        <div class="tab" *ngFor="let tab of tabs"
+             [ngClass]="{'active': selectedTab === tab.id}"
+             (click)="notifySelection(tab.id)">{{tab.text}}
+        </div>
+    </div>
+</div>

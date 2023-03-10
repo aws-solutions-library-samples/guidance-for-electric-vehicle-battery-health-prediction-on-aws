@@ -1,0 +1,10 @@
+<div class="spinner-container" [ngClass]="{'inline-position': position === 'inline', 'fixed-position': position === 'fixed'}">
+    <div class="spinner-content">
+        <div class="spinner">
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+        </div>
+        <div class="status-text">
+            <h4 [innerHTML]="status" *ngIf="status"></h4>
+        </div>
+    </div>
+</div>

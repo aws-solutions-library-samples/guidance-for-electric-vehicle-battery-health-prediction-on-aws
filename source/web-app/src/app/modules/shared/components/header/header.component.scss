@@ -1,0 +1,118 @@
+header {
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  position: fixed;
+  background: #1B1E20;
+  top: 0;
+  z-index: 10;
+
+  .header-container {
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 3em;
+    color: #fff;
+
+    .header-container--menu {
+      width: 60px;
+      text-align: center;
+
+      fa-icon {
+        color: #1B1E20;
+      }
+    }
+
+    .header-container--logo {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      cursor: pointer;
+
+      img {
+        height: 24px;
+        width: 25px;
+      }
+    }
+
+    .header-container--user {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      cursor: pointer;
+      color: #fff;
+
+      span {
+        text-align: right;
+        padding-right: 1em;
+        font-weight: 300;
+      }
+
+      .logout-menu {
+        position: relative;
+        top: 20px;
+        right: 260px;
+        height: 0;
+        width: 0;
+
+        ul {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          position: absolute;
+          outline: 0;
+          display: flex;
+          flex-direction: column;
+          background: #2D343D;
+          border-radius: 4px;
+          box-shadow: 0 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%);
+          width: 250px;
+
+
+          li {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 300;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            height: 40px;
+            padding: 4px 1em;
+            border-bottom: 1px solid #687078;
+
+            img {
+              margin-right: 1em;
+            }
+
+            span {
+              width: 100%;
+              text-align: left;
+            }
+
+            h4 {
+              margin: 0;
+            }
+
+            &:hover {
+              background: #1B1E20;
+            }
+
+            &:last-child {
+              border: none;
+            }
+          }
+        }
+      }
+
+      .show-logout {
+        opacity: 1;
+      }
+    }
+  }
+
+}

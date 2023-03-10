@@ -1,0 +1,13 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  height: 100%;
+  width: 600px;
+
+  .copyright h4 {
+    font-weight: 300;;
+  }
+}

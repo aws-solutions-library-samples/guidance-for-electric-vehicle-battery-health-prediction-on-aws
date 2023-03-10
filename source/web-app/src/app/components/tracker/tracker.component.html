@@ -1,0 +1,41 @@
+<app-header></app-header>
+<div class="tracker-container">
+    <div class="pipeline-info">
+        <div class="created-date" *ngIf="pipelineData">
+            <span>{{(pipelineData?.DataUploadedAt ?? pipelineData?.StatusUpdatedAt)| date: 'medium' : 'GMT'}}</span>
+            <span *ngIf="pipelineData?.OriginalDatasetName">{{pipelineData?.OriginalDatasetName}} | {{pipelineData?.OriginalPluginName}}</span>
+        </div>
+    </div>
+    <ul *ngIf="!showError && pipelineData">
+        <li *ngFor="let step of availableSteps;" [ngClass]="{'disable-step': step.id > currentStep}">
+            <div class="progress-step-img">
+                <img *ngIf="step.id <= currentStep" src="assets/images/tracker-step{{step.id}}.png">
+                <img *ngIf="step.id > currentStep" src="assets/images/tracker-disabled-step{{step.id}}.png">
+            </div>
+            <div class="progress-bar">
+                <hr [ngClass]="{'hide-bar': step.id === 1}">
+                <img *ngIf="step.id < currentStep || currentStep === 7" src="assets/images/completed-step.png">
+                <img *ngIf="step.id === currentStep && !pipelineData?.Error && currentStep !== 7" class="animate-inprogress"
+                     src="assets/images/inprogress-step.png">
+                <img *ngIf="step.id === currentStep && pipelineData?.Error" src="assets/images/error-step.png">
+                <img *ngIf="step.id > currentStep" src="assets/images/notstarted-step.png">
+                <hr [ngClass]="{'hide-bar': step.id === 7, 'current-step': step.id === currentStep}">
+            </div>
+            <div class="progress-step-info">
+                <h6>STEP {{step.id}}</h6>
+                <h4>{{step.title}}</h4>
+                <span class="step-timer" *ngIf="step.id < currentStep">{{calculateTime(step.id)}}</span>
+            </div>
+        </li>
+    </ul>
+    <div class="error" *ngIf="showError">
+        <fa-icon [icon]="faBug" class="fa-3x" style="color: red"></fa-icon>
+        <h4>Something happened. Unable to access pipeline.</h4>
+        <h5>Please click on <strong>Pipeline Detail Page</strong> to check if the pipeline was created.</h5>
+    </div>
+    <div class="tracker-action">
+        <button class="upload-action-primary" [routerLink]="['/history']" style="width: 167px">Past Pipelines
+        </button>
+    </div>
+</div>
+<app-footer></app-footer>

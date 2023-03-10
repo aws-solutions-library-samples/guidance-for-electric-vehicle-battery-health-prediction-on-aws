@@ -1,0 +1,36 @@
+<div id="map"></div>
+<div class="map-info-container" [ngClass]="{'show-vehicle-info': showVehicleInfo}">
+    <div class="map-info">
+        <h2>Connected Vehicles</h2>
+        <span>Click on a vehicle to view battery details</span>
+    </div>
+    <div class="map-legends">
+        <div class="location-pin">
+            <div class="charging"></div>
+            <div class="hint">
+                <span>Charging</span>
+                <span>01</span>
+            </div>
+        </div>
+        <div class="location-pin">
+            <div class="need-charging"></div>
+            <div class="hint">
+                <span>Below 20%</span>
+                <span>01</span>
+            </div>
+        </div>
+        <div class="location-pin">
+            <div class="not-charging"></div>
+            <div class="hint">
+                <span>Not Charging</span>
+                <span>00</span>
+            </div>
+        </div>
+    </div>
+    <div class="map-summary">
+        <div class="vehicle-count">
+            <span>Total Vehicles</span>
+            <span>{{locations.length < 10  ? 0 : ''}}{{locations.length}}</span>
+        </div>
+    </div>
+</div>

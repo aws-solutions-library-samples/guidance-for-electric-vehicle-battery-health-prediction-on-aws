@@ -1,0 +1,29 @@
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 10;
+}
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  background: #1B1E20;
+  height: 40px;
+  padding: 0 2em;
+  font-size: 14px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+    border-top: 1px solid #2D343D;
+
+
+  h4 {
+    font-weight: 300;
+  }
+  span {
+    font-weight: 400;
+  }
+}
