@@ -60,15 +60,19 @@ Here is the reference architecture for this project:
 The sample code deploys a web application for 2 types of users: Developer and Fleet Operator. Developer has access to all parts of the application, and Fleet Operator can only view the dashboard with battery location and digital twin of batteries after at least one ML pipeline is executed successfully. You can switch profile by clicking the User icon and then the Switch Profile button.
 
 After logging in, Developer can upload battery health datasets as well as processing plugin scripts. We provide a [sample battery dataset](./source/demo/raw_dataset.csv) and [sample processing plugin file](./source/demo/processing_plugin.py) for easy testing. These two sample files were adapted from (this project)[https://data.matr.io/1/projects/5c48dd2bc625d700019f3204] by Severson et al. Data-driven prediction of battery cycle life before capacity degradation. Nature Energy volume 4, pages 383–391 (2019).
+
 ![Upload](assets/upload.png)
 
 After files are uploaded, the ML pipeline gets triggered to start. Developer will see the progress of the ML pipeline. 
+
 ![ML pipeline](assets/pipeline.png)
 
-When the ML pipeline finishes, both Developer and Fleet Operator will see a map with batteries.
+When the ML pipeline finishes (this can take a few hours), both Developer and Fleet Operator will see a map with batteries.
+
 ![Map](assets/map.png)
 
 You can click on a vehicle to view battery information. To demonstrate how a digital twin for a battery could look like, we inserted some dummy values for the battery attributes, specifed [here](./source/deploy/assets/). In the Battery Health Prediction panel to the right, the line chart shows past and predicted battery state of health. You can click Play to watch actual data streaming as comparison to predicted data. State of Health, RUL, and model drift were all predicted or calculated using the ML pipeline deployed with the web application. 
+
 ![Battery](assets/battery.png)
 
 Developer can view results from selected ML pipeline. They can click the User icon, navigate to Pipelines, select the desired pipeline, and click Connected Vehicles, which takes them to the dashboard with battery locations. For Fleet Operators, the predicted data they see are from the most recent pipeline.

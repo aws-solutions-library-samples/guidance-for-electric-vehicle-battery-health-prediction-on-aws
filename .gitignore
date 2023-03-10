@@ -21,7 +21,7 @@
 **/.DS_Store
 **/.angular
 **/.idea
-**/cdk.out
+cdk.out
 **/data/**.csv
 
 .env
