@@ -39,6 +39,7 @@ export class DdbTableConstruct extends Construct {
       tableClass: ddb.TableClass.STANDARD,
       encryption: ddb.TableEncryption.AWS_MANAGED,
       removalPolicy: RemovalPolicy.DESTROY,
+      pointInTimeRecovery: true
     });
   }
 }

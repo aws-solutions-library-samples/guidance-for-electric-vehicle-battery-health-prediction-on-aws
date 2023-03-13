@@ -65,6 +65,13 @@ export class S3LibraryConstruct extends Construct {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       eventBridgeEnabled: true,
+      enforceSSL: true,
+      serverAccessLogsPrefix: "accesslog/",
+      intelligentTieringConfigurations: [{
+        name: 'libraryBucketConfig',
+        archiveAccessTierTime: cdk.Duration.days(90),
+        deepArchiveAccessTierTime: cdk.Duration.days(180),
+      }],
     });
 
     libraryBucket.addToResourcePolicy(

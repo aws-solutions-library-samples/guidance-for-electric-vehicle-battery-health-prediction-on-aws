@@ -48,7 +48,6 @@ export async function handler(event?: any, context?: any) {
   let data: String[] = [];
 
   try {
-    // arn:aws:forecast:us-east-1:157670018337:forecast-export-job/adi_uuid_1677324841398/adi_uuid_1677340719323
     const fcastArn = event["resources"][0];
     const exportId = fcastArn.split("/")[2].split("_");
     const userId = exportId[0];

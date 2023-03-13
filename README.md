@@ -59,7 +59,7 @@ Here is the reference architecture for this project:
 
 The sample code deploys a web application for 2 types of users: Developer and Fleet Operator. Developer has access to all parts of the application, and Fleet Operator can only view the dashboard with battery location and digital twin of batteries after at least one ML pipeline is executed successfully. You can switch profile by clicking the User icon and then the Switch Profile button.
 
-After logging in, Developer can upload battery health datasets as well as processing plugin scripts. We provide a [sample battery dataset](./source/demo/raw_dataset.csv) and [sample processing plugin file](./source/demo/processing_plugin.py) for easy testing. These two sample files were adapted from (this project)[https://data.matr.io/1/projects/5c48dd2bc625d700019f3204] by Severson et al. Data-driven prediction of battery cycle life before capacity degradation. Nature Energy volume 4, pages 383–391 (2019).
+After logging in, Developer can upload battery health datasets as well as processing plugin scripts. We provide a [sample battery dataset](./source/demo/raw_dataset.csv) and [sample processing plugin file](./source/demo/processing_plugin.py) for easy testing. The sample dataset is from [this project](https://data.matr.io/1/projects/5c48dd2bc625d700019f3204) by Severson et al. Data-driven prediction of battery cycle life before capacity degradation. Nature Energy volume 4, pages 383–391 (2019).
 
 ![Upload](assets/upload.png)
 
@@ -83,10 +83,7 @@ Developer can view results from selected ML pipeline. They can click the User ic
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
 
 ## Cleanup
-To clean up all resources, you can run
-    ``` 
-    npm run destroy
-    ```
+To clean up all resources, you can run `npm run destroy`.
 
 ## License
 

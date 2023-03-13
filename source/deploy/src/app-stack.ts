@@ -27,7 +27,6 @@ import { DdbTableConstruct } from "./constructs/ddb-table-construct";
 import * as apigw from "@aws-cdk/aws-apigatewayv2-alpha";
 import { LambdaFunctionConstruct } from "./constructs/lambda-function-construct";
 import { MapConstruct } from "./constructs/map-construct";
-import { IOTDataDumpS3Construct } from "./constructs/iot-datadump-s3-construct";
 
 export interface AppStackProps extends cdk.StackProps {
   readonly ssmWafArnParameterName: string;
@@ -79,7 +78,6 @@ export class AppStack extends cdk.Stack {
       webAclArn: cfWafWebAcl,
     });
 
-    const iotDataBucket = new IOTDataDumpS3Construct(this, "IOTDataBucket", {});
     /**
      * Create Pipeline DynamoDb database
      */
@@ -119,7 +117,6 @@ export class AppStack extends cdk.Stack {
     library.s3bucket.grantReadWrite(chargingDataFn.function);
     library.s3bucket.grantReadWrite(locationDataFn.function);
     pipelineDdb.table.grantReadWriteData(chargingDataFn.function);
-    iotDataBucket.s3bucket.grantRead(chargingDataFn.function);
 
     /**
      * Create Rest API
@@ -180,10 +177,7 @@ export class AppStack extends cdk.Stack {
       "KEY",
       "CDK-assets/connected-batteries.json"
     );
-    chargingDataFn.function.addEnvironment(
-      "IOT_BUCKET",
-      iotDataBucket.s3bucket.bucketName
-    );
+
     locationDataFn.function.addEnvironment(
       "BUCKET",
       library.s3bucket.bucketName

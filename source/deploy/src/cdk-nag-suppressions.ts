@@ -33,10 +33,6 @@ export const suppressCdkNagRules = (stack: cdk.Stack) => {
         reason: "CloudFront geo restrictions not required for prototype",
       },
       {
-        id: "AwsSolutions-CFR3",
-        reason: "CloudFront access logging not required for prototype",
-      },
-      {
         id: "AwsSolutions-CFR4",
         reason:
           "Custom certificate required for enabling this rule.  Not required for prototype",
@@ -53,23 +49,16 @@ export const suppressCdkNagRules = (stack: cdk.Stack) => {
         id: "AwsSolutions-IAM4",
         reason: "AWS managed policies allowed for prototype",
       },
-      { id: "AwsSolutions-IAM5", reason: "IAM wildcard allowed" },
-      // {
-      //   id: "AwsSolutions-L1",
-      //   reason: "Latest runtime not required for prototype",
-      // },
+      { id: "AwsSolutions-IAM5", reason: "IAM wildcard allowed for prototype" },
+      {
+        id: "AwsSolutions-L1",
+        reason: "Latest runtime not required for prototype",
+      },
       {
         id: "AwsSolutions-S1",
         reason: "S3 server access logs not required for prototype",
       },
-      // {
-      //   id: "AwsSolutions-SNS2",
-      //   reason: "Temporary SNS setup for experimentation. Unsupress.",
-      // },
-      // {
-      //   id: "AwsSolutions-SNS3",
-      //   reason: "Temporary SNS setup for experimentation. Unsupress.",
-      // },
+
     ],
     true
   );
