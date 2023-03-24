@@ -88,3 +88,6 @@ To clean up all resources, you can run `npm run destroy`.
 ## License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
+
+## Disclaimer
+You should not use this AWS Content in your production accounts, or on production or other critical data.  You are responsible for testing, securing, and optimizing the AWS Content, such as sample code, as appropriate for production grade use based on your specific quality control practices and standards.
