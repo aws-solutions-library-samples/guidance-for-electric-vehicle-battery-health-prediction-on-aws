@@ -11,6 +11,7 @@ The sample code in this project deploys an event-driven ML pipeline for EV Batte
 Here is the reference architecture for this project:
 ![Architecture](assets/architecture.png)
 
+**Note**: Sample code only includes ingestion path from web portal, and does not include ingestion pattern from AWS IoT FleetWise to Amazon Timestream. 
 
 ## Getting Started
 
