@@ -14,7 +14,7 @@
     "@types/ws": "^8.5.4",
     "@typescript-eslint/eslint-plugin": "5.22.0",
     "@typescript-eslint/parser": "5.22.0",
-    "aws-sdk": "^2.1320.0",
+    "aws-sdk": "^2.1354.0",
     "constructs": "^10.0.0",
     "eslint": "^8.9.0",
     "eslint-config-prettier": "8.5.0",
