@@ -67,6 +67,7 @@ export class S3LibraryConstruct extends Construct {
       eventBridgeEnabled: true,
       enforceSSL: true,
       serverAccessLogsPrefix: "accesslog/",
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
       intelligentTieringConfigurations: [{
         name: 'libraryBucketConfig',
         archiveAccessTierTime: cdk.Duration.days(90),

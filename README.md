@@ -4,14 +4,12 @@
 
 EV batteries, predominately lithium-ion (Li-ion) batteries, have been the bottleneck for scaling EVs, which are crucial to a net-zero economy. One challenge in the EV battery ecosystem is insufficient and inaccurate battery state of health (SOH) and remaining useful life (RUL) monitoring and prediction, resulting in shortened battery lifespan, driver frustration, lack of visibility for end-of-life processing, and wasted critical materials. Instead of the conventional static rule-of-thumb formulas, this Guidance showcases how customers can leverage the AI/ML capabilities on AWS to easily predict SOH and RUL. Better monitoring and more accurate prediction can help customers extend battery lifespan, improve driver satisfaction, reduce material waste and supply chain risks, and drive towards a sustainable future for mobility.
 
-The sample code in this project deploys an event-driven ML pipeline for EV Battery health prediction. It also deploys a front-end digital twin displaying battery health status and prediction results. The front-end web UI also allows users to upload battery health data and processing plugin files (script to clean up data) which trigger the ML pipeline.
+The sample code in this project is based on the Guidance for Electric Vehicle (EV) Battery Health Prediction on AWS. It deploys an event-driven ML pipeline for EV Battery health prediction. To simulate the data ingestion and consumption portions of the [Connected Mobility Platform](https://docs.aws.amazon.com/architecture-diagrams/latest/connected-mobility-platform-on-aws/connected-mobility-platform-on-aws.html), we build a web application, which allows you to upload battery health data and processing plugin files (scripts to clean up data). The front-end UI also acts as a digital twin for batteries, displaying battery health status and prediction results.
 
 ### Architecture
 
 Here is the reference architecture for this project:
 ![Architecture](assets/architecture.png)
-
-**Note**: Sample code only includes ingestion path from web portal, and does not include ingestion pattern from AWS IoT FleetWise to Amazon Timestream. 
 
 ## Getting Started
 

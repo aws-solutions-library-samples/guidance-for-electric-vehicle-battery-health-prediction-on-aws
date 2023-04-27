@@ -33,6 +33,11 @@ export const suppressCdkNagRules = (stack: cdk.Stack) => {
         reason: "CloudFront geo restrictions not required for prototype",
       },
       {
+        id: "AwsSolutions-CFR3",
+        reason:
+          "CloudFront logs bucket.  Not required for prototype",
+      },
+      {
         id: "AwsSolutions-CFR4",
         reason:
           "Custom certificate required for enabling this rule.  Not required for prototype",

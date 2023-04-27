@@ -105,21 +105,6 @@ export class CloudFrontS3WebSiteConstruct extends Construct {
           viewerProtocolPolicy:
             cdk.aws_cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
         },
-        logBucket: new cdk.aws_s3.Bucket(this, "DistributionLogBucket", {
-          encryption: cdk.aws_s3.BucketEncryption.S3_MANAGED,
-          autoDeleteObjects: true,
-          blockPublicAccess: cdk.aws_s3.BlockPublicAccess.BLOCK_ALL,
-          removalPolicy: cdk.RemovalPolicy.DESTROY,
-          bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
-          enforceSSL: true,
-          serverAccessLogsPrefix: "accesslog/",
-          intelligentTieringConfigurations: [{
-            name: 'logBucketConfig',
-            archiveAccessTierTime: cdk.Duration.days(90),
-            deepArchiveAccessTierTime: cdk.Duration.days(180),
-          }]
-        }),
-        logFilePrefix: 'distribution-access-log/',
         errorResponses: [
           {
             httpStatus: 404,
