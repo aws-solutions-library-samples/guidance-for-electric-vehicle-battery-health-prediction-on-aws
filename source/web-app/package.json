@@ -30,7 +30,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.3.0",
     "@fortawesome/free-regular-svg-icons": "^6.3.0",
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
-    "aws-amplify": "^5.0.16",
+    "aws-amplify": "^5.3.11",
     "highcharts": "^9.3.3",
     "highcharts-angular": "^2.10.0",
     "highcharts-annotations": "^1.3.3",
