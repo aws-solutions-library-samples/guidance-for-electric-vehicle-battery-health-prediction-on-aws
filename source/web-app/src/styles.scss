@@ -32,7 +32,7 @@ $ng_app-theme: mat.define-light-theme((
 // that you are using.
 @include mat.all-component-themes($ng_app-theme);
 
-@import '~node_modules/@aws-amplify/ui-angular/theme.css';
+@import '~@aws-amplify/ui-angular/theme.css';
 
 :root {
   --amplify-components-tabs-item-active-color: #FF9900;
@@ -46,6 +46,7 @@ $ng_app-theme: mat.define-light-theme((
   --amplify-components-button-hover-background-color: rgba(255, 153, 0, 0.3);
   --amplify-components-fieldcontrol-hover-border-color: #FF9900;
   --amplify-components-fieldcontrol-border-hover-color: #FF9900;
+  --amplify-components-authenticator-state-inactive-background-color: #eee;
 }
 
 * {
@@ -409,6 +410,36 @@ body {
     }
   }
 }
+
+.error-message-container {
+  display: flex;
+  padding: 1em 2em;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 -5px 5px -3px rgb(0 0 0 / 50%), 0px -8px 10px 1px rgb(0 0 0 / 30%), 0px -3px 14px 2px rgb(0 0 0 / 10%);
+  top: 60px;
+  height: 50px;
+  position: fixed;
+  width: 100%;
+  color: #000;
+
+  img {
+    width: 25px;
+    height: 25px;
+    margin: 0 1em;
+  }
+
+  .error-message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    span {
+      font-size: 12px;
+    }
+  }
+}
+
 
 @keyframes pulsate {
   0% {

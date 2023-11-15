@@ -34,8 +34,7 @@ export const suppressCdkNagRules = (stack: cdk.Stack) => {
       },
       {
         id: "AwsSolutions-CFR3",
-        reason:
-          "CloudFront logs bucket.  Not required for prototype",
+        reason: "CloudFront access logging not required for prototype",
       },
       {
         id: "AwsSolutions-CFR4",
@@ -54,7 +53,7 @@ export const suppressCdkNagRules = (stack: cdk.Stack) => {
         id: "AwsSolutions-IAM4",
         reason: "AWS managed policies allowed for prototype",
       },
-      { id: "AwsSolutions-IAM5", reason: "IAM wildcard allowed for prototype" },
+      { id: "AwsSolutions-IAM5", reason: "IAM wildcard allowed" },
       {
         id: "AwsSolutions-L1",
         reason: "Latest runtime not required for prototype",
@@ -63,7 +62,14 @@ export const suppressCdkNagRules = (stack: cdk.Stack) => {
         id: "AwsSolutions-S1",
         reason: "S3 server access logs not required for prototype",
       },
-
+      {
+        id: "AwsSolutions-SNS2",
+        reason: "Temporary SNS setup for experimentation. Unsupress.",
+      },
+      {
+        id: "AwsSolutions-SNS3",
+        reason: "Temporary SNS setup for experimentation. Unsupress.",
+      },
     ],
     true
   );

@@ -13,16 +13,16 @@
  * permissions and limitations under the License.
  */
 
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {faBug, faCircleCheck} from "@fortawesome/free-solid-svg-icons";
 import {faPython} from "@fortawesome/free-brands-svg-icons";
 
 @Component({
     selector: 'app-plugin-selection',
     templateUrl: './plugin-selection.component.html',
-    styleUrls: ['../../pipeline.component.scss']
+    styleUrls: ['../../pipeline.component.scss', 'plugin-selection.component.scss']
 })
-export class PluginSelectionComponent {
+export class PluginSelectionComponent implements OnInit {
     pluginSelectionTab = 1;
     faCheck = faCircleCheck;
     faBug = faBug;
@@ -31,8 +31,20 @@ export class PluginSelectionComponent {
     plugin: any;
     s3Uri: string | undefined;
     existingPlugin: any;
+    showHelp = false;
 
+    @Input() uri: any;
     @ViewChild("pluginInput") pluginInput: ElementRef | undefined;
+
+    toggleHelp = () => {
+        this.showHelp = false;
+        this.removeClickEvent()
+    }
+    toggleHelpBind = this.toggleHelp.bind(this);
+
+    ngOnInit(): void {
+        this.s3Uri = this.uri;
+    }
 
     dragEnterHandler(event: DragEvent) {
         event.preventDefault();
@@ -82,5 +94,18 @@ export class PluginSelectionComponent {
 
     validateUpload(file: File) {
         return file.name.includes('.py');
+    }
+
+    helpHandler() {
+        this.showHelp = !this.showHelp;
+        if(this.showHelp) {
+            setTimeout(() => {
+                window.addEventListener('click', this.toggleHelpBind);
+            });
+        }
+    }
+
+    private removeClickEvent() {
+        window.removeEventListener('click', this.toggleHelpBind);
     }
 }

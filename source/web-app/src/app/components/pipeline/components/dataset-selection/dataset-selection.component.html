@@ -1,7 +1,7 @@
 <div class="upload-file-body dataset-upload"(dragenter)="dragEnterHandler($event)" (dragleave)="dragLeaveHandler($event)" (dragover)="dragOverHandler($event)" (drop)="dropHandler($event)">
-    <app-tabs [tabs]="[{text: 'Upload', id: 1}, {text: 'S3', id: 2}]"
+    <app-tabs [tabs]="[{text: 'S3', id: 1}, {text: 'Existing', id: 2}]"
               (tabSelectionNotifier)="datasetSelectionTab = $event"></app-tabs>
-    <div class="file-upload" *ngIf="datasetSelectionTab === 1">
+    <div class="file-upload" *ngIf="datasetSelectionTab === 2">
         <img src="../../../../../assets/images/upload.png" alt="Upload Image"/>
         <div class="upload-file-action">
           <span class="upload-message-header">Upload Battery Dataset</span>
@@ -20,7 +20,7 @@
             <span class="upload-drag-and-drop-text">Please upload valid file types.</span>
         </div>
     </div>
-    <div class="s3-direct-url" *ngIf="datasetSelectionTab === 2">
+    <div class="s3-direct-url" *ngIf="datasetSelectionTab === 1">
         <span class="upload-message-header">Provide the S3 URI for the Battery Dataset</span>
         <mat-form-field class="s3-full-width">
             <mat-label>S3 URI</mat-label>

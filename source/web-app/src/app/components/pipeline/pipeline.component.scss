@@ -13,6 +13,7 @@
 .breadcrumb-container {
   margin: 3em 0;
 }
+
 .container {
   display: flex;
   flex-direction: column;
@@ -117,10 +118,6 @@
     align-items: center;
   }
 
-  img {
-    margin: 2em 0;
-  }
-
   .upload-file-action {
     display: flex;
     flex-direction: column;
@@ -129,6 +126,8 @@
     .upload-message-header {
       font-size: 24px;
       color: #fff;
+      display: flex;
+      align-items: center;
     }
 
     .upload-drag-and-drop-text {
@@ -236,7 +235,7 @@
 }
 
 .s3-full-width {
-  width: 100%;
+  width: 100% !important;
 }
 
 .single-btn-align {

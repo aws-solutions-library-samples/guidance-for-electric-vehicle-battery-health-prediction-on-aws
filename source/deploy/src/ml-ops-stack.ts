@@ -16,14 +16,19 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { EventBridgeLambdaConstruct } from "./constructs/eventbridge-lambda-contruct";
+import * as apigw from "@aws-cdk/aws-apigatewayv2-alpha";
 
 const iam = cdk.aws_iam;
 
 export interface MLOpsStackProps extends cdk.StackProps {
-  readonly libraryBucket: cdk.aws_s3.Bucket;
-  readonly pipelineTable: cdk.aws_dynamodb.Table;
   readonly lambdaFnPath: string;
+  readonly s3AssetsPath: string;
+  readonly pipelineBucket: cdk.aws_s3.Bucket;
+  readonly cdkBucket: cdk.aws_s3.Bucket;
+  readonly pipelineTable: cdk.aws_dynamodb.Table;
   readonly appSyncApi: cdk.aws_appsync.GraphqlApi;
+  readonly restApi: apigw.HttpApi;
+  readonly retrainFn: cdk.aws_lambda.Function;
 }
 
 /**
@@ -38,9 +43,6 @@ export class MLOpsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: MLOpsStackProps) {
     super(scope, id, props);
 
-    const stack = cdk.Stack.of(this);
-    const assetsPath = "assets";
-
     // NOTE: Create new S3 folder with UUID for every run
     // s3://<bucket>/data/123456/raw_dataset.csv
 
@@ -49,23 +51,26 @@ export class MLOpsStack extends cdk.Stack {
     const trainDatasetKey = "train_dataset.csv";
     const testDatasetKey = "test_dataset.csv";
     const testIdsKey = "test_ids.csv";
-    const forecastPrefix = "plot/predictions";
+    const forecastPrefix = "tmp/predictions";
     const postProcessorKey = "post_processor.py";
     const postProcessorName = "PostProcessingJob";
+    const defaultCheckpoint = 800;
 
     const glueRole = new iam.Role(this, "glueRole", {
       assumedBy: new iam.ServicePrincipal("glue.amazonaws.com"),
     });
 
     // Allow glue job to fetch plugin script from S3
-    props.libraryBucket.grantReadWrite(glueRole);
+    props.pipelineBucket.grantReadWrite(glueRole);
+    props.cdkBucket.grantRead(glueRole);
 
     const forecastRole = new iam.Role(this, "forecastRole", {
       assumedBy: new iam.ServicePrincipal("forecast.amazonaws.com"),
     });
 
     // Allow forecast import job access to access dataset on S3
-    props.libraryBucket.grantReadWrite(forecastRole);
+    props.pipelineBucket.grantReadWrite(forecastRole);
+    props.cdkBucket.grantRead(forecastRole);
 
     // Permissions to create and run Glue jobs
     const glueAuthPolicy = new iam.PolicyStatement({
@@ -81,6 +86,13 @@ export class MLOpsStack extends cdk.Stack {
       effect: iam.Effect.ALLOW,
       actions: ["forecast:*"],
       resources: ["*"],
+    });
+
+    // Upload static dataset and processor assets
+    new cdk.aws_s3_deployment.BucketDeployment(this, "UploadDataAssets", {
+      sources: [cdk.aws_s3_deployment.Source.asset(props.s3AssetsPath)],
+      destinationBucket: props.cdkBucket,
+      destinationKeyPrefix: props.s3AssetsPath,
     });
 
     // -------- STEP 1 --------
@@ -107,6 +119,7 @@ export class MLOpsStack extends cdk.Stack {
       lambdaPolicy: glueAuthPolicy,
       lambdaEnvConfig: {
         PLUGIN_SCRIPT_KEY: processingPluginKey,
+        DATA_CHECKPOINT: `${defaultCheckpoint}`,
       },
     });
 
@@ -174,24 +187,15 @@ export class MLOpsStack extends cdk.Stack {
     // -------- STEP 7 --------
     // Event: Forecast predictions exported
     // Action: Partition exports in format expected by UI
-    const postProcUpload = new cdk.aws_s3_deployment.BucketDeployment(
-      this,
-      "UploadPostProcessor",
-      {
-        sources: [cdk.aws_s3_deployment.Source.asset(assetsPath)],
-        destinationBucket: props.libraryBucket,
-        destinationKeyPrefix: `CDK-${assetsPath}`,
-      }
-    );
 
-    // This glue job is run with the pipeline ID for post processing forecasts
+    // This glue job is run with the pipeline ID for post-processing forecasts
     const postProcessor = new cdk.aws_glue.CfnJob(this, postProcessorName, {
       name: postProcessorName,
       role: glueRole.roleArn,
       command: {
         name: "glueetl",
         pythonVersion: "3",
-        scriptLocation: `s3://${props.libraryBucket.bucketName}/CDK-${assetsPath}/${postProcessorKey}`,
+        scriptLocation: `s3://${props.cdkBucket.bucketName}/${props.s3AssetsPath}/${postProcessorKey}`,
       },
       glueVersion: "3.0",
     });
@@ -204,7 +208,7 @@ export class MLOpsStack extends cdk.Stack {
       lambdaPolicy: glueAuthPolicy,
       lambdaEnvConfig: {
         GLUE_JOB_NAME: postProcessor.name!,
-        DATA_BUCKET: props.libraryBucket.bucketName,
+        DATA_BUCKET: props.pipelineBucket.bucketName,
         FORECAST_OUTPUT_PREFIX: forecastPrefix,
       },
     });
@@ -225,9 +229,11 @@ export class MLOpsStack extends cdk.Stack {
       },
     });
 
-    // all connected via eventbridge; ending one triggers the next one; all as a separate lambda function
+    // all connected via event-bridge; ending one triggers the next one; all as a separate lambda function
     // Note: for forecasting beyond horizon, need to train new horizon. maybe with the latest data.
     // So make sure new data is logged in some meaningful csv way. This would be part of the retraining.
     // Retraining happens for two reasons: (1) forecast horizon expired, or (2) drift exceeds tolerance
+
+    props.retrainFn.addToRolePolicy(glueAuthPolicy);
   }
 }

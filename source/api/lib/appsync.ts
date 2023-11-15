@@ -288,8 +288,7 @@ export class AppSyncClient {
     for (const attempt of attempts()) {
       if (errors.length) {
         const lastError = errors[errors.length - 1];
-        console.log("GraphQL Attempt", {
-        // console.log(`[GraphQL Attempt ${errors.length}] ${lastError.message}`, {
+        console.log(`[GraphQL Attempt ${errors.length}] ${lastError.message}`, {
           lastError,
           graphql,
         });

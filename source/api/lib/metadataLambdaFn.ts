@@ -15,14 +15,7 @@
 const csv = require("csv-parser");
 
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
-import {
-  CopyObjectCommand,
-  CopyObjectCommandInput,
-  GetObjectCommand,
-  ListObjectsCommand,
-  PutObjectCommand,
-  S3Client
-} from "@aws-sdk/client-s3";
+import {CopyObjectCommand, GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 
 const s3 = new S3Client({ region: process.env.AWS_REGION });
 
@@ -53,7 +46,7 @@ async function getMetadata(event: any) {
   return new Promise(async (resolve, reject) => {
     try {
       const getObjectParams = {
-        Bucket: process.env.BUCKET,
+        Bucket: process.env.CDK_BUCKET,
         Key: process.env.KEY
       };
       const getObjectCommand = new GetObjectCommand(getObjectParams);
@@ -112,13 +105,10 @@ function getBatteryData(event: any) {
 }
 
 async function copyDataset(event: any) {
-  const isPlugin = event.queryStringParameters.plugin === 'Y';
   const s3Uri = event.queryStringParameters.uri;
   const Key = event.queryStringParameters.key;
   let CopySource = '';
-  if (isPlugin) {
-    CopySource = process.env.IOT_BUCKET + '/default_processing_plugin.py';
-  } else if (s3Uri) {
+  if (s3Uri) {
     CopySource = s3Uri.replace("s3://", "");
   }
   const params = {

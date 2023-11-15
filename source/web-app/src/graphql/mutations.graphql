@@ -11,7 +11,8 @@ mutation Pipeline($input: PipelineRequestInput!) {
     DataImportedAt
     TrainingFinishedAt
     ForecastGeneratedAt
-    PredictionsExportedAt
+    ForecastExportedAt
+    CleaningFinishedAt
     DataGroupArn
     PreProcessingId
     RawDataSize
@@ -25,5 +26,8 @@ mutation Pipeline($input: PipelineRequestInput!) {
     PostProcessingId
     OriginalDatasetName
     OriginalPluginName
+    DataCheckpoint
+    ErrorMessage
+    PipelineRetraining
   }
 }

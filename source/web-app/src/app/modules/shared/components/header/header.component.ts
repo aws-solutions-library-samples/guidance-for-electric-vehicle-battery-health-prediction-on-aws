@@ -31,12 +31,10 @@ export class HeaderComponent implements OnInit {
     userName = "";
     faUser = faUser;
     showLogout = false;
-    showSidebar = false;
-    showSidebarContainer = false;
     showSpinner = false;
     logoSrc = environment.NG_APP_LOGO;
     customerName = environment.NG_APP_NAME;
-
+    
     toggleMenu = () => {
         this.showLogout = false;
         this.removeClickEvent()

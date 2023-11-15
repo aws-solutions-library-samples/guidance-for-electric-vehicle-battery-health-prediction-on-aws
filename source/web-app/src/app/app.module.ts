@@ -47,6 +47,7 @@ import {MatCheckboxModule} from "@angular/material/checkbox";
 import { DatasetSelectionComponent } from './components/pipeline/components/dataset-selection/dataset-selection.component';
 import { TabsComponent } from './components/pipeline/components/tabs/tabs.component';
 import { PluginSelectionComponent } from './components/pipeline/components/plugin-selection/plugin-selection.component';
+import { BatteryInfoComponent } from './components/dashboard/components/battery-info/battery-info.component';
 
 function getMapInfo(config: any) {
     const geo: any = {
@@ -73,6 +74,8 @@ function appInitializer(metadataService: ConfigService, authService: AuthService
                 environment["NG_APP_USER_POOL_ID"] = config.userPoolId;
                 environment["NG_APP_IDENTITY_POOL_ID"] = config.identityPoolId;
                 environment["NG_APP_APP_CLIENT_ID"] = config.appClientId;
+                environment["NG_APP_DATASET_URI"] = config.bucketUrl + "/cdk-assets/raw_dataset.csv",
+                environment["NG_APP_PLUGIN_URI"] = config.bucketUrl + "/cdk-assets/processing_plugin.py";
 
                 // Amplify.Logger.LOG_LEVEL = "DEBUG";
                 Amplify.configure({
@@ -118,7 +121,8 @@ function appInitializer(metadataService: ConfigService, authService: AuthService
         MapComponent,
         DatasetSelectionComponent,
         TabsComponent,
-        PluginSelectionComponent
+        PluginSelectionComponent,
+        BatteryInfoComponent
     ],
     imports: [
         BrowserModule,

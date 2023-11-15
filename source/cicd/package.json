@@ -1,0 +1,33 @@
+{
+  "name": "pipeline",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "lint": "eslint src/"
+  },
+  "devDependencies": {
+    "@types/git-branch": "^2.0.2",
+    "@types/git-repo-name": "^1.0.1",
+    "@types/jest": "^27.4.0",
+    "@types/node": "^16.11.25",
+    "@typescript-eslint/eslint-plugin": "5.22.0",
+    "@typescript-eslint/parser": "5.22.0",
+    "aws-cdk": "2.22.0",
+    "aws-cdk-lib": "2.22.0",
+    "aws-sdk": "^2.1125.0",
+    "cdk-assets": "2.22.0",
+    "constructs": "^10.0.0",
+    "eslint": "^8.9.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-prettier": "4.0.0",
+    "git-branch": "^2.0.1",
+    "git-repo-name": "^1.0.1",
+    "jest": "^27.4.0",
+    "source-map-support": "^0.5.16",
+    "ts-node": "^10.5.0",
+    "typescript": "^4.5.5"
+  }
+}

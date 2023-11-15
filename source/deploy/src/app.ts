@@ -16,7 +16,7 @@
 import * as cdk from "aws-cdk-lib";
 
 import { CfWafStack } from "./cf-waf-stack";
-import { AppStack } from "./app-stack";
+import { BaseStack } from "./base-stack";
 import { MLOpsStack } from "./ml-ops-stack";
 import { AwsSolutionsChecks } from "cdk-nag";
 import { suppressCdkNagRules } from "./cdk-nag-suppressions";
@@ -40,53 +40,56 @@ const region =
   process.env.CDK_DEFAULT_REGION;
 
 const lambdaFnPath = "../api/lib";
+const s3AssetsPath = "cdk-assets";
 
-// Deploy Waf for CloudFront in us-east-1
-const cfWafStackName = stackName + "-waf";
-
-const cfWafStack = new CfWafStack(app, cfWafStackName, {
+const cfWafStack = new CfWafStack(app, stackName + "-waf", {
   env: {
     account: account,
     region: "us-east-1",
   },
-  description: "Guidance for Electric Vehicle (EV) Battery Health Prediction (SO9184)",
-  stackName: cfWafStackName,
+  // stackName: stackName + "-waf",
 });
 
-// Deploy App Stack
-const appStack = new AppStack(app, stackName, {
+// Deploy base stack with lambda, S3 and ddb resources
+const baseStack = new BaseStack(app, stackName, {
   env: {
     account: account,
     region: region,
   },
-  description: "Guidance for Electric Vehicle (EV) Battery Health Prediction (SO9184)",
-  stackName: stackName,
+  // stackName: stackName + "-base",
   ssmWafArnParameterName: cfWafStack.ssmWafArnParameterName,
   ssmWafArnParameterRegion: cfWafStack.region,
   lambdaFnPath: lambdaFnPath,
+  s3AssetsPath: s3AssetsPath,
 });
 
-appStack.addDependency(cfWafStack);
+baseStack.addDependency(cfWafStack);
 
-// Deploy ML pipeline stack
+// Deploy ML pipeline stack with event-bridge, glue and forecast
 const mlStack = new MLOpsStack(app, stackName + "-ml", {
   env: {
     account: account,
     region: region,
   },
-  description: "Guidance for Electric Vehicle (EV) Battery Health Prediction (SO9184)",
-  libraryBucket: appStack.bucket,
   lambdaFnPath: lambdaFnPath,
-  pipelineTable: appStack.pipelineTable,
-  appSyncApi: appStack.appSyncApi,
+  s3AssetsPath: s3AssetsPath,
+  pipelineBucket: baseStack.bucket,
+  cdkBucket: baseStack.cdkBucket,
+  pipelineTable: baseStack.pipelineTable,
+  appSyncApi: baseStack.appSyncApi,
+  restApi: baseStack.restApi,
+  retrainFn: baseStack.retrainFn,
 });
 
-mlStack.addDependency(appStack);
+mlStack.addDependency(baseStack);
+
+// TODO: Deploy API stack with REST and AppSync resources
+// const apiStack = ...
 
 // Add Aws Solutions Checks and suppress rules
 cdk.Aspects.of(app).add(new AwsSolutionsChecks({ logIgnores: true }));
 suppressCdkNagRules(cfWafStack);
+suppressCdkNagRules(baseStack);
 suppressCdkNagRules(mlStack);
-suppressCdkNagRules(appStack);
 
 app.synth();

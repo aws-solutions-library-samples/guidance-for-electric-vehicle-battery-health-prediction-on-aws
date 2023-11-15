@@ -43,6 +43,23 @@ function build_response(http_code: number, body: any) {
   };
 }
 
+// Update pipeline info in ddb table
+async function update_ddb(pipeId: string, inputValues: object) {
+  await appSync.post({
+    query: `mutation MyMutation($input: PipelineRequestInput!) {
+      pipeline(input: $input) { Id PipelineStatus StatusUpdatedAt }
+    }`,
+    variables: {
+      input: {
+        ...inputValues,
+        Id: pipeId,
+        PipelineStatus: process.env.PIPELINE_STATUS,
+        StatusUpdatedAt: new Date().toISOString(),
+      },
+    },
+  });
+}
+
 /**
  * Import training dataset into Forecast
  * @param event
@@ -50,92 +67,92 @@ function build_response(http_code: number, body: any) {
  */
 export async function handler(event?: any, context?: any) {
   let data: String[] = [];
+  let pipeId: string = "";
 
   try {
     //arn:aws:forecast:us-east-1:157670018337:predictor/adi_uuid_1677311084939_01GT3RG306SGWBGQB65MNVDGY1
     const predArn = event["resources"][0];
     const fcastId = predArn.split("/")[1].split("_").slice(0, 2).join("_");
-    const pipeId = fcastId.split("_")[1];
+    pipeId = fcastId.split("_")[1];
 
     // const fcastId = idParts.slice(0, 2).join("_");
     // const userId = idParts[0];
     // const pipeId = idParts[1];
     // const fcastId = `${userId}_${pipeId}`;
 
-    const metrics = await fcast.send(
-      new GetAccuracyMetricsCommand({ PredictorArn: predArn })
-    );
+    const status = event["detail"]["status"];
+    if (status === "ACTIVE") {
+      const metrics = await fcast.send(
+        new GetAccuracyMetricsCommand({ PredictorArn: predArn })
+      );
 
-    // Error in %age
-    const wape =
-      metrics.PredictorEvaluationResults![0].TestWindows![0].Metrics!
-        .ErrorMetrics![0].WAPE!;
-    data.push(`Predictor WAPE determined: ${wape}`);
+      // Error in %age
+      const wape =
+        metrics.PredictorEvaluationResults![0].TestWindows![0].Metrics!
+          .ErrorMetrics![0].WAPE!;
+      data.push(`Predictor WAPE determined: ${wape}`);
 
-    // TODO: this can just be reconstructed from userId and pipeId
-    // Get S3 URI for pipe data from stored ddb entry
-    const pipeData = await appSync.post({
-      query: `query ($Id: String!) {
-        getPipelineById(Id: $Id) {
-          RawDataUri
-        }
-      }`,
-      variables: { Id: pipeId },
-    });
+      // TODO: this can just be reconstructed from userId and pipeId
+      // Get S3 URI for pipe data from stored ddb entry
+      const pipeData = await appSync.post({
+        query: `query ($Id: String!) {
+          getPipelineById(Id: $Id) {
+            RawDataUri
+          }
+        }`,
+        variables: { Id: pipeId },
+      });
 
-    const rawDataUri = pipeData.data.getPipelineById.RawDataUri;
-    const pipeDataUri = rawDataUri.substring(0, rawDataUri.lastIndexOf("/"));
-    const testIdsUri = `${pipeDataUri}/${process.env.TEST_IDS_KEY}`;
+      const rawDataUri = pipeData.data.getPipelineById.RawDataUri;
+      const pipeDataUri = rawDataUri.substring(0, rawDataUri.lastIndexOf("/"));
+      const testIdsUri = `${pipeDataUri}/${process.env.TEST_IDS_KEY}`;
 
-    const testSubset = {
-      TimeSeriesSelector: {
-        TimeSeriesIdentifiers: {
-          DataSource: {
-            S3Config: {
-              Path: testIdsUri,
-              RoleArn: process.env.SERVICE_ROLE_ARN,
+      const testSubset = {
+        TimeSeriesSelector: {
+          TimeSeriesIdentifiers: {
+            DataSource: {
+              S3Config: {
+                Path: testIdsUri,
+                RoleArn: process.env.SERVICE_ROLE_ARN,
+              },
+            },
+            Format: "CSV",
+            Schema: {
+              Attributes: [
+                { AttributeName: "item_id", AttributeType: "string" },
+              ],
             },
           },
-          Format: "CSV",
-          Schema: {
-            Attributes: [{ AttributeName: "item_id", AttributeType: "string" }],
-          },
         },
-      },
-    };
+      };
 
-    const forecast = await fcast.send(
-      new CreateForecastCommand({
-        ForecastName: `${fcastId}_${Date.now()}`,
-        PredictorArn: predArn,
-        ForecastTypes: ["0.5"],
-        ...testSubset,
-      })
-    );
-    data.push(`Initiated forecast generation: ${forecast.ForecastArn}`);
+      const forecast = await fcast.send(
+        new CreateForecastCommand({
+          ForecastName: `${fcastId}_${Date.now()}`,
+          PredictorArn: predArn,
+          ForecastTypes: ["0.5"],
+          ...testSubset,
+        })
+      );
+      data.push(`Initiated forecast generation: ${forecast.ForecastArn}`);
 
-    // Update pipeline info in ddb table
-    await appSync.post({
-      query: `mutation MyMutation($input: PipelineRequestInput!) {
-        pipeline(input: $input) { Id PipelineStatus StatusUpdatedAt }
-      }`,
-      variables: {
-        input: {
-          Id: pipeId,
-          TrainingFinishedAt: event["time"],
-          ModelDrift: wape,
-          ForecastArn: forecast.ForecastArn,
-          PipelineStatus: process.env.PIPELINE_STATUS,
-          StatusUpdatedAt: new Date().toISOString(),
-        },
-      },
-    });
-    data.push(`Pipeline status updated to ${process.env.PIPELINE_STATUS}`);
+      await update_ddb(pipeId, {
+        TrainingFinishedAt: event["time"],
+        ModelDrift: wape,
+        ForecastArn: forecast.ForecastArn,
+      });
+      data.push(`Pipeline status updated to ${process.env.PIPELINE_STATUS}`);
+    } else {
+      event["detail"]["name"] = status;
+      throw event["detail"];
+    }
 
     return build_response(200, data);
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    data.push("Server Error");
+
+    await update_ddb(pipeId, { ErrorMessage: err.message! });
+    data.push(`${err.name}: ${err.message}`);
 
     return build_response(500, data);
   }

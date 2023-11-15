@@ -1,6 +1,6 @@
 <div class="metric-container" [ngClass]="getOverrideClass()">
     <div class="metric-info">
-        <span>{{['FSOC', 'SOC'].includes(metric) ? 'State of Charge' : 'RUL'}}</span>
+        <span>{{['FSOC', 'SOC'].includes(metric) ? 'State of Power' : 'Remaining Useful Life'}}</span>
         <span>{{mValue}}%</span>
     </div>
     <div class="metric-bar">

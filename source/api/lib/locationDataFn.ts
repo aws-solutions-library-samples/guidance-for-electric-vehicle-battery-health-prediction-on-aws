@@ -26,10 +26,9 @@ function getBatteryData(event: any) {
   const locationData: any[] = [];
   return new Promise(async (resolve) => {
     try {
-      let Key = process.env.KEY;
       const getObjectParams = {
         Bucket: process.env.BUCKET,
-        Key,
+        Key: process.env.KEY,
       };
       const getObjectCommand = new GetObjectCommand(getObjectParams)
       const resp = await s3.send(getObjectCommand);

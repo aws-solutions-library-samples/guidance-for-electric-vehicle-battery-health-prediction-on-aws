@@ -17,8 +17,9 @@ import {Component, OnInit} from '@angular/core';
 import {APIService, GetPipelinesByUserQuery} from "../../services/api.service";
 import {PipelineStatus} from "../../models/pipeline-status";
 import {faChevronLeft, faChevronRight} from "@fortawesome/free-solid-svg-icons";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Auth} from "aws-amplify";
+import {ErrorMessages} from "../../models/error-messages";
 
 @Component({
     selector: 'app-history',
@@ -26,17 +27,19 @@ import {Auth} from "aws-amplify";
     styleUrls: ['./history.component.scss']
 })
 export class HistoryComponent implements OnInit {
+    showError: any;
     pipelineData: GetPipelinesByUserQuery[] = [];
     segmentedPipelineData: any[] = [];
     emptyRows: any[] = [];
     availableSteps = [
-        {id: 1, title: 'CSV Dataset Uploaded', status: 'DATASET_UPLOADED'},
+        {id: 1, title: 'CSV Dataset Uploaded', status: 'UPLOADING_DATASET'},
         {id: 2, title: 'Processing Dataset', status: 'PROCESSING_DATASET'},
         {id: 3, title: 'Importing Dataset', status: 'IMPORTING_DATASET'},
         {id: 4, title: 'Training Predictor', status: 'TRAINING_PREDICTOR'},
-        {id: 5, title: 'Generating Forecasts', status: 'GENERATING_FORECASTS'},
+        {id: 5, title: 'Generating Forecast', status: 'GENERATING_FORECAST'},
         {id: 6, title: 'Exporting Predictions', status: 'EXPORTING_PREDICTIONS'},
         {id: 7, title: 'Cleaning Exports', status: 'CLEANING_EXPORTS'},
+        {id: 8, title: 'Pipeline Finished', status: 'PIPELINE_FINISHED', hide: true},
     ];
     currentStep = 1;
     faLeft = faChevronLeft;
@@ -46,8 +49,17 @@ export class HistoryComponent implements OnInit {
     totalPages = 1;
     lastShownIndex = this.itemsPerPage;
     showSpinner = false;
+    errorMessages = new Map(Object.entries(ErrorMessages));
+    errorMessage: any;
 
-    constructor(private apiService: APIService, private router: Router) {
+    constructor(private apiService: APIService, private router: Router, private activatedRoute: ActivatedRoute) {
+        this.activatedRoute.queryParams.subscribe((qp: any) => {
+            if (qp.error) {
+                this.showError = !!qp.error;
+                const error = qp.error;
+                this.errorMessage = this.errorMessages.get('Err_' + error);
+            }
+        })
     }
 
     ngOnInit(): void {
@@ -98,10 +110,10 @@ export class HistoryComponent implements OnInit {
     }
 
     navigateToTracker(pipeline: any) {
-        if (pipeline.currentStep < 7) {
-            this.router.navigate(['/tracker', pipeline.Id]).then();
+        if (pipeline.PipelineStatus == 'PIPELINE_FINISHED' || pipeline.PipelineRetraining) {
+            this.router.navigate(['/dashboard'], {queryParams: {uuid: pipeline.Id}}).then();
         } else {
-            this.router.navigate(['/dashboard'],{queryParams: {uuid: pipeline.Id}}).then();
+            this.router.navigate(['/tracker', pipeline.Id]).then();
         }
     }
 

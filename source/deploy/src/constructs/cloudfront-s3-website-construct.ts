@@ -14,7 +14,6 @@
  */
 
 import * as cdk from "aws-cdk-lib";
-import { s3 } from "cdk-nag/lib/rules";
 import { Construct } from "constructs";
 
 export interface CloudFrontS3WebSiteConstructProps extends cdk.StackProps {
@@ -117,8 +116,6 @@ export class CloudFrontS3WebSiteConstruct extends Construct {
         webAclId: props.webAclArn,
         minimumProtocolVersion:
           cdk.aws_cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021, // Required by security
-        sslSupportMethod: 
-          cdk.aws_cloudfront.SSLMethod.SNI
       }
     );
 

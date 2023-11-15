@@ -11,7 +11,8 @@ subscription PipelineSub {
     DataImportedAt
     TrainingFinishedAt
     ForecastGeneratedAt
-    PredictionsExportedAt
+    ForecastExportedAt
+    CleaningFinishedAt
     DataGroupArn
     PreProcessingId
     RawDataSize
@@ -25,5 +26,8 @@ subscription PipelineSub {
     PostProcessingId
     OriginalDatasetName
     OriginalPluginName
+    DataCheckpoint
+    ErrorMessage
+    PipelineRetraining
   }
 }

@@ -42,6 +42,23 @@ function build_response(http_code: number, body: any) {
   };
 }
 
+// Update pipeline info in ddb table
+async function update_ddb(pipeId: string, inputValues: object) {
+  await appSync.post({
+    query: `mutation MyMutation($input: PipelineRequestInput!) {
+      pipeline(input: $input) { Id PipelineStatus StatusUpdatedAt }
+    }`,
+    variables: {
+      input: {
+        ...inputValues,
+        Id: pipeId,
+        PipelineStatus: process.env.PIPELINE_STATUS,
+        StatusUpdatedAt: new Date().toISOString(),
+      },
+    },
+  });
+}
+
 /**
  * Import training dataset into Forecast
  * @param event
@@ -49,65 +66,63 @@ function build_response(http_code: number, body: any) {
  */
 export async function handler(event?: any, context?: any) {
   let data: String[] = [];
+  let pipeId: string = "";
 
   try {
     //arn:aws:forecast:us-east-1:157670018337:forecast/adi_uuid_1677324841398
     const fcastArn = event["resources"][0];
     const arnId = fcastArn.split("/")[1];
     const fcastId = arnId.substring(0, arnId.lastIndexOf("_"));
-    const pipeId = fcastId.split("_")[1];
+    pipeId = fcastId.split("_")[1];
 
-    // Get S3 URI for pipe data from stored ddb entry
-    const pipeData = await appSync.post({
-      query: `query ($Id: String!) {
+    const status = event["detail"]["status"];
+    if (status === "ACTIVE") {
+      // TODO: this can just be reconstructed from userId and pipeId
+      // Get S3 URI for pipe data from stored ddb entry
+      const pipeData = await appSync.post({
+        query: `query ($Id: String!) {
         getPipelineById(Id: $Id) {
           RawDataUri
         }
       }`,
-      variables: { Id: pipeId },
-    });
+        variables: { Id: pipeId },
+      });
 
-    const rawDataUri = pipeData.data.getPipelineById.RawDataUri;
-    const pipeDataUri = rawDataUri.substring(0, rawDataUri.lastIndexOf("/"));
-    const fcastDataUri = `${pipeDataUri}/${process.env.FORECAST_OUTPUT_PREFIX}`;
-    const timestamp = Date.now();
+      const rawDataUri = pipeData.data.getPipelineById.RawDataUri;
+      const pipeDataUri = rawDataUri.substring(0, rawDataUri.lastIndexOf("/"));
+      const fcastDataUri = `${pipeDataUri}/${process.env.FORECAST_OUTPUT_PREFIX}`;
 
-    const exportJob = await fcast.send(
-      new CreateForecastExportJobCommand({
-        ForecastExportJobName: fcastId,
-        ForecastArn: fcastArn,
-        Format: "CSV",
-        Destination: {
-          S3Config: {
-            Path: `${fcastDataUri}/`,
-            RoleArn: process.env.SERVICE_ROLE_ARN,
+      const exportJob = await fcast.send(
+        new CreateForecastExportJobCommand({
+          ForecastExportJobName: fcastId,
+          ForecastArn: fcastArn,
+          Format: "CSV",
+          Destination: {
+            S3Config: {
+              Path: `${fcastDataUri}/`,
+              RoleArn: process.env.SERVICE_ROLE_ARN,
+            },
           },
-        },
-      })
-    );
-    data.push(`Exporting forecast data to ${fcastDataUri}`);
+        })
+      );
+      data.push(`Exporting forecast data to ${fcastDataUri}`);
 
-    /// Update pipeline info in ddb table
-    await appSync.post({
-      query: `mutation MyMutation($input: PipelineRequestInput!) {
-        pipeline(input: $input) { Id PipelineStatus StatusUpdatedAt }
-      }`,
-      variables: {
-        input: {
-          Id: pipeId,
-          ForecastGeneratedAt: event["time"],
-          ExportJobArn: exportJob.ForecastExportJobArn,
-          PipelineStatus: process.env.PIPELINE_STATUS,
-          StatusUpdatedAt: new Date().toISOString(),
-        },
-      },
-    });
-    data.push(`Pipeline status updated to ${process.env.PIPELINE_STATUS}`);
+      await update_ddb(pipeId, {
+        ForecastGeneratedAt: event["time"],
+        ExportJobArn: exportJob.ForecastExportJobArn,
+      });
+      data.push(`Pipeline status updated to ${process.env.PIPELINE_STATUS}`);
+    } else {
+      event["detail"]["name"] = status;
+      throw event["detail"];
+    }
 
     return build_response(200, data);
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    data.push("Server Error");
+
+    await update_ddb(pipeId, { ErrorMessage: err.message! });
+    data.push(`${err.name}: ${err.message}`);
 
     return build_response(500, data);
   }

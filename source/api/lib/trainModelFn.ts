@@ -42,6 +42,23 @@ function build_response(http_code: number, body: any) {
   };
 }
 
+// Update pipeline info in ddb table
+async function update_ddb(pipeId: string, inputValues: object) {
+  await appSync.post({
+    query: `mutation MyMutation($input: PipelineRequestInput!) {
+      pipeline(input: $input) { Id PipelineStatus StatusUpdatedAt }
+    }`,
+    variables: {
+      input: {
+        ...inputValues,
+        Id: pipeId,
+        PipelineStatus: process.env.PIPELINE_STATUS,
+        StatusUpdatedAt: new Date().toISOString(),
+      },
+    },
+  });
+}
+
 /**
  * Import training dataset into Forecast
  * @param event
@@ -49,47 +66,45 @@ function build_response(http_code: number, body: any) {
  */
 export async function handler(event?: any, context?: any) {
   let data: String[] = [];
+  let pipeId: string = "";
 
   try {
     const importArn = event["resources"][0];
     const fcastId = importArn.split("/")[1];
-    const pipeId = fcastId.split("_")[1];
+    pipeId = fcastId.split("_")[1];
 
-    const arnBase = importArn.substr(0, importArn.lastIndexOf(":"));
-    const dsgArn = `${arnBase}:dataset-group/${fcastId}`;
+    const status = event["detail"]["status"];
+    if (status === "ACTIVE") {
+      const arnBase = importArn.substr(0, importArn.lastIndexOf(":"));
+      const dsgArn = `${arnBase}:dataset-group/${fcastId}`;
 
-    // Kick off AutoML model training
-    const predictor = await fcast.send(
-      new CreateAutoPredictorCommand({
-        PredictorName: `${fcastId}_${Date.now()}`,
-        ForecastHorizon: parseInt(`${process.env.FORECAST_HORIZON}`),
-        ForecastFrequency: process.env.DATASET_FREQUENCY,
-        DataConfig: { DatasetGroupArn: dsgArn },
-      })
-    );
-    data.push(`Initiated predictor training: ${predictor.PredictorArn}`);
+      // Kick off AutoML model training
+      const predictor = await fcast.send(
+        new CreateAutoPredictorCommand({
+          PredictorName: `${fcastId}_${Date.now()}`,
+          ForecastHorizon: parseInt(`${process.env.FORECAST_HORIZON}`),
+          ForecastFrequency: process.env.DATASET_FREQUENCY,
+          DataConfig: { DatasetGroupArn: dsgArn },
+        })
+      );
+      data.push(`Initiated predictor training: ${predictor.PredictorArn}`);
 
-    // Update pipeline info in ddb table
-    await appSync.post({
-      query: `mutation MyMutation($input: PipelineRequestInput!) {
-        pipeline(input: $input) { Id PipelineStatus StatusUpdatedAt }
-      }`,
-      variables: {
-        input: {
-          Id: pipeId,
-          DataImportedAt: event["time"],
-          PredictorArn: predictor.PredictorArn,
-          PipelineStatus: process.env.PIPELINE_STATUS,
-          StatusUpdatedAt: new Date().toISOString(),
-        },
-      },
-    });
-    data.push(`Pipeline status updated to ${process.env.PIPELINE_STATUS}`);
+      await update_ddb(pipeId, {
+        DataImportedAt: event["time"],
+        PredictorArn: predictor.PredictorArn,
+      });
+      data.push(`Pipeline status updated to ${process.env.PIPELINE_STATUS}`);
+    } else {
+      event["detail"]["name"] = status;
+      throw event["detail"];
+    }
 
     return build_response(200, data);
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    data.push("Server Error");
+
+    await update_ddb(pipeId, { ErrorMessage: err.message! });
+    data.push(`${err.name}: ${err.message}`);
 
     return build_response(500, data);
   }

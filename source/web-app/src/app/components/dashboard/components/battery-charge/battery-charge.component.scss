@@ -11,7 +11,7 @@
     }
 
     span:last-child {
-      font-size: 24px;
+      font-size: 20px;
     }
   }
 
@@ -33,7 +33,7 @@
       left: 4px;
       width: var(--width);
       height: 30px;
-      transition: all 2s ease-in;
+      transition: all 1s ease-in;
       background-color: var(--background);
       animation: full 2s linear var(--animation);
     }

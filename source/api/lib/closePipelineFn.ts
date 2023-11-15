@@ -39,6 +39,23 @@ function build_response(http_code: number, body: any) {
   };
 }
 
+// Update pipeline info in ddb table
+async function update_ddb(pipeId: string, inputValues: object) {
+  await appSync.post({
+    query: `mutation MyMutation($input: PipelineRequestInput!) {
+      pipeline(input: $input) { Id PipelineStatus StatusUpdatedAt }
+    }`,
+    variables: {
+      input: {
+        ...inputValues,
+        Id: pipeId,
+        PipelineStatus: process.env.PIPELINE_STATUS,
+        StatusUpdatedAt: new Date().toISOString(),
+      },
+    },
+  });
+}
+
 /**
  * Import training dataset into Forecast
  * @param event
@@ -46,6 +63,7 @@ function build_response(http_code: number, body: any) {
  */
 export async function handler(event?: any, context?: any) {
   let data: String[] = [];
+  let pipeId: string = "";
 
   try {
     const postProcId = event["detail"]["jobRunId"];
@@ -57,28 +75,27 @@ export async function handler(event?: any, context?: any) {
       })
     );
 
-    const outputPath = run.JobRun?.Arguments?.["--output_path"]!;
-    const pipeId = outputPath.split("/")[1];
+    const outputPath = run.JobRun?.Arguments?.["--preds_path"]!;
+    pipeId = outputPath.split("/")[1];
 
-    // Update pipeline info in ddb table
-    await appSync.post({
-      query: `mutation MyMutation($input: PipelineRequestInput!) {
-        pipeline(input: $input) { Id PipelineStatus StatusUpdatedAt }
-      }`,
-      variables: {
-        input: {
-          Id: pipeId,
-          PipelineStatus: process.env.PIPELINE_STATUS,
-          StatusUpdatedAt: new Date().toISOString(),
-        },
-      },
-    });
-    data.push(`Pipeline status updated to ${process.env.PIPELINE_STATUS}`);
+    const status = event["detail"]["state"];
+    if (status === "SUCCEEDED") {
+      await update_ddb(pipeId, {
+        CleaningFinishedAt: event["time"],
+        PipelineRetraining: false
+      });
+      data.push(`Pipeline status updated to ${process.env.PIPELINE_STATUS}`);
+    } else {
+      event["detail"]["name"] = status;
+      throw event["detail"];
+    }
 
     return build_response(200, data);
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    data.push("Server Error");
+
+    await update_ddb(pipeId, { ErrorMessage: err.message! });
+    data.push(`${err.name}: ${err.message}`);
 
     return build_response(500, data);
   }

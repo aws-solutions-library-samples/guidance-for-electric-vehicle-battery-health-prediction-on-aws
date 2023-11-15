@@ -15,11 +15,14 @@
 
 import * as cdk from "aws-cdk-lib";
 import { RemovalPolicy } from "aws-cdk-lib";
+import { StreamViewType } from "aws-cdk-lib/aws-dynamodb";
 import { Construct } from "constructs";
 
 const ddb = cdk.aws_dynamodb;
 
-export interface DdbTableConstructProps extends cdk.StackProps {}
+export interface DdbTableConstructProps extends cdk.StackProps {
+  readonly hash_key_column: string;
+}
 
 const defaultProps: Partial<DdbTableConstructProps> = {};
 
@@ -35,11 +38,12 @@ export class DdbTableConstruct extends Construct {
     const stack = cdk.Stack.of(this);
 
     this.table = new ddb.Table(this, name, {
-      partitionKey: { name: "Id", type: ddb.AttributeType.STRING },
+      partitionKey: { name: props.hash_key_column, type: ddb.AttributeType.STRING },
       tableClass: ddb.TableClass.STANDARD,
       encryption: ddb.TableEncryption.AWS_MANAGED,
       removalPolicy: RemovalPolicy.DESTROY,
-      pointInTimeRecovery: true
+      stream: StreamViewType.NEW_AND_OLD_IMAGES,
+      pointInTimeRecovery: true,
     });
   }
 }

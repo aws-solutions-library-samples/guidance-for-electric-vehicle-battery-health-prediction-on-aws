@@ -22,7 +22,7 @@ const targets = cdk.aws_events_targets;
 
 export interface EventBridgeLambdaProps extends cdk.StackProps {
   readonly pipelineStatus: string;
-  readonly libraryBucket: cdk.aws_s3.Bucket;
+  readonly pipelineBucket: cdk.aws_s3.Bucket;
   readonly appSyncApi: cdk.aws_appsync.GraphqlApi;
   readonly triggerType: string;
   readonly triggerFilter?: string;
@@ -59,16 +59,18 @@ export class EventBridgeLambdaConstruct extends Construct {
     if (props.triggerType.match(/glue/i)) {
       triggerSrc = "glue";
       triggerFilter = {
-        state: ["SUCCEEDED"],
         jobName: [props.triggerFilter],
+        state: ["SUCCEEDED", "FAILED", "TIMEOUT", "STOPPED"],
       };
     } else if (props.triggerType.match(/forecast/i)) {
       triggerSrc = "forecast";
-      triggerFilter = { status: ["ACTIVE"] };
+      triggerFilter = {
+        status: ["ACTIVE", "CREATE_FAILED", "CREATE_STOPPED"],
+      };
     } else {
       triggerSrc = "s3";
       triggerFilter = {
-        bucket: { name: [props.libraryBucket.bucketName] },
+        bucket: { name: [props.pipelineBucket.bucketName] },
         object: { key: [{ suffix: props.triggerFilter }] },
       };
     }

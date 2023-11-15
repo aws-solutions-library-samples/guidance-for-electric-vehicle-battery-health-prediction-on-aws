@@ -58,21 +58,13 @@ export class S3LibraryConstruct extends Construct {
     // When using Distribution, do not set the s3 bucket website documents
     // if these are set then the distribution origin is configured for HTTP communication with the
     // s3 bucket and won't configure the cloudformation correctly.
-    const libraryBucket = new s3.Bucket(this, "Library", {
+    const libraryBucket = new s3.Bucket(this, "PipelineBucket", {
       encryption: s3.BucketEncryption.S3_MANAGED,
       autoDeleteObjects: true,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       eventBridgeEnabled: true,
-      enforceSSL: true,
-      serverAccessLogsPrefix: "accesslog/",
-      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
-      intelligentTieringConfigurations: [{
-        name: 'libraryBucketConfig',
-        archiveAccessTierTime: cdk.Duration.days(90),
-        deepArchiveAccessTierTime: cdk.Duration.days(180),
-      }],
     });
 
     libraryBucket.addToResourcePolicy(

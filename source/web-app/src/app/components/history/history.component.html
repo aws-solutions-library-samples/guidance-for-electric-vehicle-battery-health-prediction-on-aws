@@ -1,4 +1,11 @@
-<app-header></app-header>
+<app-header>
+    <div class="error-message-container" *ngIf="showError">
+        <img src="assets/images/error-step.png" alt="info icon">
+        <div class="error-message">
+            <span>{{errorMessage}}</span>
+        </div>
+    </div>
+</app-header>
 <div class="history-container">
     <div class="history-container--header">
         <h3>Pipelines</h3>
@@ -25,10 +32,10 @@
                     <td>
                         <div class="pipeline-steps">
                             <ng-container *ngFor="let step of availableSteps;">
-                                <div class="pipeline-step">
-                                    <img *ngIf="step.id < pipeline.currentStep || pipeline.currentStep === 7" src="assets/images/completed-step.png">
-                                    <img *ngIf="step.id === pipeline.currentStep && pipeline.currentStep !== 7 && !pipeline.Err" class="animate-progress" src="assets/images/inprogress-half-step.png">
-                                    <img *ngIf="step.id === pipeline.currentStep && pipeline.currentStep !== 7 && pipeline.Err" src="assets/images/error-step.png">
+                                <div class="pipeline-step" *ngIf="!step.hide">
+                                    <img *ngIf="step.id < pipeline.currentStep || pipeline.currentStep === 8" src="assets/images/completed-step.png">
+                                    <img *ngIf="step.id === pipeline.currentStep && pipeline.currentStep !== 8 && !pipeline.ErrorMessage" class="animate-progress" src="assets/images/inprogress-half-step.png">
+                                    <img *ngIf="step.id === pipeline.currentStep && pipeline.currentStep !== 8 && pipeline.ErrorMessage" src="assets/images/error-step.png">
                                     <img *ngIf="step.id > pipeline.currentStep" src="assets/images/notstarted-step.png">
                                 </div>
                             </ng-container>

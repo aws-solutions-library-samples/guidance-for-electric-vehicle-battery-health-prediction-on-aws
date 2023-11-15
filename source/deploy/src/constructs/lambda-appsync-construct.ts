@@ -43,6 +43,11 @@ export interface LambdaAppSyncConstructProps extends cdk.StackProps {
   readonly pipelineDdb: ITable;
 
   /**
+   * The battery  table for the resolver
+   */
+  readonly batteryDdb: ITable;
+
+  /**
    * The location data lambda resolver
    */
   readonly locationDataFn: cdk.aws_lambda.Function;
@@ -99,6 +104,11 @@ export class LambdaAppSyncConstruct extends Construct {
       props.pipelineDdb
     );
 
+    const batteryDS = api.addDynamoDbDataSource(
+      "BatteryDataSource",
+      props.batteryDdb
+    );
+
     const lambdaDS = api.addLambdaDataSource(
       "LocationFnDataSource",
       props.locationDataFn
@@ -115,7 +125,7 @@ export class LambdaAppSyncConstruct extends Construct {
              "Id" : $util.dynamodb.toDynamoDBJson($ctx.arguments.input["Id"])
          },
          "update": {
-           "expression": "SET #StatusUpdatedAt = :StatusUpdatedAt, #PipelineStatus = :PipelineStatus #if($ctx.arguments.input["UserId"] != $null),#UserId = :UserId#end #if($ctx.arguments.input["DataUploadedAt"] != $null),#DataUploadedAt = :DataUploadedAt#end #if($ctx.arguments.input["PredictorArn"] != $null),#PredictorArn = :PredictorArn#end #if($ctx.arguments.input["ForecastArn"] != $null),#ForecastArn = :ForecastArn#end #if($ctx.arguments.input["ExportJobArn"] != $null),#ExportJobArn = :ExportJobArn#end #if($ctx.arguments.input["ModelDrift"] != $null),#ModelDrift = :ModelDrift#end #if($ctx.arguments.input["RawDataUri"] != $null),#RawDataUri = :RawDataUri#end #if($ctx.arguments.input["RawDataSize"] != $null),#RawDataSize = :RawDataSize#end #if($ctx.arguments.input["PluginUploadedAt"] != $null),#PluginUploadedAt = :PluginUploadedAt#end #if($ctx.arguments.input["ProcFinishedAt"] != $null),#ProcFinishedAt = :ProcFinishedAt#end #if($ctx.arguments.input["DataImportedAt"] != $null),#DataImportedAt = :DataImportedAt#end #if($ctx.arguments.input["TrainingFinishedAt"] != $null),#TrainingFinishedAt = :TrainingFinishedAt#end #if($ctx.arguments.input["ForecastGeneratedAt"] != $null),#ForecastGeneratedAt = :ForecastGeneratedAt#end #if($ctx.arguments.input["PredictionsExportedAt"] != $null),#PredictionsExportedAt = :PredictionsExportedAt#end #if($ctx.arguments.input["DataGroupArn"] != $null),#DataGroupArn = :DataGroupArn#end #if($ctx.arguments.input["PreProcessingId"] != $null),#PreProcessingId = :PreProcessingId#end #if($ctx.arguments.input["PostProcessingId"] != $null),#PostProcessingId = :PostProcessingId#end #if($ctx.arguments.input["PluginScriptUri"] != $null),#PluginScriptUri = :PluginScriptUri#end #if($ctx.arguments.input["TrainingDataUri"] != $null),#TrainingDataUri = :TrainingDataUri#end #if($ctx.arguments.input["OriginalDatasetName"] != $null),#OriginalDatasetName = :OriginalDatasetName#end #if($ctx.arguments.input["OriginalPluginName"] != $null),#OriginalPluginName = :OriginalPluginName#end",
+           "expression": "SET #StatusUpdatedAt = :StatusUpdatedAt, #PipelineStatus = :PipelineStatus #if($ctx.arguments.input["UserId"] != $null),#UserId = :UserId#end #if($ctx.arguments.input["DataUploadedAt"] != $null),#DataUploadedAt = :DataUploadedAt#end #if($ctx.arguments.input["PredictorArn"] != $null),#PredictorArn = :PredictorArn#end #if($ctx.arguments.input["ForecastArn"] != $null),#ForecastArn = :ForecastArn#end #if($ctx.arguments.input["ExportJobArn"] != $null),#ExportJobArn = :ExportJobArn#end #if($ctx.arguments.input["ModelDrift"] != $null),#ModelDrift = :ModelDrift#end #if($ctx.arguments.input["RawDataUri"] != $null),#RawDataUri = :RawDataUri#end #if($ctx.arguments.input["RawDataSize"] != $null),#RawDataSize = :RawDataSize#end #if($ctx.arguments.input["PluginUploadedAt"] != $null),#PluginUploadedAt = :PluginUploadedAt#end #if($ctx.arguments.input["ProcFinishedAt"] != $null),#ProcFinishedAt = :ProcFinishedAt#end #if($ctx.arguments.input["DataImportedAt"] != $null),#DataImportedAt = :DataImportedAt#end #if($ctx.arguments.input["TrainingFinishedAt"] != $null),#TrainingFinishedAt = :TrainingFinishedAt#end #if($ctx.arguments.input["ForecastGeneratedAt"] != $null),#ForecastGeneratedAt = :ForecastGeneratedAt#end #if($ctx.arguments.input["ForecastExportedAt"] != $null),#ForecastExportedAt = :ForecastExportedAt#end #if($ctx.arguments.input["CleaningFinishedAt"] != $null),#CleaningFinishedAt = :CleaningFinishedAt#end #if($ctx.arguments.input["DataGroupArn"] != $null),#DataGroupArn = :DataGroupArn#end #if($ctx.arguments.input["PreProcessingId"] != $null),#PreProcessingId = :PreProcessingId#end #if($ctx.arguments.input["PostProcessingId"] != $null),#PostProcessingId = :PostProcessingId#end #if($ctx.arguments.input["PluginScriptUri"] != $null),#PluginScriptUri = :PluginScriptUri#end #if($ctx.arguments.input["TrainingDataUri"] != $null),#TrainingDataUri = :TrainingDataUri#end #if($ctx.arguments.input["OriginalDatasetName"] != $null),#OriginalDatasetName = :OriginalDatasetName#end #if($ctx.arguments.input["OriginalPluginName"] != $null),#OriginalPluginName = :OriginalPluginName#end #if($ctx.arguments.input["ErrorMessage"] != $null),#ErrorMessage = :ErrorMessage#end #if($ctx.arguments.input["DataCheckpoint"] != $null),#DataCheckpoint = :DataCheckpoint#end #if($ctx.arguments.input["PipelineRetraining"] != $null),#PipelineRetraining = :PipelineRetraining#end",
            "expressionNames": {
              "#StatusUpdatedAt": "StatusUpdatedAt",
              "#PipelineStatus": "PipelineStatus"
@@ -128,7 +138,8 @@ export class LambdaAppSyncConstruct extends Construct {
              #if($ctx.arguments.input["DataImportedAt"] != $null),"#DataImportedAt": "DataImportedAt"#end
              #if($ctx.arguments.input["TrainingFinishedAt"] != $null),"#TrainingFinishedAt": "TrainingFinishedAt"#end
              #if($ctx.arguments.input["ForecastGeneratedAt"] != $null),"#ForecastGeneratedAt": "ForecastGeneratedAt"#end
-             #if($ctx.arguments.input["PredictionsExportedAt"] != $null),"#PredictionsExportedAt": "PredictionsExportedAt"#end
+             #if($ctx.arguments.input["ForecastExportedAt"] != $null),"#ForecastExportedAt": "ForecastExportedAt"#end
+             #if($ctx.arguments.input["CleaningFinishedAt"] != $null),"#CleaningFinishedAt": "CleaningFinishedAt"#end
              #if($ctx.arguments.input["DataGroupArn"] != $null),"#DataGroupArn": "DataGroupArn"#end
              #if($ctx.arguments.input["PreProcessingId"] != $null),"#PreProcessingId": "PreProcessingId"#end
              #if($ctx.arguments.input["PluginScriptUri"] != $null),"#PluginScriptUri": "PluginScriptUri"#end
@@ -140,6 +151,9 @@ export class LambdaAppSyncConstruct extends Construct {
              #if($ctx.arguments.input["PostProcessingId"] != $null),"#PostProcessingId": "PostProcessingId"#end
              #if($ctx.arguments.input["OriginalDatasetName"] != $null),"#OriginalDatasetName": "OriginalDatasetName"#end
              #if($ctx.arguments.input["OriginalPluginName"] != $null),"#OriginalPluginName": "OriginalPluginName"#end
+             #if($ctx.arguments.input["ErrorMessage"] != $null),"#ErrorMessage": "ErrorMessage"#end
+             #if($ctx.arguments.input["DataCheckpoint"] != $null),"#DataCheckpoint": "DataCheckpoint"#end
+             #if($ctx.arguments.input["PipelineRetraining"] != $null),"#PipelineRetraining": "PipelineRetraining"#end
            },
            "expressionValues" : {
              ":StatusUpdatedAt": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["StatusUpdatedAt"]),
@@ -153,7 +167,8 @@ export class LambdaAppSyncConstruct extends Construct {
              #if($ctx.arguments.input["DataImportedAt"] != $null),":DataImportedAt": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["DataImportedAt"])#end
              #if($ctx.arguments.input["TrainingFinishedAt"] != $null),":TrainingFinishedAt": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["TrainingFinishedAt"])#end
              #if($ctx.arguments.input["ForecastGeneratedAt"] != $null),":ForecastGeneratedAt": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["ForecastGeneratedAt"])#end
-             #if($ctx.arguments.input["PredictionsExportedAt"] != $null),":PredictionsExportedAt": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["PredictionsExportedAt"])#end
+             #if($ctx.arguments.input["ForecastExportedAt"] != $null),":ForecastExportedAt": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["ForecastExportedAt"])#end
+             #if($ctx.arguments.input["CleaningFinishedAt"] != $null),":CleaningFinishedAt": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["CleaningFinishedAt"])#end
              #if($ctx.arguments.input["DataGroupArn"] != $null),":DataGroupArn": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["DataGroupArn"])#end
              #if($ctx.arguments.input["PreProcessingId"] != $null),":PreProcessingId": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["PreProcessingId"])#end
              #if($ctx.arguments.input["PluginScriptUri"] != $null),":PluginScriptUri": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["PluginScriptUri"])#end
@@ -164,7 +179,10 @@ export class LambdaAppSyncConstruct extends Construct {
              #if($ctx.arguments.input["ExportJobArn"] != $null),":ExportJobArn": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["ExportJobArn"])#end
              #if($ctx.arguments.input["PostProcessingId"] != $null),":PostProcessingId": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["PostProcessingId"])#end
              #if($ctx.arguments.input["OriginalDatasetName"] != $null),":OriginalDatasetName": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["OriginalDatasetName"])#end
-             #if($ctx.arguments.input["OriginalPluginName"] != $null),":OriginalPluginName": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["OriginalPluginName"])#end             
+             #if($ctx.arguments.input["OriginalPluginName"] != $null),":OriginalPluginName": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["OriginalPluginName"])#end
+             #if($ctx.arguments.input["ErrorMessage"] != $null),":ErrorMessage": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["ErrorMessage"])#end
+             #if($ctx.arguments.input["DataCheckpoint"] != $null),":DataCheckpoint": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["DataCheckpoint"])#end
+             #if($ctx.arguments.input["PipelineRetraining"] != $null),":PipelineRetraining": $util.dynamodb.toDynamoDBJson($ctx.arguments.input["PipelineRetraining"])#end
             }
          }
      }
@@ -220,6 +238,29 @@ export class LambdaAppSyncConstruct extends Construct {
         "Id"
       ),
       responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
+    });
+
+    const resolver_path = path.join(__dirname, '/battery-resolver.js')
+
+    batteryDS.createResolver("OnUpdateBatteryHealth", {
+      typeName: "Subscription",
+      fieldName: "onUpdateBatteryHealth",
+      code: new appsync.AssetCode(resolver_path),
+      runtime: appsync.FunctionRuntime.JS_1_0_0
+    });
+
+    batteryDS.createResolver("GetBatteryHealth", {
+      typeName: "Query",
+      fieldName: "getBatteryHealth",
+      code: new appsync.AssetCode(resolver_path),
+      runtime: appsync.FunctionRuntime.JS_1_0_0
+    });
+
+    batteryDS.createResolver("UpdateBatteryHealth", {
+      typeName: "Mutation",
+      fieldName: "updateBatteryHealth",
+      code: new appsync.AssetCode(path.join(__dirname, '/update-battery-resolver.js')),
+      runtime: appsync.FunctionRuntime.JS_1_0_0
     });
 
     lambdaDS.createResolver("GetLocationData", {

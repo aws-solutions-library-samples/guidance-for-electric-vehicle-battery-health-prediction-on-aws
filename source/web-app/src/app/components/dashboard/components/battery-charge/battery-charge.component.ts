@@ -32,33 +32,33 @@ export class BatteryChargeComponent implements OnChanges, OnInit {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes && changes['mValue'].currentValue && changes['mValue'].currentValue !== changes['mValue'].previousValue) {
-            const battery: any = document.querySelector(`.battery.${this.metric}`);
-            if (battery) {
-                battery?.style.setProperty('--width', `${this.mValue}%`);
-                battery?.style.setProperty('--animation', 'none');
-                this.setBatteryCellHealth(battery, this.mValue);
-            }
+            this.setBatteryCellHealth();
         }
     }
 
     ngOnInit(): void {
-        const battery: any = document.querySelector(`.battery.${this.metric}`);
+        this.setBatteryCellHealth();
+    }
+
+    setBatteryCellHealth() {
+        setTimeout(() => {
+            const battery: any = document.querySelector(`.battery.${this.metric}`);
             if (battery) {
                 battery?.style.setProperty('--width', `${this.mValue}%`);
                 battery?.style.setProperty('--animation', 'none');
-                this.setBatteryCellHealth(battery, this.mValue);
+                if (this.mValue > 80) {
+                    battery?.style.setProperty('--background', '#1D8102');
+                } else if (this.mValue <= 80 && this.mValue >= 60) {
+                    battery?.style.setProperty('--background', '#fcd303');
+                } else if (this.mValue <= 60 && this.mValue >= 40) {
+                    battery?.style.setProperty('--background', '#fcb503');
+                } else if (this.mValue <= 40 && this.mValue >= 20) {
+                    battery?.style.setProperty('--background', '#ff9606');
+                } else if (this.mValue < 20) {
+                    battery?.style.setProperty('--background', 'red');
+                }
             }
-    }
-    setBatteryCellHealth(battery: any, value: number) {
-        if (value <= 80 && value >= 60) {
-            battery?.style.setProperty('--background', '#fcd303');
-        } else if (value <= 60 && value >= 40) {
-            battery?.style.setProperty('--background', '#fcb503');
-        } else if (value <= 40 && value >= 20) {
-            battery?.style.setProperty('--background', '#ff9606');
-        } else if (value < 20) {
-            battery?.style.setProperty('--background', 'red');
-        }
+        }, 2000);
     }
 
 

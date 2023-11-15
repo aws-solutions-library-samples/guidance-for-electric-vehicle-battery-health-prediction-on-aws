@@ -1,4 +1,4 @@
-# Angular Prototype Starter
+# Smart Battery Manager
 
 ---
 
@@ -34,7 +34,10 @@
                 }
             }
        }
-       ```
+   3. `CUSTOMER_NAME` and `CUSTOMER_LOGO` env variables are supplied from node process. To set up these env variable you could 
+      1. Run `export CUSTOMER_NAME=Test` and `export CUSTOMER_LOGO=https://....`
+      2. Rename `.env.template` to `.env` and provide it in `.env` file.
+      
 #### <u>Note: DO NOT PUSH CHANGES TO `environment.ts`, `environment.prod.ts`, and `angular.json`</u>
 
 ### Run

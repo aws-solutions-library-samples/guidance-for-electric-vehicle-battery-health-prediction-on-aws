@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {APIService} from "../../services/api.service";
 import {faBug} from "@fortawesome/free-solid-svg-icons";
@@ -25,17 +25,20 @@ import {faBug} from "@fortawesome/free-solid-svg-icons";
 })
 export class TrackerComponent implements OnInit {
 
+    @Input() id: any;
+    @Output() completionNotifier = new EventEmitter<boolean>();
     pipelineId: any;
     pipelineData: any = {};
     pipelineStatus: any;
     availableSteps = [
-        {id: 1, title: 'Uploading Dataset', status: 'DATASET_UPLOADED', timeInMs: 0},
+        {id: 1, title: 'Uploading Dataset', status: 'UPLOADING_DATASET', timeInMs: 0},
         {id: 2, title: 'Processing Dataset', status: 'PROCESSING_DATASET', timeInMs: 0},
         {id: 3, title: 'Importing Dataset', status: 'IMPORTING_DATASET', timeInMs: 0},
         {id: 4, title: 'Training Predictor', status: 'TRAINING_PREDICTOR', timeInMs: 0},
         {id: 5, title: 'Generating Forecast', status: 'GENERATING_FORECAST', timeInMs: 0},
-        {id: 6, title: 'Cleaning Exports', status: 'CLEANING_EXPORTS', timeInMs: 0},
-        {id: 7, title: 'Pipeline Finished', status: 'PIPELINE_FINISHED', timeInMs: 0},
+        {id: 6, title: 'Exporting Predictions', status: 'EXPORTING_PREDICTIONS', timeInMs: 0},
+        {id: 7, title: 'Cleaning Exports', status: 'CLEANING_EXPORTS', timeInMs: 0},
+        {id: 8, title: 'Pipeline Finished', status: 'PIPELINE_FINISHED', timeInMs: 0, hide: true},
     ];
     currentStep = 1;
     showError = false;
@@ -50,12 +53,17 @@ export class TrackerComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        if (!this.pipelineId)
+            this.pipelineId = this.id;
         this.getPipelineInfo();
         this.apiService.PipelineSubListener.subscribe((pipelineData: any) => {
             if (pipelineData && pipelineData.value.data.pipelineSub?.Id === this.pipelineId) {
                 this.pipelineStatus = pipelineData.value.data.pipelineSub?.PipelineStatus;
                 this.currentStep = (this.availableSteps.find((step: any) => step.status === this.pipelineStatus)?.id ?? this.currentStep);
-                if (this.currentStep === 7) {
+                if (this.pipelineStatus === 'PIPELINE_FINISHED') {
+                    if (this.id) {
+                        this.completionNotifier.emit(true);
+                    }
                     this.router.navigate(['/dashboard'], {queryParams: {uuid: this.pipelineId}}).then();
                 } else {
                     this.getPipelineInfo();
@@ -73,7 +81,7 @@ export class TrackerComponent implements OnInit {
                 this.pipelineData = pipeline;
                 this.pipelineStatus = pipeline.PipelineStatus;
                 this.currentStep = (this.availableSteps.find((step: any) => step.status === this.pipelineStatus)?.id ?? this.currentStep);
-                if (this.currentStep === 7) {
+                if (this.pipelineStatus === 'PIPELINE_FINISHED') {
                     this.router.navigate(['/dashboard'], {queryParams: {uuid: this.pipelineId}}).then();
                 }
             }).catch(() => console.log("Pipeline is being initialized"));
@@ -101,16 +109,17 @@ export class TrackerComponent implements OnInit {
                     return this.calculateTimeDiff(this.pipelineData.ForecastGeneratedAt, this.pipelineData.TrainingFinishedAt, 5);
                 }
                 case 6: {
-                    return this.calculateTimeDiff(this.pipelineData.PredictionsExportedAt, this.pipelineData.ForecastGeneratedAt, 6)
+                    return this.calculateTimeDiff(this.pipelineData.ForecastExportedAt, this.pipelineData.ForecastGeneratedAt, 6)
                 }
                 case 7: {
-                    return this.calculateTimeDiff(this.pipelineData.PredictionsExportedAt, this.pipelineData.ForecastGeneratedAt, 6)
+                    return this.calculateTimeDiff(this.pipelineData.CleaningFinishedAt, this.pipelineData.ForecastExportedAt, 7)
                 }
             }
         }
     }
 
     calculateTimeDiff(currentStepTime: any, previousStepTime: any, step: number): any {
+        if (!currentStepTime || !previousStepTime) return;
         const startTime: any = new Date(previousStepTime);
         const endTime: any = new Date(currentStepTime);
         let duration = (endTime.getTime() - startTime.getTime());

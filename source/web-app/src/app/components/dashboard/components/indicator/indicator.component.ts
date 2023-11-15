@@ -26,14 +26,16 @@ export class IndicatorComponent implements OnChanges {
   @Input() mValue: any;
 
   ngOnChanges(changes: SimpleChanges): void {
-
       if (changes && changes['mValue'].currentValue !== changes['mValue'].previousValue) {
-          const metricLine: any = document.querySelector(`.metric-bar-line.${this.metric}`);
-          if (metricLine) {
-              metricLine?.style.setProperty('--left', `${this.mValue}%`);
-              metricLine?.style.setProperty('--animation', 'none');
-          }
+          this.setAnimation();
       }
   }
 
+    setAnimation() {
+      const metricLine: any = document.querySelector(`.metric-bar-line.${this.metric}`);
+        if (metricLine) {
+            metricLine?.style.setProperty('--left', `${this.mValue}%`);
+            metricLine?.style.setProperty('--animation', 'none');
+        }
+    }
 }

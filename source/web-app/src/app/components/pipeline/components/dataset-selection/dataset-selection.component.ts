@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {faBug, faCircleCheck, faFileCsv,} from "@fortawesome/free-solid-svg-icons";
 import {faPython} from "@fortawesome/free-brands-svg-icons";
 
@@ -22,7 +22,7 @@ import {faPython} from "@fortawesome/free-brands-svg-icons";
     templateUrl: './dataset-selection.component.html',
     styleUrls: ['../../pipeline.component.scss']
 })
-export class DatasetSelectionComponent {
+export class DatasetSelectionComponent implements OnInit {
     datasetSelectionTab = 1;
     faCheck = faCircleCheck;
     faBug = faBug;
@@ -31,7 +31,12 @@ export class DatasetSelectionComponent {
     showUploadError = false;
     file: any;
     s3Uri: string | undefined;
+    @Input() uri: any;
     @ViewChild("datasetInput") datasetInput: ElementRef | undefined;
+
+    ngOnInit(): void {
+        this.s3Uri = this.uri;
+    }
 
     dragEnterHandler(event: DragEvent) {
         event.preventDefault();

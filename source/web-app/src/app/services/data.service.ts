@@ -47,7 +47,15 @@ export class DataService {
         return this.http.get(`${environment.NG_APP_API}/api/simulation?key=${id}&file=${fileName}&action=SS`);
     }
 
-    copyFile(uri: string | undefined, key: string | undefined, plugin = 'N') {
-        return this.http.get<any>(`${environment.NG_APP_API}/api/metadata?uri=${uri}&key=${key}&plugin=${plugin}&action=CD`);
+    copyFile(uri: string | undefined, key: string | undefined) {
+        return this.http.get<any>(`${environment.NG_APP_API}/api/metadata?uri=${uri}&key=${key}&action=CD`);
+    }
+
+    retrainPipeline(checkpoint: number, uuid: string) {
+        return this.http.get<any>(`${environment.NG_APP_API}/api/retrain?checkpoint=${checkpoint}&uuid=${uuid}`);
+    }
+
+    refreshBatteryHealth(battery: string) {
+        return this.http.post<any>(`${environment.NG_APP_API}/api/refresh?battery=${battery}`,null);
     }
 }

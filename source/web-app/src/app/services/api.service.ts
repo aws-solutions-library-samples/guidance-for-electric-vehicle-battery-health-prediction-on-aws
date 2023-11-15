@@ -12,6 +12,7 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
 /* tslint:disable */
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
@@ -38,7 +39,8 @@ export type PipelineRequestInput = {
   DataImportedAt?: string | null;
   TrainingFinishedAt?: string | null;
   ForecastGeneratedAt?: string | null;
-  PredictionsExportedAt?: string | null;
+  ForecastExportedAt?: string | null;
+  CleaningFinishedAt?: string | null;
   DataGroupArn?: string | null;
   PreProcessingId?: string | null;
   RawDataSize?: number | null;
@@ -52,6 +54,9 @@ export type PipelineRequestInput = {
   PostProcessingId?: string | null;
   OriginalDatasetName?: string | null;
   OriginalPluginName?: string | null;
+  DataCheckpoint?: string | null;
+  ErrorMessage?: string | null;
+  PipelineRetraining?: boolean | null;
 };
 
 export type PipelineData = {
@@ -66,7 +71,8 @@ export type PipelineData = {
   DataImportedAt?: string | null;
   TrainingFinishedAt?: string | null;
   ForecastGeneratedAt?: string | null;
-  PredictionsExportedAt?: string | null;
+  ForecastExportedAt?: string | null;
+  CleaningFinishedAt?: string | null;
   DataGroupArn?: string | null;
   PreProcessingId?: string | null;
   RawDataSize?: number | null;
@@ -80,6 +86,9 @@ export type PipelineData = {
   PostProcessingId?: string | null;
   OriginalDatasetName?: string | null;
   OriginalPluginName?: string | null;
+  DataCheckpoint?: string | null;
+  ErrorMessage?: string | null;
+  PipelineRetraining?: boolean | null;
 };
 
 export type LocationData = {
@@ -104,7 +113,8 @@ export type PipelineMutation = {
   DataImportedAt?: string | null;
   TrainingFinishedAt?: string | null;
   ForecastGeneratedAt?: string | null;
-  PredictionsExportedAt?: string | null;
+  ForecastExportedAt?: string | null;
+  CleaningFinishedAt?: string | null;
   DataGroupArn?: string | null;
   PreProcessingId?: string | null;
   RawDataSize?: number | null;
@@ -118,6 +128,9 @@ export type PipelineMutation = {
   PostProcessingId?: string | null;
   OriginalDatasetName?: string | null;
   OriginalPluginName?: string | null;
+  DataCheckpoint?: string | null;
+  ErrorMessage?: string | null;
+  PipelineRetraining?: boolean | null;
 };
 
 export type GetPipelinesByUserQuery = {
@@ -132,7 +145,8 @@ export type GetPipelinesByUserQuery = {
   DataImportedAt?: string | null;
   TrainingFinishedAt?: string | null;
   ForecastGeneratedAt?: string | null;
-  PredictionsExportedAt?: string | null;
+  ForecastExportedAt?: string | null;
+  CleaningFinishedAt?: string | null;
   DataGroupArn?: string | null;
   PreProcessingId?: string | null;
   RawDataSize?: number | null;
@@ -146,6 +160,9 @@ export type GetPipelinesByUserQuery = {
   PostProcessingId?: string | null;
   OriginalDatasetName?: string | null;
   OriginalPluginName?: string | null;
+  DataCheckpoint?: string | null;
+  ErrorMessage?: string | null;
+  PipelineRetraining?: boolean | null;
 };
 
 export type GetPipelineByIdQuery = {
@@ -160,7 +177,8 @@ export type GetPipelineByIdQuery = {
   DataImportedAt?: string | null;
   TrainingFinishedAt?: string | null;
   ForecastGeneratedAt?: string | null;
-  PredictionsExportedAt?: string | null;
+  ForecastExportedAt?: string | null;
+  CleaningFinishedAt?: string | null;
   DataGroupArn?: string | null;
   PreProcessingId?: string | null;
   RawDataSize?: number | null;
@@ -174,6 +192,9 @@ export type GetPipelineByIdQuery = {
   PostProcessingId?: string | null;
   OriginalDatasetName?: string | null;
   OriginalPluginName?: string | null;
+  DataCheckpoint?: string | null;
+  ErrorMessage?: string | null;
+  PipelineRetraining?: boolean | null;
 };
 
 export type GetPipelineByProcessingIdQuery = {
@@ -188,7 +209,8 @@ export type GetPipelineByProcessingIdQuery = {
   DataImportedAt?: string | null;
   TrainingFinishedAt?: string | null;
   ForecastGeneratedAt?: string | null;
-  PredictionsExportedAt?: string | null;
+  ForecastExportedAt?: string | null;
+  CleaningFinishedAt?: string | null;
   DataGroupArn?: string | null;
   PreProcessingId?: string | null;
   RawDataSize?: number | null;
@@ -202,6 +224,9 @@ export type GetPipelineByProcessingIdQuery = {
   PostProcessingId?: string | null;
   OriginalDatasetName?: string | null;
   OriginalPluginName?: string | null;
+  DataCheckpoint?: string | null;
+  ErrorMessage?: string | null;
+  PipelineRetraining?: boolean | null;
 };
 
 export type GetLocationDataQuery = {
@@ -226,7 +251,8 @@ export type PipelineSubSubscription = {
   DataImportedAt?: string | null;
   TrainingFinishedAt?: string | null;
   ForecastGeneratedAt?: string | null;
-  PredictionsExportedAt?: string | null;
+  ForecastExportedAt?: string | null;
+  CleaningFinishedAt?: string | null;
   DataGroupArn?: string | null;
   PreProcessingId?: string | null;
   RawDataSize?: number | null;
@@ -240,6 +266,19 @@ export type PipelineSubSubscription = {
   PostProcessingId?: string | null;
   OriginalDatasetName?: string | null;
   OriginalPluginName?: string | null;
+  DataCheckpoint?: string | null;
+  ErrorMessage?: string | null;
+  PipelineRetraining?: boolean | null;
+};
+
+// Response DTO or Entity
+export type Battery = {
+  __typename: string;
+  battery: string;
+  AcceleratedAging: string;
+  ExternalShortCircuit: string;
+  OverTemp: string;
+  ThermalEnergy: string;
 };
 
 @Injectable({
@@ -260,7 +299,8 @@ export class APIService {
           DataImportedAt
           TrainingFinishedAt
           ForecastGeneratedAt
-          PredictionsExportedAt
+          ForecastExportedAt
+          CleaningFinishedAt
           DataGroupArn
           PreProcessingId
           RawDataSize
@@ -274,6 +314,9 @@ export class APIService {
           PostProcessingId
           OriginalDatasetName
           OriginalPluginName
+          DataCheckpoint
+          ErrorMessage
+          PipelineRetraining
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -300,7 +343,8 @@ export class APIService {
           DataImportedAt
           TrainingFinishedAt
           ForecastGeneratedAt
-          PredictionsExportedAt
+          ForecastExportedAt
+          CleaningFinishedAt
           DataGroupArn
           PreProcessingId
           RawDataSize
@@ -314,6 +358,9 @@ export class APIService {
           PostProcessingId
           OriginalDatasetName
           OriginalPluginName
+          DataCheckpoint
+          ErrorMessage
+          PipelineRetraining
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -338,7 +385,8 @@ export class APIService {
           DataImportedAt
           TrainingFinishedAt
           ForecastGeneratedAt
-          PredictionsExportedAt
+          ForecastExportedAt
+          CleaningFinishedAt
           DataGroupArn
           PreProcessingId
           RawDataSize
@@ -352,6 +400,9 @@ export class APIService {
           PostProcessingId
           OriginalDatasetName
           OriginalPluginName
+          DataCheckpoint
+          ErrorMessage
+          PipelineRetraining
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -378,7 +429,8 @@ export class APIService {
           DataImportedAt
           TrainingFinishedAt
           ForecastGeneratedAt
-          PredictionsExportedAt
+          ForecastExportedAt
+          CleaningFinishedAt
           DataGroupArn
           PreProcessingId
           RawDataSize
@@ -392,6 +444,9 @@ export class APIService {
           PostProcessingId
           OriginalDatasetName
           OriginalPluginName
+          DataCheckpoint
+          ErrorMessage
+          PipelineRetraining
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -436,7 +491,8 @@ export class APIService {
           DataImportedAt
           TrainingFinishedAt
           ForecastGeneratedAt
-          PredictionsExportedAt
+          ForecastExportedAt
+          CleaningFinishedAt
           DataGroupArn
           PreProcessingId
           RawDataSize
@@ -450,10 +506,38 @@ export class APIService {
           PostProcessingId
           OriginalDatasetName
           OriginalPluginName
+          DataCheckpoint
+          ErrorMessage
+          PipelineRetraining
         }
       }`
     )
   ) as Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "pipelineSub">>
   >;
+
+  SubscribeToBatteryHealth(battery: string): Observable<Battery> {
+
+    // Grapql Subscribe statement
+    const statement = `subscription onUpdateBatteryHealth($battery: String!) {
+      onUpdateBatteryHealth(battery: $battery) {
+        AcceleratedAging
+        ExternalShortCircuit
+        OverTemp
+        ThermalEnergy
+        battery
+      }
+    }`;
+
+    // Grapql Subscribe variables
+    const gqlAPIServiceArguments: any = {
+      battery
+    };
+
+    // Combining statement and variable for execution
+    return (API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as unknown )as Observable<Battery>;
+
+  }
 }

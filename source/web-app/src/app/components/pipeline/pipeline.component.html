@@ -30,9 +30,9 @@
       </li>
     </ul>
   </div>
-  <div class="upload-file-container" [hidden]="currentStep === 3">
-    <app-dataset-selection #datasetComponent [hidden]="currentStep !== 1"></app-dataset-selection>
-    <app-plugin-selection #pluginComponent [hidden]="currentStep !== 2"></app-plugin-selection>
+  <div class="upload-file-container" [ngStyle]="{'display': currentStep === 3 ? 'none' : 'flex'}">
+    <app-dataset-selection #datasetComponent [hidden]="currentStep !== 1" [uri]="datasetURI"></app-dataset-selection>
+    <app-plugin-selection #pluginComponent [hidden]="currentStep !== 2" [uri]="pluginURI"></app-plugin-selection>
   </div>
   <div class="launch-pipeline" *ngIf="currentStep === 3">
     <span style="font-size: 24px;">Review your uploaded files</span>

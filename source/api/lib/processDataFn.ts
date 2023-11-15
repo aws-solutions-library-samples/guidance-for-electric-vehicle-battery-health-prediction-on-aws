@@ -43,6 +43,23 @@ function build_response(http_code: number, body: any) {
   };
 }
 
+// Update pipeline info in ddb table
+async function update_ddb(pipeId: string, inputValues: object) {
+  await appSync.post({
+    query: `mutation MyMutation($input: PipelineRequestInput!) {
+      pipeline(input: $input) { Id PipelineStatus StatusUpdatedAt }
+    }`,
+    variables: {
+      input: {
+        ...inputValues,
+        Id: pipeId,
+        PipelineStatus: process.env.PIPELINE_STATUS,
+        StatusUpdatedAt: new Date().toISOString(),
+      },
+    },
+  });
+}
+
 /**
  * Create and run Glue job on processor script upload
  * @param event
@@ -50,17 +67,18 @@ function build_response(http_code: number, body: any) {
  */
 export async function handler(event?: any, context?: any) {
   let data: String[] = [];
+  let pipeId: string = "";
 
   try {
     const bucket = event["detail"]["bucket"]["name"];
     const file = event["detail"]["object"];
-    const pipeId = file["key"].split("/")[1];
     const pipePrefix = file["key"].substring(0, file["key"].lastIndexOf("/"));
+    pipeId = file["key"].split("/")[1];
 
     // Create Glue job from processing script
     const job = await glue.send(
       new CreateJobCommand({
-        Name: pipeId,
+        Name: `${pipeId}`,
         Role: process.env.SERVICE_ROLE_ARN,
         Command: {
           Name: "glueetl",
@@ -70,6 +88,7 @@ export async function handler(event?: any, context?: any) {
         DefaultArguments: {
           "--s3_bucket": bucket,
           "--raw_dataset_key": file["key"],
+          "--data_checkpoint": process.env.DATA_CHECKPOINT!,
         },
         GlueVersion: "3.0",
       })
@@ -82,31 +101,25 @@ export async function handler(event?: any, context?: any) {
       new StartJobRunCommand({ JobName: job["Name"] })
     );
 
-    data.push(`Glue job run initiated: ${run["JobRunId"]}`);
+    data.push(
+      `Preprocessing initiated with checkpoint at ${process.env.DATA_CHECKPOINT}`
+    );
 
-    // Update pipeline info in ddb table
-    await appSync.post({
-      query: `mutation MyMutation($input: PipelineRequestInput!) {
-        pipeline(input: $input) { Id PipelineStatus StatusUpdatedAt }
-      }`,
-      variables: {
-        input: {
-          Id: pipeId,
-          DataUploadedAt: event["time"],
-          RawDataUri: `s3://${bucket}/${file["key"]}`,
-          RawDataSize: file["size"],
-          PreProcessingId: run["JobRunId"],
-          PipelineStatus: process.env.PIPELINE_STATUS,
-          StatusUpdatedAt: new Date().toISOString(),
-        },
-      },
+    await update_ddb(pipeId, {
+      DataUploadedAt: event["time"],
+      RawDataUri: `s3://${bucket}/${file["key"]}`,
+      RawDataSize: file["size"],
+      PreProcessingId: run["JobRunId"],
+      DataCheckpoint: process.env.DATA_CHECKPOINT,
     });
     data.push(`Pipeline status updated to ${process.env.PIPELINE_STATUS}`);
 
     return build_response(200, data);
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    data.push("Server Error");
+
+    await update_ddb(pipeId, { ErrorMessage: err.message! });
+    data.push(`${err.name}: ${err.message}`);
 
     return build_response(500, data);
   }

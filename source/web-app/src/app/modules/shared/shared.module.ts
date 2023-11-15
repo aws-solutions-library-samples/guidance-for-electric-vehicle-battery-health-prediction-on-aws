@@ -21,10 +21,11 @@ import { RouterLink, RouterLinkActive } from "@angular/router";
 import { SpinnerComponent } from "./components/spinner/spinner.component";
 import {HighchartsChartModule} from "highcharts-angular";
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
+import { SwitchComponent } from './components/switch/switch.component';
 
 @NgModule({
-    declarations: [HeaderComponent, FooterComponent, SpinnerComponent, BreadcrumbComponent],
-    exports: [HeaderComponent, FooterComponent, FontAwesomeModule, SpinnerComponent, BreadcrumbComponent],
+    declarations: [HeaderComponent, FooterComponent, SpinnerComponent, BreadcrumbComponent, SwitchComponent],
+    exports: [HeaderComponent, FooterComponent, FontAwesomeModule, SpinnerComponent, BreadcrumbComponent, SwitchComponent],
     imports: [CommonModule, FontAwesomeModule, HighchartsChartModule, RouterLink, RouterLinkActive],
 })
 export class SharedModule {}

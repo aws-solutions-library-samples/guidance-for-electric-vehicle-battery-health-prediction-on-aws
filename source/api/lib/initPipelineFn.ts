@@ -61,6 +61,7 @@ export async function handler(event?: any, context?: any) {
           UserId: userId,
           PluginUploadedAt: event["time"],
           PluginScriptUri: `s3://${bucket}/${file["key"]}`,
+          PipelineRetraining: false,
           PipelineStatus: process.env.PIPELINE_STATUS,
           StatusUpdatedAt: new Date().toISOString(),
         },
@@ -71,10 +72,10 @@ export async function handler(event?: any, context?: any) {
     );
 
     return build_response(200, data);
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    data.push("Server Error");
 
+    data.push(`${err.name}: ${err.message}`);
     return build_response(500, data);
   }
 }

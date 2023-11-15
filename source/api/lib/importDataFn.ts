@@ -26,7 +26,7 @@ import {
 } from "@aws-sdk/client-forecast";
 
 const fcast = new ForecastClient({ region: process.env.AWS_REGION });
-const appSyncClient = new AppSyncClient({
+const appSync = new AppSyncClient({
   graphQlUrl: process.env.APPSYNC_GRAPHQL_URL!,
   credentials: fromEnv(),
 });
@@ -54,12 +54,13 @@ function build_response(http_code: number, body: any) {
  */
 export async function handler(event?: any, context?: any) {
   let data: String[] = [];
+  let pipeId: String = "";
 
   try {
     const bucket = event["detail"]["bucket"]["name"];
     const file = event["detail"]["object"];
     const userId = file["key"].split("/")[0];
-    const pipeId = file["key"].split("/")[1];
+    pipeId = file["key"].split("/")[1];
     const fcastId = `${userId}_${pipeId}`;
 
     // Check if DSG for id already exists
@@ -138,7 +139,7 @@ export async function handler(event?: any, context?: any) {
     data.push(`Initiated dataset import: ${importJob.DatasetImportJobArn}`);
 
     // Update pipeline info in ddb table
-    await appSyncClient.post({
+    await appSync.post({
       query: `mutation MyMutation($input: PipelineRequestInput!) {
         pipeline(input: $input) { Id PipelineStatus StatusUpdatedAt }
       }`,
@@ -156,9 +157,24 @@ export async function handler(event?: any, context?: any) {
     data.push(`Pipeline status updated to ${process.env.PIPELINE_STATUS}`);
 
     return build_response(200, data);
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    data.push("Server Error");
+
+    // Update pipeline info in ddb table
+    await appSync.post({
+      query: `mutation MyMutation($input: PipelineRequestInput!) {
+        pipeline(input: $input) { Id PipelineStatus StatusUpdatedAt }
+      }`,
+      variables: {
+        input: {
+          Id: pipeId,
+          ErrorMessage: err.message!,
+          PipelineStatus: process.env.PIPELINE_STATUS,
+          StatusUpdatedAt: new Date().toISOString(),
+        },
+      },
+    });
+    data.push(`${err.name}: ${err.message}`);
 
     return build_response(500, data);
   }

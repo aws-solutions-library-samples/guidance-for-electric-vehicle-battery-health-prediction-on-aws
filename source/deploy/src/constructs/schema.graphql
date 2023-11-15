@@ -1,94 +1,200 @@
-type Mutation {
-  pipeline(input: PipelineRequestInput!): PipelineData! @aws_iam @aws_cognito_user_pools
-}
-
-type PipelineData @aws_iam @aws_cognito_user_pools {
-  Id: String!
-  PipelineStatus: String!
-  StatusUpdatedAt: String!
-  UserId: String
-  DataUploadedAt: String
-  PluginUploadedAt: String
-  ProcFinishedAt: String
-  DataImportedAt: String
-  TrainingFinishedAt: String
-  ForecastGeneratedAt: String
-  PredictionsExportedAt: String
-  DataGroupArn: String
-  PreProcessingId: String
-  RawDataSize: Int
-  RawDataUri: String
-  PluginScriptUri: String
-  TrainingDataUri: String
-  PredictorArn: String
-  ForecastArn: String
-  ModelDrift: Float
-  ExportJobArn: String
-  PostProcessingId: String
-  OriginalDatasetName: String
-  OriginalPluginName: String
-}
-
-input PipelineRequestInput {
-  Id: String!
-  PipelineStatus: String!
-  StatusUpdatedAt: String!
-  UserId: String
-  DataUploadedAt: String
-  PluginUploadedAt: String
-  ProcFinishedAt: String
-  DataImportedAt: String
-  TrainingFinishedAt: String
-  ForecastGeneratedAt: String
-  PredictionsExportedAt: String
-  DataGroupArn: String
-  PreProcessingId: String
-  RawDataSize: Int
-  RawDataUri: String
-  PluginScriptUri: String
-  TrainingDataUri: String
-  PredictorArn: String
-  ForecastArn: String
-  ModelDrift: Float
-  ExportJobArn: String
-  PostProcessingId: String
-  OriginalDatasetName: String
-  OriginalPluginName: String
-}
-
-type LocationData @aws_cognito_user_pools {
-  BatteryId: String!
-  Lng: String!
-  Lat: String!
-  Country: String!
-  City: String!,
-  VIN: String!
-}
-
-input LocationDataRequestInput {
-  BatteryId: String!
-  Lng: String!
-  Lat: String!
-  Country: String!
-  City: String!,
-  VIN: String!
-}
-
-type Query {
-  getPipelinesByUser(UserId: String!): [PipelineData!]
-    @aws_iam
-    @aws_cognito_user_pools
-  getPipelineById(Id: String!): PipelineData! @aws_iam @aws_cognito_user_pools
-  getPipelineByProcessingId(PostProcessingId: String!): [PipelineData!] @aws_iam @aws_cognito_user_pools
-  getLocationData: [LocationData] @aws_iam @aws_cognito_user_pools
-}
-
-type Subscription {
-  pipelineSub: PipelineData @aws_subscribe(mutations: ["pipeline"])
-}
-
 schema {
   query: Query
   mutation: Mutation
   subscription: Subscription
+}
+
+type BatteryHealth @aws_cognito_user_pools @aws_iam {
+  AcceleratedAging: AWSJSON!
+  ExternalShortCircuit: AWSJSON!
+  OverTemp: AWSJSON!
+  ThermalEnergy: AWSJSON!
+  battery: String!
+}
+
+type BatteryHealthConnection {
+  items: [BatteryHealth]
+  nextToken: String
+}
+
+type LocationData @aws_cognito_user_pools {
+  BatteryId: String!
+  City: String!
+  Country: String!
+  Lat: String!
+  Lng: String!
+  VIN: String!
+}
+
+type Mutation {
+  createBatteryHealth(input: CreateBatteryHealthInput!): BatteryHealth @aws_cognito_user_pools @aws_iam
+  deleteBatteryHealth(input: DeleteBatteryHealthInput!): BatteryHealth @aws_cognito_user_pools @aws_iam
+  pipeline(input: PipelineRequestInput!): PipelineData! @aws_cognito_user_pools @aws_iam
+  updateBatteryHealth(input: UpdateBatteryHealthInput!): BatteryHealth @aws_cognito_user_pools @aws_iam
+}
+
+type PipelineData @aws_cognito_user_pools @aws_iam {
+  CleaningFinishedAt: String
+  DataCheckpoint: String
+  DataGroupArn: String
+  DataImportedAt: String
+  DataUploadedAt: String
+  ErrorMessage: String
+  ExportJobArn: String
+  ForecastArn: String
+  ForecastExportedAt: String
+  ForecastGeneratedAt: String
+  Id: String!
+  ModelDrift: Float
+  OriginalDatasetName: String
+  OriginalPluginName: String
+  PipelineRetraining: Boolean
+  PipelineStatus: String!
+  PluginScriptUri: String
+  PluginUploadedAt: String
+  PostProcessingId: String
+  PreProcessingId: String
+  PredictorArn: String
+  ProcFinishedAt: String
+  RawDataSize: Int
+  RawDataUri: String
+  StatusUpdatedAt: String!
+  TrainingDataUri: String
+  TrainingFinishedAt: String
+  UserId: String
+}
+
+type Query {
+  getBatteryHealth(battery: String!): BatteryHealth @aws_cognito_user_pools @aws_iam
+  getLocationData: [LocationData] @aws_cognito_user_pools @aws_iam
+  getPipelineById(Id: String!): PipelineData! @aws_cognito_user_pools @aws_iam
+  getPipelineByProcessingId(PostProcessingId: String!): [PipelineData!] @aws_cognito_user_pools @aws_iam
+  getPipelinesByUser(UserId: String!): [PipelineData!] @aws_cognito_user_pools @aws_iam
+  listBatteryHealths(filter: TableBatteryHealthFilterInput, limit: Int, nextToken: String): BatteryHealthConnection @aws_cognito_user_pools @aws_iam
+}
+
+type Subscription {
+  onCreateBatteryHealth(AcceleratedAging: AWSJSON, ExternalShortCircuit: AWSJSON, OverTemp: AWSJSON, ThermalEnergy: AWSJSON, battery: String): BatteryHealth @aws_subscribe(mutations : ["createBatteryHealth"])
+  onDeleteBatteryHealth(AcceleratedAging: AWSJSON, ExternalShortCircuit: AWSJSON, OverTemp: AWSJSON, ThermalEnergy: AWSJSON, battery: String): BatteryHealth @aws_subscribe(mutations : ["deleteBatteryHealth"])
+  onUpdateBatteryHealth(AcceleratedAging: AWSJSON, ExternalShortCircuit: AWSJSON, OverTemp: AWSJSON, ThermalEnergy: AWSJSON, battery: String): BatteryHealth @aws_subscribe(mutations : ["updateBatteryHealth"])
+  pipelineSub: PipelineData @aws_subscribe(mutations : ["pipeline"])
+}
+
+input CreateBatteryHealthInput {
+  AcceleratedAging: AWSJSON!
+  ExternalShortCircuit: AWSJSON!
+  OverTemp: AWSJSON!
+  ThermalEnergy: AWSJSON!
+  battery: String!
+}
+
+input DeleteBatteryHealthInput {
+  battery: String!
+}
+
+input LocationDataRequestInput {
+  BatteryId: String!
+  City: String!
+  Country: String!
+  Lat: String!
+  Lng: String!
+  VIN: String!
+}
+
+input PipelineRequestInput {
+  CleaningFinishedAt: String
+  DataCheckpoint: String
+  DataGroupArn: String
+  DataImportedAt: String
+  DataUploadedAt: String
+  ErrorMessage: String
+  ExportJobArn: String
+  ForecastArn: String
+  ForecastExportedAt: String
+  ForecastGeneratedAt: String
+  Id: String!
+  ModelDrift: Float
+  OriginalDatasetName: String
+  OriginalPluginName: String
+  PipelineRetraining: Boolean
+  PipelineStatus: String!
+  PluginScriptUri: String
+  PluginUploadedAt: String
+  PostProcessingId: String
+  PreProcessingId: String
+  PredictorArn: String
+  ProcFinishedAt: String
+  RawDataSize: Int
+  RawDataUri: String
+  StatusUpdatedAt: String!
+  TrainingDataUri: String
+  TrainingFinishedAt: String
+  UserId: String
+}
+
+input TableBatteryHealthFilterInput {
+  battery: TableStringFilterInput
+}
+
+input TableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input TableFloatFilterInput {
+  between: [Float]
+  contains: Float
+  eq: Float
+  ge: Float
+  gt: Float
+  le: Float
+  lt: Float
+  ne: Float
+  notContains: Float
+}
+
+input TableIDFilterInput {
+  beginsWith: ID
+  between: [ID]
+  contains: ID
+  eq: ID
+  ge: ID
+  gt: ID
+  le: ID
+  lt: ID
+  ne: ID
+  notContains: ID
+}
+
+input TableIntFilterInput {
+  between: [Int]
+  contains: Int
+  eq: Int
+  ge: Int
+  gt: Int
+  le: Int
+  lt: Int
+  ne: Int
+  notContains: Int
+}
+
+input TableStringFilterInput {
+  beginsWith: String
+  between: [String]
+  contains: String
+  eq: String
+  ge: String
+  gt: String
+  le: String
+  lt: String
+  ne: String
+  notContains: String
+}
+
+input UpdateBatteryHealthInput {
+  AcceleratedAging: AWSJSON
+  ExternalShortCircuit: AWSJSON
+  OverTemp: AWSJSON
+  ThermalEnergy: AWSJSON
+  battery: String!
 }

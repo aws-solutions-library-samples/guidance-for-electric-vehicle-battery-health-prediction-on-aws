@@ -1,0 +1,75 @@
+{
+  "b1": {
+    "batteryName": "b1",
+    "serialNumber": "BELQ4202303235005",
+    "batteryModel": "NMC811Q43",
+    "nominalVoltage": "403V",
+    "capacity": "129 kWh",
+    "numberOfModules": 32,
+    "modulesUnderWarning": [],
+    "modulesNeedAttention": [],
+    "cellType": "80Ah – Prismatic",
+    "cellProducer": "Samsung SDI",
+    "cellPlant": "Göd, Hungary",
+    "assemblyPlant": "Brussels, Belgium",
+    "chargingDetails": {
+      "charging": true,
+      "chargingTarget": 80,
+      "chargingCurrent": "53A",
+      "totalChargingTime": "00:02:32",
+      "chargingTimeToTarget": "00:00:32",
+      "chargingPercent": "75%",
+      "chargingRate": "123 A",
+      "chargingVoltage": "12 V",
+      "fastChargingDuration": "00:34:34",
+      "numberOfFastCharges1": 30,
+      "numberOfFastCharges2": 90,
+      "numberOfL1": 110,
+      "numberOfL2": 30
+    },
+    "drivingDetails": {
+      "odometer": "50,546 Km",
+      "drivingScore": 86,
+      "ambientTemperature": 86,
+      "range": 350
+    },
+    "stateOfCharge": 87,
+    "expectedEOL": 1862
+  },
+  "b3": {
+    "batteryName": "b3",
+    "serialNumber": "IDEQ4202303234536",
+    "batteryModel": "BGC811Q43",
+    "nominalVoltage": "403V",
+    "capacity": "129 kWh",
+    "numberOfModules": 16,
+    "modulesUnderWarning": [],
+    "modulesNeedAttention": [],
+    "cellType": "80Ah – Prismatic",
+    "cellProducer": "Samsung SDI",
+    "cellPlant": "Göd, Hungary",
+    "assemblyPlant": "Brussels, Belgium",
+    "chargingDetails": {
+      "chargingTarget": 80,
+      "chargingCurrent": "53A",
+      "totalChargingTime": "00:02:32",
+      "chargingTimeToTarget": "00:00:32",
+      "chargingPercent": "75%",
+      "chargingRate": "123 A",
+      "chargingVoltage": "12 V",
+      "fastChargingDuration": "00:34:34",
+      "numberOfFastCharges1": 60,
+      "numberOfFastCharges2": 40,
+      "numberOfL1": 80,
+      "numberOfL2": 50
+    },
+    "drivingDetails": {
+      "odometer": "50,546 Km",
+      "drivingScore": 85,
+      "ambientTemperature": 82,
+      "range": 380
+    },
+    "stateOfCharge": 91,
+    "expectedEOL": 1862
+  }
+}

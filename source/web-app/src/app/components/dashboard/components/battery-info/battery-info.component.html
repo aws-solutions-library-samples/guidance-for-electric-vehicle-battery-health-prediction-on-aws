@@ -1,0 +1,45 @@
+<div class="battery-details" [ngClass]="{'visible': visible}" *ngIf="battery">
+    <div class="close-panel" (click)="notifyInfoPanelClose.emit(false);">
+        <fa-icon [icon]="faClose" class="fa-lg"></fa-icon>
+    </div>
+    <h2>Battery Details</h2>
+    <div class="metrics-group">
+        <h6>Serial number</h6>
+        <span>{{ battery.serialNumber }}</span>
+    </div>
+    <div class="metrics-group">
+        <h6>Model</h6>
+        <span>{{ battery.batteryModel }}</span>
+    </div>
+    <div class="metrics-group">
+        <h6>Nominal Voltage</h6>
+        <span>{{ battery.nominalVoltage }}</span>
+    </div>
+    <div class="metrics-group">
+        <h6>Capacity</h6>
+        <span>{{ battery.capacity }}</span>
+    </div>
+    <div class="metrics-group">
+        <h6>Number of Modules</h6>
+        <span>{{ battery.numberOfModules }}</span>
+    </div>
+    <div class="metrics-group">
+        <h6>Cell Type</h6>
+        <span>{{ battery.cellType }}</span>
+    </div>
+    <div class="metrics-group">
+        <h6>Cell Producer</h6>
+        <span>{{ battery.cellProducer }}</span>
+    </div>
+    <div class="metrics-group">
+        <h6>Cell Plant</h6>
+        <span>{{ battery.cellPlant }}</span>
+    </div>
+    <div class="metrics-group">
+        <h6>Battery Assembly Plant</h6>
+        <span>{{ battery.assemblyPlant }}</span>
+    </div>
+    <div class="qr-code">
+        <img src="assets/images/qrcode.png" alt="qr code">
+    </div>
+</div>

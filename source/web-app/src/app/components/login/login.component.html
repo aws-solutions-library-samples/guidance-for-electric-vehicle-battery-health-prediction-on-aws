@@ -1,6 +1,10 @@
 <div class="login-container">
-    <amplify-authenticator>
-        <ng-template amplifySlot="authenticated"
+    <div class="login-avatar">
+        <fa-icon [icon]="faLock"></fa-icon>
+    </div>
+    <h1 class="login-header">Sign in</h1>
+    <amplify-authenticator [hideSignUp]="true">
+        <ng-template amplifySlot="signIn"
             let-user="user"
             let-signOut="signOut">
             <router-outlet></router-outlet>

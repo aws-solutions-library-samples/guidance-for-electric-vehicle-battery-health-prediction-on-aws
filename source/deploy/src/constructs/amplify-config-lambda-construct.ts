@@ -56,6 +56,11 @@ export interface AmplifyConfigLambdaConstructProps extends cdk.StackProps {
    * The location service map name
    */
   readonly map: string;
+
+  /**
+   * S3 URI for the IOT data dump bucket
+   */
+  readonly bucketUrl: string;
 }
 
 const defaultProps: Partial<AmplifyConfigLambdaConstructProps> = {};
@@ -79,7 +84,7 @@ export class AmplifyConfigLambdaConstruct extends Construct {
     const stack = cdk.Stack.of(this);
 
     const authorizerFn = new cdk.aws_lambda.Function(this, "AuthorizerLambda", {
-      runtime: cdk.aws_lambda.Runtime.PYTHON_3_9,
+      runtime: cdk.aws_lambda.Runtime.PYTHON_3_8,
       handler: "index.lambda_handler",
       code: cdk.aws_lambda.Code.fromInline(this.getAuthorizerLambdaCode()),
       timeout: cdk.Duration.seconds(15),
@@ -99,7 +104,7 @@ export class AmplifyConfigLambdaConstruct extends Construct {
     );
 
     const lambdaFn = new cdk.aws_lambda.Function(this, "AmplifyConfigLambda", {
-      runtime: cdk.aws_lambda.Runtime.PYTHON_3_9,
+      runtime: cdk.aws_lambda.Runtime.PYTHON_3_8,
       handler: "index.lambda_handler",
       code: cdk.aws_lambda.Code.fromInline(this.getPythonLambdaFunction()),
       timeout: cdk.Duration.seconds(15),
@@ -111,6 +116,7 @@ export class AmplifyConfigLambdaConstruct extends Construct {
         LIBRARY_BUCKET: props.libraryBucketName,
         GRAPHQL_ENDPOINT: props.graphqlEndpoint,
         MAP_NAME: props.map,
+        BUCKET_URL: props.bucketUrl,
       },
     });
 
@@ -170,6 +176,7 @@ def lambda_handler(event, context):
   library_bucket = os.getenv("LIBRARY_BUCKET", None)
   graphql_endpoint = os.getenv("GRAPHQL_ENDPOINT", None)
   map_name = os.getenv("MAP_NAME", None)
+  bucket_url = os.getenv("BUCKET_URL", None)
   response = {
       "region": region,
       "userPoolId": user_pool_id,
@@ -178,6 +185,7 @@ def lambda_handler(event, context):
       "libraryBucket": library_bucket,
       "graphqlEndpoint": graphql_endpoint,
       "mapName": map_name,
+      "bucketUrl": bucket_url,
   }
   return {
       "statusCode": "200",

@@ -15,11 +15,13 @@
 
 export const environment = {
     production: true,
-    NG_APP_NAME: process.env['CUSTOMER_NAME'] ?? 'Smart Battery Management System',
+    NG_APP_NAME: process.env['CUSTOMER_NAME'] ?? 'Smart Battery Manager',
     NG_APP_LOGO: process.env['CUSTOMER_LOGO'] ?? '/assets/logos/logo.png',
     NG_APP_API: "",
     NG_APP_REGION: "",
     NG_APP_USER_POOL_ID: "",
     NG_APP_IDENTITY_POOL_ID: "",
     NG_APP_APP_CLIENT_ID: "",
+    NG_APP_DATASET_URI: "",
+    NG_APP_PLUGIN_URI: ""
 };
