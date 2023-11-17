@@ -1,3 +1,10 @@
-.DS_Store
-node_modules
-cdk.out
+**/node_modules
+**/dist
+**/build
+**/.DS_Store
+**/.angular
+**/.idea
+/deploy/cdk.out
+**/data/**.csv
+
+.env

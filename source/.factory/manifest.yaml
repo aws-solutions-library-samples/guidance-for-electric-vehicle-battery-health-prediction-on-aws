@@ -1,0 +1,164 @@
+# Demo Factory Manifest File -- This is just an example
+# In order to have DF recognize this RENAME to `manifest.yaml` OR make your own
+
+## ID: Unique ID for storage and reference. Should be all lowercase alpha characters seperated by dashes i.e. this-is-an-id
+## Make this short and concise - this is also used for the short code / page slug
+id: smart-battery-manager
+
+## Title: Name of your demo, should be eye-catching and encompass what the demo is capable of.
+## If representing a key industry or AWS service it should be featured in the name.
+## Should ideally be under 60 characters
+title: Smart Battery Manager
+
+## releaseVersion: The semantic version for your demo (first published demo should be 1.0.0)
+releaseVersion: 1.2.0
+
+## manifestVersion: Current semantic version of the manifest template being used (2.0.0)
+## This tells DF how to parse this manifest and allows for backwards compatibility.
+## Note: DO NOT CHANGE THIS
+manifestVersion: 2.0.0
+
+## Description: Defines the demo clearly at a high level. Includes key services, industries, use-cases, and any high-level
+## disclaimers the user may need to know for using the demo (e.g. this demo requires you to bring robots)
+## Greater than 200 characters and no more than 500 (if it’s too large viewers may not read)
+## If this demo can only be launched in a pre-provisioned account, append to the description - Must be launched into an existing account.
+description: |
+    Smart Battery Manager provides EV fleet condition monitoring and insights into vehicle performance through meaningful digital-twin visualizations built upon the AWS ML and IoT stacks. The underlying ML pipeline draws on existing battery data collected from connected in-market EVs and generates battery health prediction models developed on a highly scalable event-driven microservices infrastructure.
+
+## onlyBYOA: If this demo can only be launched in a pre-provisioned account, set to true
+onlyBYOA: false
+
+## keyAWSServices: List of key AWS services that your demo leverages
+keyAWSServices:
+    - AWS Glue
+    - Amazon Forecast
+    - Amazon EventBridge
+    - Amazon Location Service
+    - AWS AppSync
+    - AWS Lambda
+    - Amazon S3
+    - Amazon DynamoDB
+    - Amazon CloudFront
+    
+## Which industries does this demo fall in?
+industries:
+#    - Advertising & Marketing
+#    - Agriculture
+    - Automotive
+#    - Consumer Packaged Goods (CPG)
+#    - Education
+#    - Energy (Oil & Gas)
+#    - Engineering, Construction & Real Estate
+#    - Financial Services (FSI)
+#    - Games
+#    - Government
+#    - Healthcare & Life Sciences (HCLS)
+#    - Hi-Tech
+#    - Manufacturing
+#    - Media & Entertainment
+#    - Mining
+#    - Non Profit
+
+## Which technology buckets does this demo fall in?
+technology:
+    - Analytics
+#    - App Development & DevOps
+#    - Blockchain
+#    - Cloud Foundations
+#    - Cloud Operations
+#    - Compute
+#    - Content Delivery & Edge Services
+#    - Databases
+#    - Digital Workplace
+#    - Enterprise Resource Planning
+    - Internet of Things (IoT)
+    - Machine Learning (AI/ML)
+#    - Migration & Modernization
+#    - Networking
+#    - Resilience
+#    - Security & Compliance
+#    - Spatial Computing
+#    - Storage
+#    - Supply Chain
+#    - Sustainability
+
+## credits: List of all individuals who contributed to this demo
+credits:
+    ### alias: Amazon alias of individual (not your email)
+    - alias: adsnghw
+      ### name: Full name of individual
+      name: Adi Singh
+      ### role: Role of individual in demo creation (i.e. Author)
+      role: Lead Author
+    - alias: mkguru
+      ### name: Full name of individual
+      name: Mohan Kumar Guruswamy
+      ### role: Role of individual in demo creation (i.e. Author)
+      role: Author
+    - alias: chiockc
+      ### name: Full name of individual
+      name: Conie Chiock
+      ### role: Role of individual in demo creation (i.e. Author)
+      role: Designer
+
+## Associated documents/images for your demo (rendered in Demo Factory website)
+# Note: Your FIRST screenshot is the most important -- it will be used as a preview of your demo
+## REQUIRED: 1 `diagram` and 3+ `screenshot` assets
+assets:
+    ### name: A unique identifier for this asset this will be displayed in resources
+    - name: diagram-1
+      ### filePath: Should be an accurate path from the root project directory.
+      ### Do not start with a forward slash. Assets do not need to be in the .factory folder.
+      ### REQUIRED unless you do an external_link type (see below)
+      filePath: assets/arch_v3.png
+      ### type: The type of asset, which controls how it will be used.
+      ### OPTIONS: `screenshot`, `diagram`, `video`, `presentation`, `instructions', or 'external_link'
+      type: diagram
+    - name: screenshot-1
+      filePath: assets/screen_1.jpg
+      type: screenshot
+    - name: screenshot-2
+      filePath: assets/screen_2.jpg
+      type: screenshot
+    - name: screenshot-3
+      filePath: assets/screen_3.jpg
+      type: screenshot
+    - name: screenshot-4
+      filePath: assets/screen_4.jpg
+      type: screenshot
+    - name: screenshot-5
+      filePath: assets/screen_5.jpg
+      type: screenshot
+    - name: Demo Walkthrough
+      link: https://broadcast.amazon.com/videos/726638
+      type: external_link
+    - name: Sample Dataset
+      filePath: deploy/cdk-assets/raw_dataset.csv
+      type: instructions
+    - name: Sample Processing Plugin
+      filePath: deploy/cdk-assets/processing_plugin.py
+      type: instructions
+    - name: Documentation
+      filePath: assets/instructions.pdf
+      type: instructions
+    # - name: Link 1
+      ### link: Should be an accessible link relevant to your demo
+      ### This is not required but can be helpful if you have additionally relevant content
+      # link: "https://aws.amazon.com/blogs/aws/"
+      ### type: The type of asset, which controls how it will be used.
+      # type: external_link
+
+## launchParameters: Additional environment variables used by your demo to customize the experience
+## Users will be asked to provide this information during launch and they will be exported as environment variables.
+## CUSTOMER_NAME and CUSTOMER_LOGO should *not* be included, as these are always provided.
+launchParameters:
+    ### env: Environment variable name
+    ### FORMAT: All caps, underscore separated (i.e. `SAMPLE_VAR`)
+    - env: ADMIN_EMAIL
+      ### label: User-friendly label for data input
+      label: Admin Email
+      ### helpText (optional): Additional context to provide to the user for data input
+      helpText: Email used to make a user #### Any additional details the user may need past simple desc
+      ### type: Type of input field to use when prompting user
+      ### OPTIONS: `email`, `password`, `text`
+      type: email
