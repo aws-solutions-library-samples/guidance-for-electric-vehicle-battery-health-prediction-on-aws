@@ -411,7 +411,7 @@ export class DashboardComponent implements OnInit {
                     // this.batteryVoltages[k] = this.getRandomFloat(5.3,5.6,2);
                 }, i * 3000);
             }
-        }, 10000);
+        }, 120000);
     }
 
     scenario2() {
@@ -459,7 +459,7 @@ export class DashboardComponent implements OnInit {
                     this.dtc_message = "DTC : Err_overtemperature_Module_1";
                 }, i * 3000);
             }
-        }, 10000);
+        }, 120000);
     }
 
 
