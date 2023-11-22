@@ -21,20 +21,26 @@ import {Observable} from "rxjs";
     providedIn: 'root'
 })
 export class DataService {
+    API_URL: string = "";
 
     constructor(private http: HttpClient) {
+        if (environment.development && environment.API_GW_URL!= "") {
+            this.API_URL = environment.API_GW_URL;
+        } else {
+            this.API_URL = environment.NG_APP_API;
+        }
     }
 
     getSignedUrl(key: string): Observable<any> {
-        return this.http.get<any>(`${environment.NG_APP_API}/api/link?fileName=${key}&action=GSU`);
+        return this.http.get<any>(`${this.API_URL}/api/link?fileName=${key}&action=GSU`);
     }
 
     getMetadata(key: string, uuid: string): Observable<any> {
-        return this.http.get<any>(`${environment.NG_APP_API}/api/metadata?key=${key}&uuid=${uuid}&action=GM`)
+        return this.http.get<any>(`${this.API_URL}/api/metadata?key=${key}&uuid=${uuid}&action=GM`)
     }
 
     getBatteryData(key: string, uuid: string, battery: string, type: string): Observable<any> {
-        return this.http.get<any>(`${environment.NG_APP_API}/api/metadata?key=${key}&uuid=${uuid}&battery=${battery}&type=${type}&action=GBD`)
+        return this.http.get<any>(`${this.API_URL}/api/metadata?key=${key}&uuid=${uuid}&battery=${battery}&type=${type}&action=GBD`)
     }
 
     uploadFile(signedURL: string, file: File, contentType: string): Observable<any> {
@@ -44,18 +50,18 @@ export class DataService {
     }
 
     simulate(id: string, fileName: string): Observable<any> {
-        return this.http.get(`${environment.NG_APP_API}/api/simulation?key=${id}&file=${fileName}&action=SS`);
+        return this.http.get(`${this.API_URL}/api/simulation?key=${id}&file=${fileName}&action=SS`);
     }
 
     copyFile(uri: string | undefined, key: string | undefined) {
-        return this.http.get<any>(`${environment.NG_APP_API}/api/metadata?uri=${uri}&key=${key}&action=CD`);
+        return this.http.get<any>(`${this.API_URL}/api/metadata?uri=${uri}&key=${key}&action=CD`);
     }
 
     retrainPipeline(checkpoint: number, uuid: string) {
-        return this.http.get<any>(`${environment.NG_APP_API}/api/retrain?checkpoint=${checkpoint}&uuid=${uuid}`);
+        return this.http.get<any>(`${this.API_URL}/api/retrain?checkpoint=${checkpoint}&uuid=${uuid}`);
     }
 
     refreshBatteryHealth(battery: string) {
-        return this.http.post<any>(`${environment.NG_APP_API}/api/refresh?battery=${battery}`,null);
+        return this.http.post<any>(`${this.API_URL}/api/refresh?battery=${battery}`,null);
     }
 }

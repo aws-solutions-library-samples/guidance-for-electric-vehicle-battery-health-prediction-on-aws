@@ -20,9 +20,17 @@ import {environment} from "../../environments/environment";
     providedIn: "root",
 })
 export class ConfigService {
-    constructor(private http: HttpClient) {}
+    API_URL: string = "";
+
+    constructor(private http: HttpClient) {
+        if (environment.development && environment.API_GW_URL!= "") {
+            this.API_URL = environment.API_GW_URL;
+        } else {
+            this.API_URL = environment.NG_APP_API;
+        }
+    }
 
     getConfig() {
-        return this.http.get<any>(`${environment.NG_APP_API}/api/amplify-config`);
+        return this.http.get<any>(`${this.API_URL}/api/amplify-config`);
     }
 }

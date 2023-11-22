@@ -27,7 +27,9 @@ export const environment = {
     NG_APP_IDENTITY_POOL_ID: "",
     NG_APP_APP_CLIENT_ID: "",
     NG_APP_DATASET_URI: "",
-    NG_APP_PLUGIN_URI: ""
+    NG_APP_PLUGIN_URI: "",
+    development: true,
+    API_GW_URL: "",
 };
 
 /*
