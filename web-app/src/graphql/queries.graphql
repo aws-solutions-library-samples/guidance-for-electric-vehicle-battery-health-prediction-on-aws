@@ -1,0 +1,107 @@
+# this is an auto generated file. This will be overwritten
+query GetPipelinesByUser($UserId: String!) {
+  getPipelinesByUser(UserId: $UserId) {
+    Id
+    PipelineStatus
+    StatusUpdatedAt
+    UserId
+    DataUploadedAt
+    PluginUploadedAt
+    ProcFinishedAt
+    DataImportedAt
+    TrainingFinishedAt
+    ForecastGeneratedAt
+    ForecastExportedAt
+    CleaningFinishedAt
+    DataGroupArn
+    PreProcessingId
+    RawDataSize
+    RawDataUri
+    PluginScriptUri
+    TrainingDataUri
+    PredictorArn
+    ForecastArn
+    ModelDrift
+    ExportJobArn
+    PostProcessingId
+    OriginalDatasetName
+    OriginalPluginName
+    DataCheckpoint
+    ErrorMessage
+    PipelineRetraining
+  }
+}
+query GetPipelineById($Id: String!) {
+  getPipelineById(Id: $Id) {
+    Id
+    PipelineStatus
+    StatusUpdatedAt
+    UserId
+    DataUploadedAt
+    PluginUploadedAt
+    ProcFinishedAt
+    DataImportedAt
+    TrainingFinishedAt
+    ForecastGeneratedAt
+    ForecastExportedAt
+    CleaningFinishedAt
+    DataGroupArn
+    PreProcessingId
+    RawDataSize
+    RawDataUri
+    PluginScriptUri
+    TrainingDataUri
+    PredictorArn
+    ForecastArn
+    ModelDrift
+    ExportJobArn
+    PostProcessingId
+    OriginalDatasetName
+    OriginalPluginName
+    DataCheckpoint
+    ErrorMessage
+    PipelineRetraining
+  }
+}
+query GetPipelineByProcessingId($PostProcessingId: String!) {
+  getPipelineByProcessingId(PostProcessingId: $PostProcessingId) {
+    Id
+    PipelineStatus
+    StatusUpdatedAt
+    UserId
+    DataUploadedAt
+    PluginUploadedAt
+    ProcFinishedAt
+    DataImportedAt
+    TrainingFinishedAt
+    ForecastGeneratedAt
+    ForecastExportedAt
+    CleaningFinishedAt
+    DataGroupArn
+    PreProcessingId
+    RawDataSize
+    RawDataUri
+    PluginScriptUri
+    TrainingDataUri
+    PredictorArn
+    ForecastArn
+    ModelDrift
+    ExportJobArn
+    PostProcessingId
+    OriginalDatasetName
+    OriginalPluginName
+    DataCheckpoint
+    ErrorMessage
+    PipelineRetraining
+  }
+}
+query GetLocationData {
+  getLocationData {
+    BatteryId
+    Lng
+    Lat
+    Country
+    City
+    VIN
+  }
+}

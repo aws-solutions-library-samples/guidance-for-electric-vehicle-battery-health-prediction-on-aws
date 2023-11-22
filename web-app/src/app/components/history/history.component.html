@@ -1,0 +1,77 @@
+<app-header>
+    <div class="error-message-container" *ngIf="showError">
+        <img src="assets/images/error-step.png" alt="info icon">
+        <div class="error-message">
+            <span>{{errorMessage}}</span>
+        </div>
+    </div>
+</app-header>
+<div class="history-container">
+    <div class="history-container--header">
+        <h3>Pipelines</h3>
+        <button class="upload-action-primary" [routerLink]="['/pipeline']">Add Pipeline</button>
+    </div>
+    <div class="history-container--records">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date Created</th>
+                    <th>Dataset File Name</th>
+                    <th>Plugin Name</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="!pipelineData.length">
+                    <td colspan="5"><span style="width: 100%; display: flex; justify-content: center">No pipeline available</span></td>
+                </tr>
+                <tr *ngFor="let pipeline of segmentedPipelineData" class="highlight" (click)="navigateToTracker(pipeline)">
+                    <td>{{pipeline.DataUploadedAt | date: 'medium' : 'GMT'}}</td>
+                    <td>{{pipeline.OriginalDatasetName}}</td>
+                    <td>{{pipeline.OriginalPluginName}}</td>
+                    <td>
+                        <div class="pipeline-steps">
+                            <ng-container *ngFor="let step of availableSteps;">
+                                <div class="pipeline-step" *ngIf="!step.hide">
+                                    <img *ngIf="step.id < pipeline.currentStep || pipeline.currentStep === 8" src="assets/images/completed-step.png">
+                                    <img *ngIf="step.id === pipeline.currentStep && pipeline.currentStep !== 8 && !pipeline.ErrorMessage" class="animate-progress" src="assets/images/inprogress-half-step.png">
+                                    <img *ngIf="step.id === pipeline.currentStep && pipeline.currentStep !== 8 && pipeline.ErrorMessage" src="assets/images/error-step.png">
+                                    <img *ngIf="step.id > pipeline.currentStep" src="assets/images/notstarted-step.png">
+                                </div>
+                            </ng-container>
+                        </div>
+                    </td>
+                </tr>
+            <tr *ngFor="let row of emptyRows">
+                <td colspan="4"></td>
+            </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3"></td>
+                    <td>
+                       <div class="pagination">
+                           <span>Items per page:</span>
+                           <span>
+                                  <mat-select [(value)]="itemsPerPage" (valueChange)="updatePagination()">
+                                    <mat-option [value]="5">5</mat-option>
+                                    <mat-option [value]="10">10</mat-option>
+                                    <mat-option [value]="15">15</mat-option>
+                                  </mat-select>
+                           </span>
+                           <span>Page {{currentPage}} of {{totalPages}}</span>
+                           <span (click)="goBack()">
+                               <fa-icon [icon]="faLeft" class="fa-lg" [ngClass]="{'disable-step': currentPage === 1}"></fa-icon>
+                           </span>
+                           <span (click)="goNext()">
+                               <fa-icon [icon]="faRight" class="fa-lg" [ngClass]="{'disable-step': currentPage === totalPages}"></fa-icon>
+                           </span>
+                       </div>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<app-footer></app-footer>
+<app-spinner *ngIf="showSpinner" [displayText]="'Loading Pipelines...'"></app-spinner>

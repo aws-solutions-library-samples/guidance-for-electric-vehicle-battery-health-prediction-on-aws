@@ -1,0 +1,86 @@
+<app-header></app-header>
+<div class="breadcrumb-container">
+  <app-breadcrumb [text]="'Add Pipeline'" [route]="'history'"></app-breadcrumb>
+</div>
+<div class="container">
+  <div class="upload-stepper-container">
+    <ul>
+      <li>
+        <div class="step" [ngClass]="{ active: currentStep <= 3 }">
+          <span>1</span>
+        </div>
+        <span class="step-text">Battery Dataset</span>
+      </li>
+      <hr />
+      <li>
+        <div
+          class="step"
+          [ngClass]="{ active: currentStep > 1 && currentStep <= 3 }"
+        >
+          <span>2</span>
+        </div>
+        <span class="step-text">Processing Plugin</span>
+      </li>
+      <hr />
+      <li>
+        <div class="step" [ngClass]="{ active: currentStep === 3 }">
+          <span>3</span>
+        </div>
+        <span class="step-text">Review</span>
+      </li>
+    </ul>
+  </div>
+  <div class="upload-file-container" [ngStyle]="{'display': currentStep === 3 ? 'none' : 'flex'}">
+    <app-dataset-selection #datasetComponent [hidden]="currentStep !== 1" [uri]="datasetURI"></app-dataset-selection>
+    <app-plugin-selection #pluginComponent [hidden]="currentStep !== 2" [uri]="pluginURI"></app-plugin-selection>
+  </div>
+  <div class="launch-pipeline" *ngIf="currentStep === 3">
+    <span style="font-size: 24px;">Review your uploaded files</span>
+    <ul>
+      <li>
+        <fa-icon class="fa-2x" style="color: #fff; width: 30px;" [icon]="faCsv"></fa-icon>
+        <span>{{originalDatasetFileName}}</span>
+      </li>
+      <li>
+        <fa-icon class="fa-2x" style="color: #fff; width: 30px;" [icon]="faPython"></fa-icon>
+        <span>{{originalPluginFileName}}</span>
+      </li>
+    </ul>
+    <div class="launch-msg">
+      <span class="launch-message-header">You are ready, launch your pipeline</span>
+      <img src="assets/images/launch.png" alt="Launch Pipeline" />
+    </div>
+  </div>
+  <div class="upload-action"
+    [ngClass]="{ 'single-btn-align': currentStep === 1 }">
+    <button
+      class="upload-action-secondary"
+      *ngIf="currentStep > 1"
+      (click)="currentStep = currentStep - 1">
+      Back
+    </button>
+    <div>
+      <button
+        class="upload-action-tertiary"
+        *ngIf="pipelineId && currentStep < 3"
+        [routerLink]="['/dashboard']">
+        Cancel
+      </button>
+      <button
+        class="upload-action-primary"
+        [ngClass]="{'disabled-btn': disableStep()}"
+        *ngIf="currentStep < 3"
+        (click)="currentStep = currentStep + 1; getPluginFileName(); getDatasetFileName();">
+        Continue
+      </button>
+    </div>
+    <button
+      class="upload-action-primary"
+      *ngIf="currentStep === 3"
+      (click)="createPipeline()">
+      Launch
+    </button>
+  </div>
+</div>
+<app-footer></app-footer>
+<app-spinner [displayText]="displayText" *ngIf="showSpinner"></app-spinner>

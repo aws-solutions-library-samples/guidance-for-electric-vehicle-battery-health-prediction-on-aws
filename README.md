@@ -1,99 +1,158 @@
-## Guidance for Electric Vehicle (EV) Battery Health Prediction on AWS
+# Smart Battery Manager
+## Tool Versions
 
-### Introduction 
+To build and deploy this template the following tools are required.
 
-EV batteries, predominately lithium-ion (Li-ion) batteries, have been the bottleneck for scaling EVs, which are crucial to a net-zero economy. One challenge in the EV battery ecosystem is insufficient and inaccurate battery state of health (SOH) and remaining useful life (RUL) monitoring and prediction, resulting in shortened battery lifespan, driver frustration, lack of visibility for end-of-life processing, and wasted critical materials. Instead of the conventional static formula-based approach, this Guidance showcases how customers can use the AI/ML capabilities on AWS to easily predict SOH and RUL. Predictions of battery health will help OEMs and EV owners proactively plan for battery replacement, and most importantly, can be used to move battery into a new life and promote the overall circular economy of a battery.
+1. NodeJs >= 14
+2. Python3 >= 3.8
+3. Docker
 
-The sample code in this project is based on the [Guidance for Electric Vehicle Battery Health Prediction on AWS](https://aws.amazon.com/solutions/guidance/electric-vehicle-battery-health-prediction-on-aws/). It deploys an event-driven ML pipeline for EV Battery health prediction using purpose-built services such as [Amazon Forecast](https://aws.amazon.com/forecast/). To simulate the data ingestion and consumption portions of the [Connected Mobility Platform](https://docs.aws.amazon.com/architecture-diagrams/latest/connected-mobility-platform-on-aws/connected-mobility-platform-on-aws.html), we build a web application, which allows you to upload battery health data and visualize battery health prediction results. 
+## Template Information (remove when used in a prototype)
+
+Template Owner: Brandt Beal
+
+This template is a foundational template for a S3 React Website and Api proxied through CloudFront with authentication using Cognito.
+
+The application is deployed as a single stack, where Amplify Cognito configuration is provided by an unauthenticated api found at `/api/amplify-config`.
+
+There are two stacks to this template.  A WAF CloudFront ACL can only be installed in us-east-1 and since a single CloudFormation template can't deploy to two regions, the WAF stack and App stack have to be separate.  Deployment is still a single command as both stacks are deployed when deploying the application.
+
+**this version is built using CDK V2**
+
+## Architecture
+
+![architecture](./spa-serverless-single-stack-v2.architecture.png)
+
+## IsengardCli
+
+<INTERNAL> Use the isengardcli assume to assume a role in the destination account
+
+## Build 
+
+The top level package.json is only for easy to use top level commands and doesn't contain any packages so there is no reason to install it.  When pulling latest its always best to run a build all to ensure you have the latest code. 
+
+To build the entire project run:
+
+```
+npm run build
+```
+
+Then during development, individual parts of the project can be built separately using the scoped commands:
+
+```
+npm run build.cdk
+npm run build.web
+npm run build.api
+```
+
+## Deploy
+
+If you are deploying to a new account or region you will need to bootstrap the CDK.  By default CDK bootstraps with AdministratorAccess policy which is restricted in certain environments.  If you need greater access than PowerUserAccess and IAMFullAccess, add the role arns to the list.
+
+If you are installing the application into a region other than `us-east-1` you must bootstrap both regions.  You can do this by setting the environment variable `CDK_DEPLOY_REGION` to us-east-1 and running the command below, then clearing the environment variable to pick up the set default.  Or you can manually run the command with both regions provided.  See statements below.
+
+```
+npm run deploy.bootstrap
+```
+
+or manually
+
+```
+cd cdk && npx cdk bootstrap --cloudformation-execution-policies "arn:aws:iam::aws:policy/PowerUserAccess,arn:aws:iam::aws:policy/IAMFullAccess"
+// or
+cd cdk && npx cdk bootstrap ${AWS_ACCOUNT}/us-east-1 ${AWS_ACCOUNT}/us-west-1 --cloudformation-execution-policies "arn:aws:iam::aws:policy/PowerUserAccess,arn:aws:iam::aws:policy/IAMFullAccess"
+```
+
+You can either deploy manually, use the CICD flow, or use both approaches.  For the integration branch it makes sense to use the CICD flow.  For feature branches, it's usually faster to deploy manually.
+### Manual Deployment
+
+To deploy an environment by branch name, run:
+
+```
+npm run deploy
+```
+
+To deploy other environments either copy the commands and rename the stack name or use the STACK_NAME environment variable :
+
+```
+export STACK_NAME="prod"
+npm run deploy
+```
+
+### CICD Deployment
+
+The CICD deployment uses the `branch name` to name the CICD, APP and WAF stacks when contained within a git repo, and `dev` if not.  The CICD CDK stack is separate from the Application stacks in the deploy folder so that it can be an optional method of deployment.  The CICD stack is just to assist with development and is optional.
+
+1. Make sure the code is committed to the destination branch and push to CodeCommit.
+2. Run: `npm run deploy.cicd` to deploy the cicd pipeline.  It will automatically deploy the stack for you.
+
+For example, if you are on the `main` branch and deploy the CICD pipeline three stacks will be deployed
+
+- main-cicd - the cicd stack
+- main - the application stack
+- main-waf - the waf stack in us-east-1
+
+**Once deployed, you will need to create a Cognito User to access the web application.**
+
+The project supports individual development environments as well.  Copy one of the deployment commands from the package.json file and change the name of the stack.  It's recommended to name individual environments with your initials and a numerical suffix so that the rest of the team knows who the stack belongs to.  For example: `bab01` is a good stack name.
+
+## Build and Deploy
+
+Here is a helper syntax to build and deploy in one step
+
+```
+npm run build && npm run deploy
+```
+
+To deploy into another account or region you can set the context variables by:
+
+```
+npm run deploy -- -c region=eu-west-1 - c
+```
 
 
-### Architecture
+## Destroy
 
-Here is the reference architecture for this project:
-![Architecture](assets/architecture.png)
+To destroy the dev environment, run:
 
-## Getting Started
+```
+npm run destroy
+```
 
-### Requirements
+## Development
 
-* [Create an AWS account](https://portal.aws.amazon.com/gp/aws/developer/registration/index.html) if you do not already have one and log in. The IAM user that you use must have sufficient permissions to make necessary AWS service calls and manage AWS resources.
-* [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed and configured
-* [Git Installed](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-* [Node and NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 14 installed
-* [AWS Cloud Developer Kit](https://docs.aws.amazon.com/cdk/v2/guide/cli.html) installed and configured
-* [Docker](https://www.docker.com/)
-* [Python3](https://www.python.org/downloads/) >= 3.8
+The top level project structure follows a responsibility structure:
 
+- [/api](./api/README.md) - contains lambda functions for the api
+- [/cicd](./cicd/README.md) - contains the continuous integration and deployment code
+- [/deploy](./deploy/README.md) - contains cloud development kit (CDK) to deploy the solution
+- [/web-app](./web-app/README.md) - contains the SPA web client for the application
 
-### Deploying the CDK stack
+Please see the README.md files in each folder for development rules and instructions.
 
-1. Create a new directory, navigate to that directory in a terminal and clone the GitHub repository:
-    ``` 
-    git clone https://github.com/aws-solutions-library-samples/guidance-for-electric-vehicle-battery-health-prediction-on-aws
-    ```
-2. Change directory to the pattern directory:
-    ```
-    cd source
-    ```
-3. Configure your AWS CLI to point to the AWS account and region where you want to deploy the solution. You can run the following command to verify which AWS account you are currently logged on:
-    ```
-    aws sts get-caller-identity
-    ```
-4. If you are using CDK to deploy to your AWS account for the first time, you will have to bootstrap your account. To do this, run the command:
-    ```
-    cdk bootstrap <account-number>/<region>
-    ```
-5. To build the entire project, run 
-    ```
-    npm run build
-    ```
-6. To deploy the project, run
-    ```
-    npm run deploy
-    ```
-7. We have architected this demo in a way that self-registration is disabled and only administrators can add users to access the web application. Therefore, once the project is deployed, you need to create a Cognito User to access the web application [through the AWS Management console](https://docs.aws.amazon.com/cognito/latest/developerguide/how-to-create-user-accounts.html) or [using AWS CLI](https://docs.aws.amazon.com/cli/latest/reference/cognito-idp/admin-create-user.html). 
+# Cross Platform Notes
 
-8. You have finished deployment and setting up! You can find the URL of the web application in CloudFront, or as part of the CDK outputs (value for WebAppCloudFrontDistributionDomainName).
+The build and deploy is cross platform to support both Windows and Mac/Linux users.  This section details common problems when extending the build system.
 
-**Note**: Since WAF CloudFront ACL can only be installed in us-east-1, the WAF stack and App stack might be deployed to 2 separate regions, depending on what your default deployment region is.
+## Python subprocess.run
 
-### How it works
+On Windows, Python's subprocess.run isn't able to find global commands like npm because the PATH isn't provided to the process.  Passing `env=os.environ` didn't seem to have any effect.  Using the parameter `shell=True` works on Windows but the command needs to be reformatted because of the way subprocess interprets the command based on this setting.  A work around is to use `shutil` to locate the full path to the command before running it.
 
-The sample code deploys a web application for 2 types of users: Developer and Fleet Operator. Developer has access to all parts of the application, and Fleet Operator can only view the dashboard with battery location and digital twin of batteries after at least one ML pipeline is executed successfully. You can switch profile by clicking the User icon and then the Switch Profile button.
+```
+import subprocess
+import shutil
 
-After logging in, Developer can upload battery health datasets as well as processing plugin scripts (scripts to clean up data). We provide a [sample battery dataset](./source/demo/raw_dataset.csv) and [sample processing plugin file](./source/demo/processing_plugin.py) for easy testing. The sample dataset is from [this project](https://data.matr.io/1/projects/5c48dd2bc625d700019f3204) by Severson et al. Data-driven prediction of battery cycle life before capacity degradation. Nature Energy volume 4, pages 383–391 (2019).
+npm_cmd = shutil.which("npm")
+cmd = [npm_cmd, "install"]
+proc = subprocess.run(cmd, stderr=subprocess.STDOUT)
+```
 
-![Upload](assets/upload.png)
+# Troubleshooting
 
-After files are uploaded, the ML pipeline gets triggered to start. Developer will see the progress of the ML pipeline. 
+## Docker issues
 
-![ML pipeline](assets/pipeline.png)
+### Build fails during a docker step due to `OSError: [Errno 28] No space left on device:` or something similar.
 
-When the ML pipeline finishes (this can take a few hours), both Developer and Fleet Operator will see a map with batteries.
+Open docker desktop, click on `Images`, click on `Clean up`, check `Unused` and `Dangling`, then click `Remove`.   
 
-![Map](assets/map.png)
-
-You can click on a vehicle to view battery information. To demonstrate how a digital twin for a battery could look like, we inserted some dummy values for the battery attributes, specifed [here](./source/deploy/assets/). 
-
-![Battery](assets/battery.png)
-
-In the Battery Health Prediction panel to the right, the line chart shows past and predicted battery state of health. You can enlarge this panel and click Play to watch actual data streaming as comparison to predicted data. State of Health, RUL, and model drift were all predicted or calculated using the ML pipeline deployed with the web application. 
-
-![Prediction](assets/prediction.png)
-
-Developer can view results from selected ML pipeline. They can click the User icon, navigate to Pipelines, select the desired pipeline, and click Connected Vehicles, which takes them to the dashboard with battery locations. For Fleet Operators, the predicted data they see are from the most recent pipeline.
-
-
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
-
-## Cleanup
-To clean up all resources, you can run `npm run destroy`.
-
-## License
-
-This library is licensed under the MIT-0 License. See the LICENSE file.
-
-## Disclaimer
-You should not use this AWS Content in your production accounts, or on production or other critical data.  You are responsible for testing, securing, and optimizing the AWS Content, such as sample code, as appropriate for production grade use based on your specific quality control practices and standards.
+or run from the command line: `docker image prune -a`

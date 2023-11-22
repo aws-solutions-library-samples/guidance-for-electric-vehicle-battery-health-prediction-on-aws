@@ -1,0 +1,80 @@
+{
+  "name": "ng-app",
+  "version": "0.1.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "lint": "eslint '**/*.{ts,tsx}'"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular-eslint/schematics": "^14.2.0",
+    "@angular/animations": "^14.2.12",
+    "@angular/cdk": "^13.0.0",
+    "@angular/common": "^14.2.0",
+    "@angular/compiler": "^14.2.0",
+    "@angular/core": "^14.2.0",
+    "@angular/forms": "^14.2.0",
+    "@angular/material": "^13.0.0",
+    "@angular/platform-browser": "^14.2.0",
+    "@angular/platform-browser-dynamic": "^14.2.0",
+    "@angular/router": "^14.2.0",
+    "@aws-amplify/api": "^5.0.13",
+    "@aws-amplify/core": "^5.0.16",
+    "@aws-amplify/ui-angular": "^3.2.7",
+    "@fortawesome/angular-fontawesome": "^0.11.1",
+    "@fortawesome/fontawesome-svg-core": "^6.3.0",
+    "@fortawesome/free-brands-svg-icons": "^6.3.0",
+    "@fortawesome/free-regular-svg-icons": "^6.3.0",
+    "@fortawesome/free-solid-svg-icons": "^6.3.0",
+    "aws-amplify": "^5.0.16",
+    "highcharts": "^9.3.3",
+    "highcharts-angular": "^2.10.0",
+    "highcharts-annotations": "^1.3.3",
+    "maplibre-gl": "^2.4.0",
+    "maplibre-gl-js-amplify": "^3.0.2",
+    "rxjs": "~7.5.0",
+    "tslib": "^2.3.0",
+    "uuid": "^9.0.0",
+    "zone.js": "~0.11.4"
+  },
+  "devDependencies": {
+    "@angular-builders/custom-webpack": "^14.1.0",
+    "@angular-devkit/build-angular": "^14.2.7",
+    "@angular-eslint/eslint-plugin": "^14.2.0",
+    "@angular/cli": "~14.2.7",
+    "@angular/compiler-cli": "^14.2.0",
+    "@types/jasmine": "~4.0.0",
+    "@types/lodash": "^4.14.191",
+    "@types/mapbox__mapbox-gl-draw": "^1.3.3",
+    "@types/node": "^18.14.6",
+    "@typescript-eslint/eslint-plugin": "^5.53.0",
+    "@typescript-eslint/parser": "^5.53.0",
+    "dotenv-webpack": "^8.0.1",
+    "eslint": "^8.34.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "jasmine-core": "~4.3.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.0.0",
+    "prettier": "^2.8.1",
+    "typescript": "~4.7.2"
+  },
+  "browserslist": {
+    "production": [
+      "defaults",
+      "not ie 11"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

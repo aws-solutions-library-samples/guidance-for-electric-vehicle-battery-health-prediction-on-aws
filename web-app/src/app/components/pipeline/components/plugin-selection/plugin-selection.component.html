@@ -1,0 +1,145 @@
+<div
+  class="upload-file-body plugin-upload"
+  (dragenter)="dragEnterHandler($event)"
+  (dragleave)="dragLeaveHandler($event)"
+  (dragover)="dragOverHandler($event)"
+  (drop)="dropHandler($event)"
+>
+  <app-tabs
+    [tabs]="[
+      { text: 'S3', id: 1 },
+      { text: 'Existing', id: 2 }
+    ]"
+    (tabSelectionNotifier)="pluginSelectionTab = $event"
+  ></app-tabs>
+  <div class="file-upload" *ngIf="pluginSelectionTab === 2">
+    <img
+      src="../../../../../assets/images/upload.png"
+      alt="Upload Image"
+      style="margin: 2em 0"
+    />
+    <div class="upload-file-action">
+      <span class="upload-message-header">
+        <span>Upload Processing Plugin</span>
+        <img
+          src="assets/icons/help.png"
+          alt="help icon"
+          style="margin-left: 8px; cursor: pointer"
+          (click)="helpHandler()"
+        />
+      </span>
+      <span class="upload-drag-and-drop-text"
+        >Drag and drop
+        <fa-icon class="fa-2x" style="color: #fff" [icon]="faPython"></fa-icon>
+        or <span class="link" (click)="triggerPluginInput()"> click</span>
+      </span>
+      <input
+        type="file"
+        #pluginInput
+        hidden
+        [accept]="'text/x-python-script'"
+        (change)="onPluginUpload($event)"
+      />
+    </div>
+    <div class="success-msg" *ngIf="plugin">
+      <fa-icon
+        [icon]="faCheck"
+        style="color: #1d8102; margin: 4px"
+        class="fa-lg"
+      ></fa-icon>
+      <span class="upload-drag-and-drop-text"
+        >File has successfully uploaded.</span
+      >
+    </div>
+    <div class="success-msg" *ngIf="showUploadError">
+      <fa-icon
+        [icon]="faBug"
+        style="color: red; margin: 4px"
+        class="fa-lg"
+      ></fa-icon>
+      <span class="upload-drag-and-drop-text"
+        >Please upload valid file types.</span
+      >
+    </div>
+  </div>
+  <div class="s3-direct-url" *ngIf="pluginSelectionTab === 1">
+    <span class="upload-message-header">
+      <span>Provide the S3 URI for the Processing Plugin</span>
+      <img
+        src="assets/icons/help.png"
+        alt="help icon"
+        style="margin-left: 8px; cursor: pointer"
+        (click)="helpHandler()"
+      />
+    </span>
+    <mat-form-field class="s3-full-width">
+      <mat-label>S3 URI</mat-label>
+      <input
+        type="input"
+        matInput
+        [(ngModel)]="s3Uri"
+        placeholder="Ex. s3://my-example-bucket/dataset/my_plugin.py"
+      />
+      <button
+        *ngIf="s3Uri"
+        matSuffix
+        mat-icon-button
+        aria-label="Clear"
+        (click)="s3Uri = ''"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+  <div class="default-plugin" *ngIf="pluginSelectionTab === 3">
+    <span class="upload-message-header">Select Processing Plugin</span>
+    <mat-form-field appearance="fill">
+      <mat-label>Select a plugin</mat-label>
+      <mat-select [(value)]="existingPlugin">
+        <mat-option [value]="'default'"
+          >default_processing-plugin.py</mat-option
+        >
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div
+    class="plugin-description"
+    [ngClass]="{ 'plugin-desc-animation': showHelp }"
+  >
+    <h2>Plugin Description</h2>
+    <div class="plugin-content">
+      <p>
+        The processing plugin is expected to be a python script that accepts the
+        raw dataset file uploaded in the previous step as input. The plugin will
+        be run in an Apache Spark environment and, as such, also accepts
+        operations from the PySpark API.
+      </p>
+      <p>
+        The plugin can expect <code>s3_bucket</code> and
+        <code>raw_dataset_key</code> as arguments passed to it by the pipeline.
+        With this information, the script can access the raw dataset file from
+        within the SBM data store using the AWS SDK for Python (Boto3). It can
+        be assumed that the script will have the necessary read-write
+        permissions to S3 already granted.
+      </p>
+      <p>
+        The plugin should output a file titled
+        <code>train_dataset.csv</code> which will be used for building the
+        forecasting models. This file will have exactly 3 columns, without
+        headers, in the following order:
+      </p>
+
+      <ol>
+        <li>
+          <p>Timestamp in the format <code>yyyy-MM-dd HH:mm:ss</code></p>
+        </li>
+        <li><p>Entity ID (usually at cell level), and</p></li>
+        <li><p>Discharge capacity (Qd)</p></li>
+      </ol>
+      <p>
+        The training dataset should be saved to this S3 bucket in the same
+        location as the raw dataset.
+      </p>
+    </div>
+  </div>
+</div>

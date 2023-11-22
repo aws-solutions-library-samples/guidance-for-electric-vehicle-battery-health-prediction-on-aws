@@ -1,0 +1,40 @@
+<header>
+    <div class="header-container">
+        <div class="header-container--logo" [routerLink]="['/dashboard']">
+            <img [src]="logoSrc" alt="Customer logo">
+            <span style="padding-left: 8px;">{{customerName}}</span>
+        </div>
+        <div class="header-container--user">
+            <span>{{ userName }}</span>
+            <div class="icon-container">
+                <fa-icon
+                    [icon]="faUser"
+                    style="color: #fff"
+                    (click)="navHandler()"
+                ></fa-icon>
+            </div>
+            <div class="logout-menu" *ngIf="showLogout">
+                <ul>
+                    <li [routerLink]="['/dashboard']" *ngIf="userPrefService.currentPersona === 2" (click)="showLogout = false;">
+                        <img src="assets/images/car.png">
+                        <span>Connected Vehicles</span>
+                    </li>
+                    <li [routerLink]="['/history']" *ngIf="userPrefService.currentPersona === 2" (click)="showLogout = false;">
+                        <img src="assets/images/pipeline.png">
+                        <span>Pipelines</span>
+                    </li>
+                    <li (click)="switchProfile()">
+                        <img src="assets/images/persona.png">
+                        <div>
+                            <h4>{{userPrefService.currentPersona === 1 ? 'Fleet Operator' : 'Developer' }}</h4>
+                            <span style="font-size: 12px;">Switch Profile</span>
+                        </div>
+                    </li>
+                    <li (click)="signOut()"><h4>Logout</h4></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+<ng-content></ng-content>
+<app-spinner *ngIf="showSpinner"></app-spinner>

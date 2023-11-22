@@ -1,0 +1,34 @@
+<div class="upload-file-body dataset-upload"(dragenter)="dragEnterHandler($event)" (dragleave)="dragLeaveHandler($event)" (dragover)="dragOverHandler($event)" (drop)="dropHandler($event)">
+    <app-tabs [tabs]="[{text: 'S3', id: 1}, {text: 'Existing', id: 2}]"
+              (tabSelectionNotifier)="datasetSelectionTab = $event"></app-tabs>
+    <div class="file-upload" *ngIf="datasetSelectionTab === 2">
+        <img src="../../../../../assets/images/upload.png" alt="Upload Image"/>
+        <div class="upload-file-action">
+          <span class="upload-message-header">Upload Battery Dataset</span>
+            <span class="upload-drag-and-drop-text">Drag and drop
+                <fa-icon class="fa-2x" style="color: #fff" [icon]="faCsv"></fa-icon>
+                or <span class="link" (click)="triggerInput()"> click</span>
+            </span>
+            <input type="file" #datasetInput hidden [accept]="'text/csv'" (change)="onDatasetUpload($event)"/>
+        </div>
+        <div class="success-msg" *ngIf="file">
+            <fa-icon [icon]="faCheck" style="color: #1d8102; margin: 4px" class="fa-lg"></fa-icon>
+            <span class="upload-drag-and-drop-text">File has successfully uploaded.</span>
+        </div>
+        <div class="success-msg" *ngIf="showUploadError">
+            <fa-icon [icon]="faBug" style="color: red; margin: 4px" class="fa-lg"></fa-icon>
+            <span class="upload-drag-and-drop-text">Please upload valid file types.</span>
+        </div>
+    </div>
+    <div class="s3-direct-url" *ngIf="datasetSelectionTab === 1">
+        <span class="upload-message-header">Provide the S3 URI for the Battery Dataset</span>
+        <mat-form-field class="s3-full-width">
+            <mat-label>S3 URI</mat-label>
+            <input type="input" matInput [(ngModel)]="s3Uri"
+                   placeholder="Ex. s3://my-example-bucket/dataset/my_dataset.csv">
+            <button *ngIf="s3Uri" matSuffix mat-icon-button aria-label="Clear" (click)="s3Uri=''">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+</div>

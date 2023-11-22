@@ -1,0 +1,12 @@
+<div class="metric-container" [ngClass]="getOverrideClass()">
+    <div class="metric-info">
+        <span>{{['FSOC', 'SOC'].includes(metric) ? 'State of Power' : 'Remaining Useful Life'}}</span>
+        <span>{{mValue}}%</span>
+    </div>
+    <div class="metric-bar">
+        <div class="battery" [ngClass]="{'FRUL': metric === 'FRUL', 'SOC': metric === 'SOC', 'FSOC': metric === 'FSOC'}"></div>
+        <div class="percent-markers">
+            <span>0%</span><span>50%</span><span>100%</span>
+        </div>
+    </div>
+</div>

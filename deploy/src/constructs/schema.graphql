@@ -1,0 +1,102 @@
+type Mutation {
+  pipeline(input: PipelineRequestInput!): PipelineData! @aws_iam @aws_cognito_user_pools
+}
+
+type PipelineData @aws_iam @aws_cognito_user_pools {
+  Id: String!
+  PipelineStatus: String!
+  StatusUpdatedAt: String!
+  UserId: String
+  DataUploadedAt: String
+  PluginUploadedAt: String
+  ProcFinishedAt: String
+  DataImportedAt: String
+  TrainingFinishedAt: String
+  ForecastGeneratedAt: String
+  ForecastExportedAt: String
+  CleaningFinishedAt: String
+  DataGroupArn: String
+  PreProcessingId: String
+  RawDataSize: Int
+  RawDataUri: String
+  PluginScriptUri: String
+  TrainingDataUri: String
+  PredictorArn: String
+  ForecastArn: String
+  ModelDrift: Float
+  ExportJobArn: String
+  PostProcessingId: String
+  OriginalDatasetName: String
+  OriginalPluginName: String
+  DataCheckpoint: String
+  ErrorMessage: String
+  PipelineRetraining: Boolean
+}
+
+input PipelineRequestInput {
+  Id: String!
+  PipelineStatus: String!
+  StatusUpdatedAt: String!
+  UserId: String
+  DataUploadedAt: String
+  PluginUploadedAt: String
+  ProcFinishedAt: String
+  DataImportedAt: String
+  TrainingFinishedAt: String
+  ForecastGeneratedAt: String
+  ForecastExportedAt: String
+  CleaningFinishedAt: String
+  DataGroupArn: String
+  PreProcessingId: String
+  RawDataSize: Int
+  RawDataUri: String
+  PluginScriptUri: String
+  TrainingDataUri: String
+  PredictorArn: String
+  ForecastArn: String
+  ModelDrift: Float
+  ExportJobArn: String
+  PostProcessingId: String
+  OriginalDatasetName: String
+  OriginalPluginName: String
+  DataCheckpoint: String
+  ErrorMessage: String
+  PipelineRetraining: Boolean
+}
+
+type LocationData @aws_cognito_user_pools {
+  BatteryId: String!
+  Lng: String!
+  Lat: String!
+  Country: String!
+  City: String!,
+  VIN: String!
+}
+
+input LocationDataRequestInput {
+  BatteryId: String!
+  Lng: String!
+  Lat: String!
+  Country: String!
+  City: String!,
+  VIN: String!
+}
+
+type Query {
+  getPipelinesByUser(UserId: String!): [PipelineData!]
+    @aws_iam
+    @aws_cognito_user_pools
+  getPipelineById(Id: String!): PipelineData! @aws_iam @aws_cognito_user_pools
+  getPipelineByProcessingId(PostProcessingId: String!): [PipelineData!] @aws_iam @aws_cognito_user_pools
+  getLocationData: [LocationData] @aws_iam @aws_cognito_user_pools
+}
+
+type Subscription {
+  pipelineSub: PipelineData @aws_subscribe(mutations: ["pipeline"])
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}

@@ -1,0 +1,15 @@
+<div class="metric-container">
+    <div class="metric-info">
+        <span>{{metric.includes('SOH') ? 'State of Certified Energy' : 'Remaining Useful Life'}}</span>
+        <span>{{mValue}}%</span>
+    </div>
+    <div class="metric-bar">
+        <div class="metric-bar-line" [ngClass]="{'SOH': metric === 'SOH', 'FSOH': metric === 'FSOH', 'RUL': metric === 'RUL', 'FRUL': metric === 'FRUL'}">
+            <div class="metric-position-line"></div>
+            <div class="metric-position-icon"></div>
+        </div>
+    </div>
+    <div class="percent-markers">
+        <span>0%</span><span>50%</span><span>100%</span>
+    </div>
+</div>

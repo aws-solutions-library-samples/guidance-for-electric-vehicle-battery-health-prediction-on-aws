@@ -1,0 +1,43 @@
+<app-header *ngIf="!id"></app-header>
+<div class="tracker-container">
+    <div class="pipeline-info">
+        <div class="created-date" *ngIf="pipelineData">
+            <span>{{(pipelineData?.DataUploadedAt ?? pipelineData?.StatusUpdatedAt)| date: 'medium' : 'GMT'}}</span>
+            <span *ngIf="pipelineData?.OriginalDatasetName">{{pipelineData?.OriginalDatasetName}} | {{pipelineData?.OriginalPluginName}}</span>
+        </div>
+    </div>
+    <ul *ngIf="!showError && pipelineData" [ngStyle]="{'flex': pipelineData.ErrorMessage || showError ? 1 : 2}">
+        <li *ngFor="let step of availableSteps;" [ngClass]="{'disable-step': step.id > currentStep}">
+            <ng-container *ngIf="!step.hide">
+                <div class="progress-step-img">
+                    <img *ngIf="step.id <= currentStep" src="assets/images/tracker-step{{step.id}}.png">
+                    <img *ngIf="step.id > currentStep" src="assets/images/tracker-disabled-step{{step.id}}.png">
+                </div>
+                <div class="progress-bar">
+                    <hr [ngClass]="{'hide-bar': step.id === 1}">
+                    <img *ngIf="step.id < currentStep || currentStep === 8" src="assets/images/completed-step.png">
+                    <img *ngIf="step.id === currentStep && !pipelineData?.ErrorMessage && currentStep !== 8" class="animate-inprogress"
+                         src="assets/images/inprogress-step.png">
+                    <img *ngIf="step.id === currentStep && pipelineData?.ErrorMessage" src="assets/images/error-step.png">
+                    <img *ngIf="step.id > currentStep" src="assets/images/notstarted-step.png">
+                    <hr [ngClass]="{'hide-bar': step.id === 7, 'current-step': step.id === currentStep}">
+                </div>
+                <div class="progress-step-info">
+                    <h6>STEP {{step.id}}</h6>
+                    <h4>{{step.title}}</h4>
+                    <span class="step-timer" *ngIf="(step.id < currentStep) && !(step.id === 1 && pipelineData.PipelineRetraining)">{{calculateTime(step.id)}}</span>
+                </div>
+            </ng-container>
+        </li>
+    </ul>
+    <div class="error" *ngIf="showError">
+        <img src="assets/images/error-step.png" alt="Error Image">
+        <span>Something happened. Unable to access pipeline.</span>
+        <span>Please click on <strong>Pipeline Detail Page</strong> to check if the pipeline was created.</span>
+    </div>
+    <div class="error" *ngIf="pipelineData.ErrorMessage">
+        <img src="assets/images/error-step.png" alt="Error Image">
+        <span>{{pipelineData.ErrorMessage}}</span>
+    </div>
+</div>
+<app-footer *ngIf="!id"></app-footer>

@@ -1,0 +1,247 @@
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-stretch {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.breadcrumb-container {
+  margin: 3em 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  margin: 5em auto 2em auto;
+  border-radius: 8px;
+  justify-content: center;
+  align-items: center;
+  width: 60%;
+
+  .upload-stepper-container {
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      @include flex-stretch;
+
+      li {
+        @include flex-center;
+      }
+
+      hr {
+        height: 1px;
+        border: 1px;
+        background: #fff;
+        width: 160px;
+        margin: 0 1em;
+      }
+
+      .step {
+        @include flex-center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        background: #687078;
+        color: #fff;
+      }
+
+      .active {
+        background: #DE8909;
+      }
+
+      .step-text {
+        font-size: 14px;
+        color: #fff;
+        padding: 0 16px;
+      }
+    }
+  }
+
+  .upload-file-container {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    margin: 3em auto;
+    background: #2D343D;
+    border-radius: 8px;
+    justify-content: center;
+    align-items: center;
+    width: 50em;
+    border: 1px dashed #979797;
+  }
+}
+
+.upload-file-body {
+  flex: 2;
+  padding: 5em 0;
+  width: 50em;
+  min-height: 20em;
+  border-radius: 8px;
+
+  .file-tabs {
+    display: flex;
+    justify-content: center;
+
+    button {
+      margin: 0;
+
+      &:first-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      &:last-child {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+
+      &:hover {
+        background: #EC7211;
+        color: #fff;
+      }
+    }
+  }
+
+  .file-upload {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .upload-file-action {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    .upload-message-header {
+      font-size: 24px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+    }
+
+    .upload-drag-and-drop-text {
+      font-size: 14px;
+      color: #fff;
+      padding: 16px 0;
+
+      & > span.link {
+        color: #0073BB;
+        background: none;
+        cursor: pointer;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  .s3-direct-url, .default-plugin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 3em 0;
+
+    span {
+      padding: 2em 0;
+      font-size: 24px;
+    }
+  }
+
+  .success-msg {
+    font-size: 14px;
+    font-weight: 300;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.mat-form-field {
+  width: 275px !important;
+}
+
+.launch-pipeline {
+  margin: 5em 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  ul {
+    list-style: none;
+
+    li {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+
+      span {
+        margin: 8px;
+      }
+    }
+  }
+
+  .launch-msg {
+    position: relative;
+    margin: 3em 0;
+
+    .launch-message-header {
+      font-size: 24px;
+      color: #fff;
+    }
+
+    img {
+      position: absolute;
+      right: -100px;
+      top: -40px;
+    }
+  }
+}
+
+.upload-action {
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 72%;
+}
+
+.mat-form-field {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    .mat-icon {
+      color: #fff;
+    }
+  }
+}
+
+.s3-full-width {
+  width: 100% !important;
+}
+
+.single-btn-align {
+  justify-content: flex-end !important;
+}
+
+.drop-enter {
+  background: #1B1E20 !important;
+}

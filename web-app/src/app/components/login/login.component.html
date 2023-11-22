@@ -1,0 +1,16 @@
+<div class="login-container">
+    <div class="login-avatar">
+        <fa-icon [icon]="faLock"></fa-icon>
+    </div>
+    <h1 class="login-header">Sign in</h1>
+    <amplify-authenticator [hideSignUp]="true">
+        <ng-template amplifySlot="signIn"
+            let-user="user"
+            let-signOut="signOut">
+            <router-outlet></router-outlet>
+        </ng-template>
+    </amplify-authenticator>
+    <div class="copyright">
+        <h4>Copyright © 2023 Amazon Web Services, Inc. or its affiliates. All rights reserved.</h4>
+    </div>
+</div>

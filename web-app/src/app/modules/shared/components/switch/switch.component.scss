@@ -1,0 +1,32 @@
+.switch-container {
+  width: 48px;
+  height: 24px;
+  border-radius: 12px;
+  background: #2D343D;
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+
+  .switch-button {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    transition: all 0.1s linear;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .off {
+    background: #434A54;
+    left: 2px;
+  }
+
+  .on {
+    background: #008800;
+    left: 54%;
+  }
+}

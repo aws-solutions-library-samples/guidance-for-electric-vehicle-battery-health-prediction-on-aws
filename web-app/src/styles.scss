@@ -1,0 +1,473 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$ng_app-primary: mat.define-palette(mat.$indigo-palette);
+$ng_app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$ng_app-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$ng_app-theme: mat.define-light-theme((
+        color: (
+                primary: $ng_app-primary,
+                accent: $ng_app-accent,
+                warn: $ng_app-warn,
+        )
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($ng_app-theme);
+
+@import '~@aws-amplify/ui-angular/theme.css';
+
+:root {
+  --amplify-components-tabs-item-active-color: #FF9900;
+  --amplify-components-button-link-color: #FF9900;
+  --amplify-components-button-link-hover-color: #fff;
+  --amplify-components-button-link-hover-background-color: rgba(255, 153, 0, 0.6);
+  --amplify-components-button-primary-hover-background-color: #EC7211;
+  --amplify-components-button-primary-background-color: #FF9900;
+  --amplify-components-tabs-item-active-border-color: #FF9900;
+  --amplify-components-tabs-item-hover-color: #EC7211;
+  --amplify-components-button-hover-background-color: rgba(255, 153, 0, 0.3);
+  --amplify-components-fieldcontrol-hover-border-color: #FF9900;
+  --amplify-components-fieldcontrol-border-hover-color: #FF9900;
+  --amplify-components-authenticator-state-inactive-background-color: #eee;
+}
+
+* {
+  font-family: "Amazon Ember", Helvetica, sans-serif;
+}
+
+body {
+  height: 100vh;
+  background: #2D343D;
+  margin: 0;
+  color: #fff;
+}
+
+.amplify-field-group__outer-end button {
+  &:hover {
+    border-top: 1px solid #FF9900 !important;
+    border-right: 1px solid #FF9900 !important;
+    border-bottom: 1px solid #FF9900 !important;
+  }
+
+  svg {
+    color: #000 !important;
+  }
+}
+
+.icon-container {
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    background-color: rgb(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+button.upload-action-primary {
+  border-radius: 4px;
+  background: #FF9900;
+  color: #fff;
+  width: 137px;
+  height: 36px;
+  margin: 1em;
+  padding: 0 16px;
+  border: none;
+  font-size: 14px;
+
+  &:hover {
+    cursor: pointer;
+    background: #EC7211;
+  }
+}
+
+button.disabled-btn {
+  background: #AAB7B8;
+  color: #687078;
+  pointer-events: none;
+}
+
+button.upload-action-secondary {
+  border-radius: 4px;
+  border: 2px solid #FF9900;
+  color: #FF9900;
+  width: 137px;
+  height: 36px;
+  margin: 1em;
+  padding: 0 16px;
+  font-size: 14px;
+  background: none;
+
+  &:hover {
+    cursor: pointer;
+    border-color: #EC7211;
+    color: #EC7211;
+  }
+}
+
+button.upload-action-tertiary {
+  color: #FF9900;
+  border: none;
+  width: 137px;
+  height: 36px;
+  margin: 1em;
+  padding: 0 16px;
+  font-size: 14px;
+  background: none;
+
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    transition: all 0.2s;
+  }
+}
+
+button.upload-action-disabled {
+  border-radius: 4px;
+  background: #ddd;
+  color: #888;
+  height: 40px;
+  margin: 1em;
+  padding: 0 16px;
+  border: none;
+  font-size: 14px;
+  letter-spacing: 2px;
+  min-width: 100px;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.mat-select-theme, .mat-select-panel {
+  background: #2F3135 !important;
+}
+
+.mat-select-color, .mat-select-value-text, {
+  color: #fff;
+}
+
+.mat-option.mat-selected {
+  color: #FF9900 !important;
+}
+
+.mat-option:not(.mat-selected) {
+  color: #fff;
+}
+
+.mat-select-arrow {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 8px solid !important;
+  margin: 0 4px;
+  color: #fff;
+
+  &:active {
+    color: #FF9900;
+  }
+}
+
+.mat-form-field {
+  width: 250px;
+}
+
+.mat-form-field {
+  .mat-input-element {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 300;
+
+    &::placeholder {
+      color: #888;
+    }
+  }
+
+  .mat-form-field-label {
+    color: #fff;
+  }
+
+  .mat-form-field-underline {
+    background-color: #fff;
+  }
+
+  .mat-form-field-ripple {
+    background-color: #ff9900;
+  }
+
+  .mat-form-field-required-marker {
+    color: #ff9900;
+  }
+}
+
+.mat-form-field.mat-focused {
+  .mat-form-field-label {
+    color: #fff;
+  }
+
+  .mat-form-field-ripple {
+    background-color: #fff;
+  }
+
+  .mat-form-field-required-marker {
+    color: #fff;
+  }
+
+  .mat-input-element {
+    color: #fff;
+  }
+}
+
+.mat-form-field-flex {
+  background-color: #2F3135;
+  padding: 0.5em 1em;
+}
+
+.mat-checkbox-frame {
+  border-color: #6a6a6a;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
+  opacity: 0.03 !important;
+  background-color: #ff9900 !important;
+}
+
+.mat-checkbox-label {
+  font-size: 12px;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background, .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: #ff9900;
+}
+
+.maplibregl-popup-content .map-tooltip, .maplibregl-ctrl-bottom-right {
+  color: #000;
+
+  h4 {
+    margin: 0;
+  }
+}
+
+.map-tooltip {
+  h3 {
+    margin: 0;
+  }
+}
+
+.loc {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  left: 10px;
+  top: -10px
+}
+
+.pin.charging, .pin.not-charging, .pin.need-charging {
+  width: 40px;
+  height: 40px;
+  border-radius: 50% 50% 50% 0;
+  background: #1D8102;
+  margin: -20px 0 0 -20px;
+  animation-name: bounce;
+  animation-fill-mode: both;
+  animation-duration: 1s;
+
+  &::after {
+    content: '';
+    width: 100%;
+    height: 100%;
+    margin: 8px 0 0 8px;
+    background-image: url(/assets/images/charging.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    transform: rotate(45deg);
+    left: -7px;
+    top: -10px;
+  }
+}
+
+.pin.not-charging {
+  background: #545B64;
+
+  &::after {
+    background-image: url(/assets/images/not-charging.png);
+  }
+}
+
+.pin.need-charging {
+  background: #FFAA00;
+
+  &::after {
+    background-image: url(/assets/images/need-charging.png);
+  }
+}
+
+.pulse {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  height: 14px;
+  width: 14px;
+  margin: 11px 0px 0px -12px;
+  transform: rotateX(55deg);
+  z-index: -2;
+  position: absolute;
+  left: 5px;
+  top: 12px;
+
+  &::after {;
+    content: "";
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    position: absolute;
+    margin: -13px 0 0 -13px;
+    animation: pulsate 1s ease-out;
+    animation-iteration-count: infinite;
+    opacity: 0.0;
+    box-shadow: 0 0 1px 2px #89849b;
+    animation-delay: 1.1s;
+  }
+}
+
+.battery-charge-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+
+  h6 {
+    margin: 4px;
+    font-size: 8px;
+  }
+
+  & > span {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 60px;
+
+    img {
+      width: 17px;
+      height: 24px;
+    }
+
+    span {
+      font-size: 14px;
+    }
+  }
+}
+
+.pop-in-out-icon-container {
+  display: flex;
+  align-items: center;
+
+  h3 {
+    font-size: 18px;
+  }
+
+  img {
+    width: 20px;
+    height: 20px;
+    margin: 0 8px;
+    cursor: pointer;
+
+    &:last-child {
+      visibility: hidden;
+    }
+  }
+}
+
+.error-message-container {
+  display: flex;
+  padding: 1em 2em;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 -5px 5px -3px rgb(0 0 0 / 50%), 0px -8px 10px 1px rgb(0 0 0 / 30%), 0px -3px 14px 2px rgb(0 0 0 / 10%);
+  top: 60px;
+  height: 50px;
+  position: fixed;
+  width: 100%;
+  color: #000;
+
+  img {
+    width: 25px;
+    height: 25px;
+    margin: 0 1em;
+  }
+
+  .error-message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    span {
+      font-size: 12px;
+    }
+  }
+}
+
+
+@keyframes pulsate {
+  0% {
+    transform: scale(0.1, 0.1);
+    opacity: 0.0;
+  }
+  50% {
+    opacity: 1.0;
+  }
+  100% {
+    transform: scale(1.2, 1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes bounce {
+  0% {
+    opacity: 0;
+    transform: translateY(-2000px) rotate(-45deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(30px) rotate(-45deg);
+  }
+  80% {
+    transform: translateY(-10px) rotate(-45deg);
+  }
+  100% {
+    transform: translateY(0) rotate(-45deg);
+  }
+}

@@ -1,0 +1,298 @@
+<app-header>
+    <div class="error-message-container" *ngIf="showError">
+        <img src="assets/images/error-step.png" alt="info icon">
+        <div class="error-message">
+            <span>Unable to retrieve battery details. Please try again later.</span>
+        </div>
+    </div>
+</app-header>
+<div class="map-container" *ngIf="batteries?.length && !selectedBattery">
+    <app-map [batteries]="batteries" (batterySelectionEmitter)="updateBatteryData($event)" (mapCreationEmitter)="showSpinner = !$event"></app-map>
+</div>
+<div class="retrain-message-container" *ngIf="selectedBattery && battery && showRetrainMessage">
+    <img src="assets/icons/info.png" alt="info icon">
+    <div class="retrain-message">
+        <span>Pipline is retraining. This dashboard will be updated with new data once retraining is completed.</span>
+        <span (click)="showPipelineStatus = true">View retraining status</span>
+    </div>
+</div>
+<div class="dashboard-container" *ngIf="selectedBattery && battery" [ngStyle]="{'padding-top': !showRetrainMessage ? '2.5em': '0'}">
+    <div class="battery-info-container">
+        <app-breadcrumb [text]="'Battery Digital Twin'" [clickHandler]="reset()"></app-breadcrumb>
+        <div class="battery-pack-info">
+            <div class="battery-info">
+                <div class="cell-details">
+                    <div class="cell-details-header">
+                        <h3>{{battery?.batteryName | uppercase}}
+                            <img src="/assets/icons/info.png" alt="Battery details" width="15" height="15" style="cursor:pointer;" (click)="showBatteryInfo = !showBatteryInfo"/>
+                        </h3>
+                        <h4>{{ battery?.numberOfModules }} Modules</h4>
+                    </div>
+                    <div class="cell-info">
+                        <div *ngFor="let module of modules; let idx = index"
+                             [ngClass]="{'medium': battery?.modulesUnderWarning?.includes(idx + 1), 'low': battery?.modulesNeedAttention?.includes(module)}"
+                             (mouseenter)="moduleId = idx"
+                             (mouseleave)="moduleId = undefined">
+                            <div class="tool-tip" *ngIf="moduleId === idx">
+                                <span>Module {{idx + 1}}</span>
+                                <span>Cells: 8</span>
+                                <span>Voltage: 3 v</span>
+                                <span>Current: 1.2 A</span>
+                                <span>Temperature: 98°F</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="charging-info-container" *ngIf="chargingChartOptions">
+                        <div class="charging-time">
+                            <div class="charging-details-header">
+                                <div class="title">
+                                    <h3>Charging</h3>
+                                    <app-switch (click)="charging = !charging" [currentState]="charging"></app-switch>
+                                </div>
+                                <span style="font-size: 10px; opacity: 0.6" *ngIf="charging">Charging Current {{ battery?.chargingDetails?.chargingCurrent }}</span>
+                            </div>
+                            <div class="charging" *ngIf="charging">
+                                <img src="assets/icons/charging-time.png" alt="Charging Time" width="15" height="24">
+                                <div style="margin-left: 1em">
+                                    <span style="font-size: 10px; margin: 0;">Total Charging Time</span>
+                                    <span style="font-size: 18px;"> &nbsp;{{battery?.chargingDetails?.totalChargingTime}}</span>
+                                </div>
+                            </div>
+                            <div class="charging" *ngIf="!charging">
+                                <span style="font-size: 10px; margin: 0;  opacity: 0.6">Last Charged {{ lastChargedDate | date : "longDate" }}</span>
+                            </div>
+                        </div>
+                        <div class="charging-station">
+                            <div class="charging-station-header" *ngIf="charging">
+                                <span style="font-size: 10px; margin: 0;">Charge time to Target</span>
+                                <span style="font-size: 18px;"> &nbsp;{{battery?.chargingDetails?.chargingTimeToTarget}}</span>
+                            </div>
+                            <div class="active-charging-container" *ngIf="charging">
+                                <div class="target-marker" (click)="resetChargingTarget = true">
+                                    <div class="target-marker-content">
+                                        <span class="target-marker-text">Target {{ chargingTarget }}%</span>
+                                        <div class="target-marker-triangle"></div>
+                                    </div>
+                                    <hr class="target-marker-line"/>
+                                </div>
+                                <div class="charging-images">
+                                    <div class="charging-animation"></div>
+
+                                    <img src="assets/images/charge-station.png" width="250"/>
+                                </div>
+                            </div>
+                            <span *ngIf="charging" style="font-size: 10px; opacity: 0.6; margin-left: 3em;">Charging Voltage 238v</span>
+                            <div class="inactive-charging-container" *ngIf="!charging">
+                                <img src="assets/images/charge-station-disabled.png" height="120" width="120"/>
+                                <h2 style="margin: 0; padding: 1em; color: #2D343D;">Plug vehicle to start charging</h2>
+                            </div>
+                            <div class="charging-station-footer" *ngIf="charging">
+                                <h3>{{ battery?.chargingDetails?.chargingPercent }} Charged</h3>
+                            </div>
+                        </div>
+                        <div class="charge-details">
+                            <div class="charging-station-header">
+                                <h3 style="margin: 0;">Charge Details</h3>
+                                <span style="font-size: 10px; opacity: 0.6; margin: 0;">Fast Charge Duration {{battery?.chargingDetails?.fastChargingDuration}}</span>
+                            </div>
+                            <div class="detail-groups">
+                                <highcharts-chart [Highcharts]="highcharts"
+                                                  [options]="chargingChartOptions"
+                                                  [callbackFunction]="fastChargeChartCallback"
+                                                  style="width: 180px; height: 180px; display: block;"
+                                ></highcharts-chart>
+                                <div class="charge-details-info">
+                                    <div class="charge-type">
+                                        <h5>Charge Type</h5>
+                                        <div>
+                                            <div class="legend charge-type-fast1"></div>
+                                            <span>Fast Charge (350kW)</span>
+                                        </div>
+                                        <div>
+                                            <div class="legend charge-type-fast2"></div>
+                                            <span>Fast Charge (150kW)</span>
+                                        </div>
+                                        <div>
+                                            <div class="legend charge-type-l1"></div>
+                                            <span>L1 (350kW)</span>
+                                        </div>
+                                        <div>
+                                            <div class="legend charge-type-30"></div>
+                                            <span>L2 (11kW)</span>
+                                        </div>
+                                    </div>
+                                    <div class="charge-times">
+                                        <h5>Times</h5>
+                                        <span>{{ battery?.chargingDetails?.numberOfFastCharges1 }}</span>
+                                        <span>{{ battery?.chargingDetails?.numberOfFastCharges2 }}</span>
+                                        <span>{{ battery?.chargingDetails?.numberOfL1 }}</span>
+                                        <span>{{ battery?.chargingDetails?.numberOfL2 }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="battery-metrics">
+                <div class="driving-details">
+                    <div style="padding: 0 1em">
+                        <h4>Driving Details</h4>
+                        <span style="font-size: 10px; opacity: 0.6;">Odometer {{ battery?.drivingDetails?.odometer }}</span>
+                    </div>
+                    <div class="car-details">
+                        <div class="car-details-groups">
+                            <div class="car-details-group">
+                                <img src="assets/icons/car.png" width="32" height="15" alt="Driving score icon">
+                                <div class="details-section">
+                                    <h6>Driving Score</h6>
+                                    <span>{{battery?.drivingDetails?.drivingScore}}<span class="sup">%</span></span>
+                                </div>
+                            </div>
+                            <div class="car-details-group">
+                                <img src="assets/icons/temperature.png" height="20" alt="Car Ambient Temperature">
+                                <div class="details-section">
+                                    <h6>Ambient Temperature</h6>
+                                    <span>{{battery?.drivingDetails?.ambientTemperature}}<span class="sup">°F</span></span>
+                                </div>
+                            </div>
+                            <div class="car-details-group">
+                                <img src="assets/icons/steering-wheel.png" alt="Steering Wheel" width="20" height="20">
+                                <div class="details-section">
+                                    <h6>Range</h6>
+                                    <span>{{battery?.drivingDetails?.range}}<span class="sup">km</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="safety-details">
+                    <div class="safety-control">
+                        <div>
+                            <h4>Safety & Control</h4>
+                            <span style="font-size: 10px; opacity: 0.6">Select the control you would like to apply</span>
+                        </div>
+                        <div class="safety-switch">
+                            <span>Cell Balancing</span>
+                            <app-switch (click)="cellBalancing = !cellBalancing" [currentState]="cellBalancing"></app-switch>
+                        </div>
+                        <div class="safety-switch">
+                            <span>Start Cooling</span>
+                            <app-switch (click)="startCooling = !startCooling" [currentState]="startCooling"></app-switch>
+                        </div>
+                        <div class="safety-switch">
+                            <span>Start Heating</span>
+                            <app-switch (click)="startHeating = !startHeating" [currentState]="startHeating"></app-switch>
+                        </div>
+                    </div>
+                    <div class="fault-detection" style="padding: 1.5em">
+                        <h4 style="display: flex; justify-content: space-between"><span>Fault Detection</span></h4>
+                        <div class="highchart-groups">
+                            <div class="fd-label" *ngFor="let label of faultDetections">
+                                <span>{{ label }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span style="font-size: 10px; width: 100%; text-align: left;">BMS Version</span>
+        </div>
+    </div>
+    <div class="battery-health-container">
+        <div class="bhp-section-header">
+            <span>Battery Health Prediction</span>
+            <button *ngIf="snoozedRetrain && !pipelineData?.PipelineRetraining" class="upload-action-primary" (click)="retrainPipeline()">Retrain</button>
+        </div>
+        <div class="charts-container">
+            <div class="chart-container" [ngClass]="{'popout-chart': popout}">
+                <div id="highchart-container" class="highchart-container">
+                    <highcharts-chart *ngIf="linechartDark"
+                                      [Highcharts]="highcharts"
+                                      [options]="linechartDark"
+                                      [callbackFunction]="chartCallback"
+                                      style="display: block;"
+                    ></highcharts-chart>
+                </div>
+                <div class="chart-actions" [ngStyle]="{'top': popout ? '120px' : '10px', 'right': popout ? '100px' :  '30px'}">
+                    <button class="upload-action-tertiary" (click)="startStreaming();">
+                        <img src="assets/icons/play.png" alt="Play Button" *ngIf="!startedStream">
+                        <img src="assets/icons/pause.png" alt="Play Button" *ngIf="startedStream">
+                        <span style="padding: 0 0.5em">{{startedStream ? 'Pause' : 'Play'}}</span>
+                    </button>
+                </div>
+                <div class="model-drift" *ngIf="showDrift" [ngStyle]="{'left': popout ? '10%' :  '20%'}">
+                    <h4>Model Drift</h4>
+                    <span>{{drift | number:'1.0-2'}}%</span>
+                </div>
+            </div>
+            <div class="battery-cell-info">
+                <div class="projections">
+                    <app-indicator [metric]="'FSOH'" [mValue]="forecastedSOH"></app-indicator>
+                    <app-battery-charge [metric]="'FSOC'" [mValue]="forecastedStateOfCharge" [overrideCss]="'soc-predictions'"></app-battery-charge>
+                    <app-battery-charge [metric]="'FRUL'" [mValue]="forecastedRUL" [overrideCss]="'soc-predictions'"></app-battery-charge>
+                </div>
+                <div class="recommendations">
+                    <span style="font-size: 12px;">Expected End of Life</span>
+                    <div style="display: flex; justify-content: space-between">
+                        <div class="expected-eol">
+                            <span class="eol-rul">
+                                <img src="assets/icons/empty-battery.png" alt="Empty Battery Icon">{{battery?.expectedEOL | number: '1.0':'en-US'}} <span>&nbsp;Cycles</span>
+                            </span>
+                        </div>
+                        <div class="state-of-health">
+                            <span>{{ eolDate | date:"longDate" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="charging-target-modal" *ngIf="resetChargingTarget">
+    <div class="charging-target-container">
+        <div class="charging-target-header">
+            <span>Set Charging Target</span>
+        </div>
+        <div class="charging-target-body">
+            <mat-form-field class="input-full-width">
+                <input type="input" matInput [(ngModel)]="chargingTarget">
+            </mat-form-field>
+        </div>
+        <div class="charging-target-action">
+            <button class="upload-action-secondary" (click)="cancelChargingTarget()">Cancel</button>
+            <button class="upload-action-primary" (click)="setChargingTarget()">Save</button>
+        </div>
+    </div>
+</div>
+<div class="retrain-pipeline-modal" *ngIf="selectedBattery && retrain">
+    <div class="retrain-pipeline">
+        <div class="retrain-header">
+            <span>Confirm</span>
+        </div>
+        <div class="retrain-body">
+            <h5>It's time to retrain the pipeline.</h5>
+            <h4>Do you want to start with the re-training now? </h4>
+        </div>
+        <div class="retrain-action">
+            <button class="upload-action-secondary" (click)="snoozedRetrain = true; retrain = false;">Cancel</button>
+            <button class="upload-action-primary" (click)="retrainPipeline()">Retrain</button>
+        </div>
+    </div>
+</div>
+<div class="retrain-pipeline-status-modal" *ngIf="showPipelineStatus">
+    <div class="retrain-pipeline-container">
+        <div class="retrain-header">
+            <span>Pipeline Status</span>
+            <img src="assets/icons/close.png" alt="close icon" (click)="showPipelineStatus = false;">
+        </div>
+        <div class="retrain-body">
+            <app-tracker [id]="pipelineId" (completionNotifier)="showPipelineStatus = false; reset()()"></app-tracker>
+        </div>
+        <div class="retrain-action">
+            <button class="upload-action-secondary" (click)="showPipelineStatus = false;">Cancel</button>
+        </div>
+    </div>
+</div>
+<app-footer></app-footer>
+<app-spinner [displayText]="displayText" *ngIf="showSpinner"></app-spinner>
+<app-battery-info [battery]="battery" [visible]="showBatteryInfo" (notifyInfoPanelClose)="showBatteryInfo = $event"></app-battery-info>
