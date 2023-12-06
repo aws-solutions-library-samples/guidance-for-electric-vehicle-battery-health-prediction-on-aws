@@ -68,4 +68,13 @@ export class DataService {
     refreshBatteryHealth(battery: string) {
         return this.http.post<any>(`${this.API_URL}/api/refresh?battery=${battery}`,null);
     }
+
+    getFaults(batteryId: string): Observable<any> {
+        return this.http.get<any>(`${this.EATRON_API_URL}/batteries/${batteryId}/faults`, {
+            headers: new HttpHeaders({
+                "Authorization": "Bearer " + localStorage.getItem("eatron_token"),
+                "accept": "application/json"
+            }),
+        });
+    }
 }
