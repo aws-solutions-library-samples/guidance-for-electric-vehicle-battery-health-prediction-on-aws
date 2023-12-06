@@ -22,6 +22,7 @@ import {Observable} from "rxjs";
 })
 export class DataService {
     API_URL: string = "";
+    EATRON_API_URL = "";
 
     constructor(private http: HttpClient) {
         if (environment.development && environment.API_GW_URL!= "") {
@@ -29,6 +30,9 @@ export class DataService {
         } else {
             this.API_URL = environment.NG_APP_API;
         }
+
+        // this.EATRON_API_URL = "https://cloud.dev.eatron.com/bmc/v2";
+        this.EATRON_API_URL = "http://localhost:4000/bmc/v2";
     }
 
     getSignedUrl(key: string): Observable<any> {

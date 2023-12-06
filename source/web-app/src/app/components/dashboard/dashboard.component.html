@@ -202,8 +202,8 @@
                         </h4>
                         <div class="highchart-groups">
                             <div *ngFor="let item of faultDetections | keyvalue">
-                                <div class="fd-label {{item.value['state']}}"
-                                    (click)="showFaultHistory(item.value['title'],item.value['state']);">
+                                <div class="fd-label {{item.value['state']}} fault-tile"
+                                    (click)="showFaultHistory(item.value['title'],item.value['state'],item.key);">
                                     <span>{{item.value['title']}}</span>
                                 </div>
                             </div>
@@ -294,21 +294,17 @@
         <div class="charging-target-header">
             <span>{{ faultDetectionTitle }} History</span>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Time</th>
-                    <th>Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of faultHistory">
-                    <td>{{ item[0] | date : 'yyyy-MM-dd HH:mm:ss'}}</td>
-                    <td>{{ item[1] }}</td>
-                </tr>
-                
-            </tbody>
-        </table>
+
+        <div *ngIf="isFaultsBatchData">
+            {{ faultStatistics.occurences }}
+            {{ faultStatistics.period }}
+        </div>
+
+        <div *ngIf="!isFaultsBatchData">
+            <highcharts-chart *ngIf="faultLineChartOptions" [Highcharts]="highcharts" [options]="faultLineChartOptions"
+                [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
+        </div>
+
         <div class="retrain-action">
             <button class="upload-action-secondary" (click)="showFaultDetectionDetails = false;">Close</button>
         </div>

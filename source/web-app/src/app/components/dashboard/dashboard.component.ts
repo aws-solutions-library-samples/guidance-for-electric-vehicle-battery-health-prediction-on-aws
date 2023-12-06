@@ -107,6 +107,11 @@ export class DashboardComponent implements OnInit {
     batteryVoltages: number[] = [];
     batteryTemperature: number[] = [];
     faultHistory: any[any] = []
+    isFaultsBatchData = false;
+    faultData: any = {};
+    currentFaultData: any = {};
+    faultLineChartOptions: any = {};
+    faultStatistics: any = {};
     faultDetections = {
         "AcceleratedAging": {
             "title": "Accelerated Aging",
@@ -511,8 +516,9 @@ export class DashboardComponent implements OnInit {
         this.displayText = 'Loading Dashboard...';
         // const initialFaultDetections = this.initialFaultDetections
         // this.faultDetections = initialFaultDetections;
-        this.faultDetections["OverTemp"]["state"] = "green";
-        this.faultDetections["Overvoltage"]["state"] = "green";
+
+        this.getFaultDetections(batteryInfo.BatteryId);
+
         this.showSpinner = true;
         this.showError = false;
         this.selectedBattery = batteryInfo.BatteryId;
@@ -553,6 +559,19 @@ export class DashboardComponent implements OnInit {
         this.stopStreaming();
         this.setBatteryVoltageTemp();
         // this.vehicleSubscribe();
+    }
+
+    getFaultDetections(batteryId: string) {
+        this.dataService.getFaults(batteryId).subscribe({
+            next: (data: any[]) => {
+                this.faultData = data;
+
+                data.forEach((fault: any) => {
+                    const faultName: string = fault.name;
+                    this.faultDetections[faultName as keyof typeof this.faultDetections]["state"] = fault.state;
+                })
+            }
+        });
     }
 
     updateFaultDetection() {
@@ -790,31 +809,99 @@ export class DashboardComponent implements OnInit {
         this.eolDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + numberOfCyclesLeft);
     }
 
-    showFaultHistory(faultType: string, state: string) {
-        var tstamp = (new Date()).getTime();
-        let fault_history_array = [];
-        for (let i = 0; i < 10; i++) {
-            if (faultType == "Over Temp") {
-                fault_history_array.push([
-                    new Date(tstamp - i * 15000),
-                    this.getRandomInt(20, 55)
-                ]);
-            }
-            else if (faultType == "Over Voltage") {
-                fault_history_array.push([
-                    new Date(tstamp - i * 15000),
-                    this.getRandomFloat(2.2, 5, 2)
-                ]);
-            } else {
-                fault_history_array.push([
-                    new Date(tstamp - i * 15000),
-                    this.getRandomInt(3, 20)
-                ]);
-            }
+    showFaultHistory(faultType: string, state: string, faultKey: string) {
+        this.isFaultsBatchData = faultKey === 'ThermalEnergy';
+
+        this.currentFaultData = this.faultData.find((fault: any) => fault.name === faultKey);
+        // populate highchart option property of this component - realTimeFaultHistory
+
+        !this.isFaultsBatchData && this.setFaultLineChartOptions(this.currentFaultData.data);
+
+        if (this.isFaultsBatchData) {
+            this.faultStatistics = this.currentFaultData.statistics;
         }
-        this.faultHistory = fault_history_array;
+
         this.faultDetectionTitle = faultType;
         this.showFaultDetectionDetails = true;
+    }
+
+    private setFaultLineChartOptions(data: any[]) {
+        console.log(data);
+        
+        this.faultLineChartOptions = {
+            series: [
+                {
+                    data: data,
+                    color: '#38EF7D',
+                    name: 'Voltage',
+                    type: 'line'
+                },
+            ],
+            chart: {
+                type: 'line',
+                backgroundColor: '#2D343D',
+                zoomType: 'x',
+                panning: true,
+                panKey: 'shift',
+                reflow: false,
+            },
+            colorAxis: [{
+                gridLineColor: '#e6e6e6'
+            }],
+            title: {
+                text: '',
+                style: {
+                    fontSize: 24,
+                    textAlign: 'left',
+                    color: 'white',
+                },
+                useHTML: true,
+                align: 'left',
+            },
+            credits: {
+                enabled: false
+            },
+            yAxis: {
+                labels: {
+                    style: {
+                        color: '#fff'
+                    },
+                },
+                title: {
+                    text: 'Battery (V)',
+                    style: {
+                        color: '#fff'
+                    }
+                },
+                gridLineColor: '#888',
+                gridLineWidth: 1,
+            },
+            xAxis: {
+                type: 'datetime',
+                labels: {
+                    style: {
+                        color: '#fff'
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: '#2D343D',
+                style: { color: '#fff' },
+                //@ts-ignore
+                formatter: function () {
+                    // @ts-ignore
+                    const x: any = this.x;
+                    // @ts-ignore
+                    const y: any = this.y;
+                    if (x && y) {
+                        return `<div><strong>Timestamp: </strong>${x}</div><div><strong>Sensor value:</strong> ${y}%</div>`
+                    } else {
+                        return;
+                    }
+                },
+                useHTML: true
+            }
+        };
     }
 
     async vehicleSubscribe() {
