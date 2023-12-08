@@ -25,6 +25,8 @@ import SolidGauge from 'highcharts/modules/solid-gauge';
 import HC_more from "highcharts/highcharts-more";
 import { Auth } from "aws-amplify";
 
+import { WebsocketService } from '../../services/websocket.service';
+
 AnnotationsModule(Highcharts);
 HC_more(Highcharts);
 SolidGauge(Highcharts);
@@ -245,11 +247,13 @@ export class DashboardComponent implements OnInit {
     startCooling = true;
     startHeating = false;
     eolDate: Date | undefined;
+    receivedMessage= "";
 
     constructor(private apiService: APIService,
         private dataService: DataService,
         private activatedRoute: ActivatedRoute,
-        private router: Router) {
+        private router: Router,
+        private websocketService: WebsocketService) {
         this.activatedRoute.queryParams.subscribe((params: any) => {
             if (params.uuid) {
                 this.pipelineId = params.uuid;
@@ -258,6 +262,12 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.websocketService.connect();
+        this.websocketService.receiveMessage().subscribe((message: any) => {
+            this.receivedMessage = message;
+            console.log(message);
+        }
+        );
         Auth.currentUserInfo().then(user => {
             this.username = user.username.split('@')[0];
             if (!this.pipelineId) {

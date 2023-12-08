@@ -49,6 +49,12 @@ import { TabsComponent } from './components/pipeline/components/tabs/tabs.compon
 import { PluginSelectionComponent } from './components/pipeline/components/plugin-selection/plugin-selection.component';
 import { BatteryInfoComponent } from './components/dashboard/components/battery-info/battery-info.component';
 
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { WebsocketService } from './services/websocket.service';
+
+const config: SocketIoConfig = { url: 'ws://localhost:3500', options: {} };
+
+
 function getMapInfo(config: any) {
     const geo: any = {
             AmazonLocationService: {
@@ -140,6 +146,7 @@ function appInitializer(metadataService: ConfigService, authService: AuthService
         MatIconModule,
         MatPaginatorModule,
         MatCheckboxModule,
+        SocketIoModule.forRoot(config)
     ],
     providers: [
         {
@@ -149,6 +156,7 @@ function appInitializer(metadataService: ConfigService, authService: AuthService
             deps: [ConfigService, AuthService],
         },
         {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+        WebsocketService
     ],
     bootstrap: [AppComponent],
 })
