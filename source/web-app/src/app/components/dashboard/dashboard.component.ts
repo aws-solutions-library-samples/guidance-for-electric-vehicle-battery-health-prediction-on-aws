@@ -927,4 +927,7 @@ export class DashboardComponent implements OnInit {
             }
         })
     }
+    navigateToAnalytics() {
+        this.router.navigate(['/analytics', this.selectedBattery]);
+      }
 }
