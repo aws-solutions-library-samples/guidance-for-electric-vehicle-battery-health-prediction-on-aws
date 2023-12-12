@@ -77,4 +77,22 @@ export class DataService {
             }),
         });
     }
+
+    getAnalyticsForVehicle(batteryId: string) {
+        return [[1,1], [2,2], [3,3], [4,1], [5,2], [6,3]];
+        //return this.http.get<any>(`${this.EATRON_API_URL}/batteries/${batteryId}/faults`, {
+        //});
+    }
+
+    getAnalyticsForBattery(batteryId: string) {
+        return [[1,6], [2,2], [3,1], [4,6], [5,2], [6,1]];
+        //return this.http.get<any>(`${this.EATRON_API_URL}/batteries/${batteryId}/faults`, {
+        //});
+    }
+
+    getAnalyticsForCell(batteryId: string) {
+        return [[1,1], [2,5], [3,3], [4,1], [5,5], [6,3]];
+        //return this.http.get<any>(`${this.EATRON_API_URL}/batteries/${batteryId}/faults`, {
+        //});
+    }
 }
