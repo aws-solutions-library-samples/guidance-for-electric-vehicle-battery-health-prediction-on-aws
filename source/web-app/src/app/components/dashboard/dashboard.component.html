@@ -6,6 +6,7 @@
         </div>
     </div>
 </app-header>
+<router-outlet></router-outlet>
 <div class="map-container" *ngIf="batteries?.length && !selectedBattery">
     <app-map [batteries]="batteries" (batterySelectionEmitter)="updateBatteryData($event)"
         (mapCreationEmitter)="showSpinner = !$event"></app-map>
@@ -29,6 +30,7 @@
                             <img src="/assets/icons/info.png" alt="Battery details" width="15" height="15"
                                 style="cursor:pointer;" (click)="showBatteryInfo = !showBatteryInfo" />
                         </h3>
+                        <button (click)="navigateToAnalytics()">See analytics</button>
                         <h4>{{ dtc_message }}</h4>
                         <h4>{{ battery?.numberOfModules }} Modules</h4>
                     </div>
