@@ -22,6 +22,8 @@ import {LoginComponent} from "./components/login/login.component";
 import {TrackerComponent} from "./components/tracker/tracker.component";
 import {HistoryComponent} from "./components/history/history.component";
 import {PersonaGuard} from "./guards/persona.guard";
+import {AnalyticsComponent} from "./components/dashboard/components/analytics/analytics.component";
+
 
 const routes: Routes = [
     {
@@ -56,6 +58,11 @@ const routes: Routes = [
         path: "history",
         component: HistoryComponent,
         pathMatch: "full",
+        canActivate: [AuthGuard, PersonaGuard],
+    },
+    {
+        path: "analytics/:id",
+        component: AnalyticsComponent,
         canActivate: [AuthGuard, PersonaGuard],
     },
 ];
