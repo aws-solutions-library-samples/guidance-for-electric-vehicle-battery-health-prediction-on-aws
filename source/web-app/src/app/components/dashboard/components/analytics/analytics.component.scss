@@ -1,0 +1,70 @@
+.select-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 20%;
+}
+
+.charts-container {
+  text-align: center;
+  display: flex;
+}
+
+.graph-container {
+  flex: 1;
+  margin: 1%;
+  padding: 2%;
+  border-radius: 2%;
+  border: 0.2em solid #434A54;
+  box-shadow: 0 0.2em 0.4em rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.legend {
+  color: #ababab;
+}
+
+.custom-dropdown {
+  z-index: 1000;
+  margin: 1%;
+  background-color: #434A54;
+  color: white;
+  border-radius: 5px;
+  overflow: hidden;
+  padding: 1%;
+}
+
+.time-picker-container {
+  display: flex;
+  margin: 1%;
+  justify-content: center;
+}
+  
+.time-picker input[type="datetime-local"] {
+  z-index: 1000;
+  background-color: #434A54;
+  color: #fff;
+  border: 0.1em solid #888;
+  border-radius: 5px;
+  padding: 1%;
+  margin-right: 3%;
+  margin-left: 2%;
+  width: 60%;
+  box-sizing: border-box;
+}
+
+.label {
+  justify-content: center;
+  margin-top: 1%;
+}
+
+.title-container {
+  margin-top: 5%;
+  margin-bottom: 1%;
+  background-color: #434A54;
+  box-shadow: 0 0.2em 0.4em rgba(0, 0, 0, 0.5);
+  padding: 0.1%;
+  text-align: center;
+  width: 100%;
+}
