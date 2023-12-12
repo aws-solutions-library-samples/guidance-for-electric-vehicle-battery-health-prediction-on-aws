@@ -21,6 +21,7 @@ export class WebsocketService {
   }
 
   receiveMessage() {
+    console.log("receiveMessage");
     // Listen for incoming messages from the WebSocket server
     return this.socket.fromEvent('message');
   }

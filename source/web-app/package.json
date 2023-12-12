@@ -36,7 +36,7 @@
     "highcharts-annotations": "^1.3.3",
     "maplibre-gl": "^2.4.0",
     "maplibre-gl-js-amplify": "^3.0.2",
-    "ngx-socket-io": "^4.6.1",
+    "ngx-socket-io": "^4.3.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "uuid": "^9.0.0",

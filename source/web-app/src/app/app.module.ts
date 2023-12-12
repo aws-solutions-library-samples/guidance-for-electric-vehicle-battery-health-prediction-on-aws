@@ -52,7 +52,7 @@ import { BatteryInfoComponent } from './components/dashboard/components/battery-
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { WebsocketService } from './services/websocket.service';
 
-const config: SocketIoConfig = { url: 'ws://localhost:3500', options: {} };
+const config: SocketIoConfig = { url: 'localhost:3500', options: {} };
 
 
 function getMapInfo(config: any) {

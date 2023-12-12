@@ -263,11 +263,6 @@ export class DashboardComponent implements OnInit {
 
     ngOnInit(): void {
         this.websocketService.connect();
-        this.websocketService.receiveMessage().subscribe((message: any) => {
-            this.receivedMessage = message;
-            console.log(message);
-        }
-        );
         Auth.currentUserInfo().then(user => {
             this.username = user.username.split('@')[0];
             if (!this.pipelineId) {
@@ -582,6 +577,16 @@ export class DashboardComponent implements OnInit {
                 })
             }
         });
+        this.websocketService.receiveMessage().subscribe((message: any) => {
+            this.receivedMessage = message;
+            if (this.receivedMessage.includes("Overcurrent")) {
+                this.faultDetections["Overcurrent"]["state"] = "danger";
+            } else {
+                this.faultDetections["Overcurrent"]["state"] = "green";
+            }
+            console.log(message);
+        }
+        );
     }
 
     updateFaultDetection() {
