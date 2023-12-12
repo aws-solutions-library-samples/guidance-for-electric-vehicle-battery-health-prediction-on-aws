@@ -30,7 +30,7 @@
                             <img src="/assets/icons/info.png" alt="Battery details" width="15" height="15"
                                 style="cursor:pointer;" (click)="showBatteryInfo = !showBatteryInfo" />
                         </h3>
-                        <button (click)="navigateToAnalytics()">See analytics</button>
+                        <button (click)="navigateToAnalytics()" class="analytics-button">See Analytics</button>
                         <h4>{{ dtc_message }}</h4>
                         <h4>{{ battery?.numberOfModules }} Modules</h4>
                     </div>

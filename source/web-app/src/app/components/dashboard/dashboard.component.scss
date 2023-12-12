@@ -921,3 +921,21 @@
 .fault-tile {
   cursor: pointer;
 }
+
+.analytics-button {
+  display: inline-block;
+  background-color: green;
+  color: #fff;
+  min-width: 120px;
+  max-width: 120px;
+  border: 2px solid #fff;
+  border-radius: 16px;
+  height: 26px;
+  font-size: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 2%;
+  margin-right: auto;
+  margin-bottom: 1%;
+}
