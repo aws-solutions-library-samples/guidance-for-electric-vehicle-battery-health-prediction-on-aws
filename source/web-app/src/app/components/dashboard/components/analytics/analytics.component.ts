@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import Highcharts from "highcharts";
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from "../../../../services/data.service";
+import { time } from "console";
 
 interface VehicleData {
     bucket: string;
@@ -67,12 +68,10 @@ export class AnalyticsComponent implements OnInit {
     constructor(private route: ActivatedRoute,
                 private dataService: DataService) {
         this.route.params.subscribe((params: any) => {
-            if (params.id) {
-                this.selectedBattery = params.id;
-            }
-            if (params.annotationTimestamp) {
-                this.annotationTimestamp = params.annotationTimestamp
-            }
+            this.selectedBattery = params.id ?? '';
+            this.annotationTimestamp = params.annotationTimestamp ?? '';
+            this.selectedStartTime = params.timeStart ?? '';
+            this.selectedEndTime = params.timeEnd ?? '';
         });
     }
 
