@@ -247,7 +247,6 @@ export class DashboardComponent implements OnInit {
     startCooling = true;
     startHeating = false;
     eolDate: Date | undefined;
-    receivedMessage= "";
 
     constructor(private apiService: APIService,
         private dataService: DataService,
@@ -578,13 +577,9 @@ export class DashboardComponent implements OnInit {
             }
         });
         this.websocketService.receiveMessage().subscribe((message: any) => {
-            this.receivedMessage = message;
-            if (this.receivedMessage.includes("Overcurrent")) {
-                this.faultDetections["Overcurrent"]["state"] = "danger";
-            } else {
-                this.faultDetections["Overcurrent"]["state"] = "green";
-            }
-            console.log(message);
+            this.faultDetections["OverTemp"]["state"] = message.OverTemp_Status == 1 ? "danger" : "green";
+            this.faultDetections["Overvoltage"]["state"] = message.OverVolt_Status == 1 ? "danger" : "green";
+            this.faultDetections["Overcurrent"]["state"] = message.OverCurrent_Status == 1 ? "danger" : "green";
         }
         );
     }
