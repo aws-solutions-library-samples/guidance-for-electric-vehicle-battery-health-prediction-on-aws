@@ -297,7 +297,7 @@
             <span>{{ faultDetectionTitle }} History</span>
         </div>
 
-        <div *ngIf="currentFaultData">
+        <div *ngIf="currentRealTimeFaultData">
             <table>
                 <thead>
                     <tr>
@@ -318,10 +318,10 @@
             </table>
         </div>
 
-        <!-- <div *ngIf="!isFaultsBatchData">
+         <div *ngIf="currentFaultData">
             <highcharts-chart *ngIf="faultLineChartOptions" [Highcharts]="highcharts" [options]="faultLineChartOptions"
                 [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
-        </div> -->
+        </div> 
 
         <div class="retrain-action">
             <button class="upload-action-secondary" (click)="showFaultDetectionDetails = false;">Close</button>
