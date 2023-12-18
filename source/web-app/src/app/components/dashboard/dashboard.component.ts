@@ -109,19 +109,15 @@ export class DashboardComponent implements OnInit {
     batteryVoltages: number[] = [];
     batteryTemperature: number[] = [];
     faultHistory: any[any] = []
-    isFaultsBatchData = false;
     faultData: any = {};
+    faultRealTimeData: any = {};
     currentFaultData: any = {};
+    currentRealTimeFaultData: any = {};
     faultLineChartOptions: any = {};
     faultStatistics: any = {};
     faultDetections = {
         "AcceleratedAging": {
             "title": "Accelerated Aging",
-            "state": "green",
-            "value": 10
-        },
-        "ThermalEnergy": {
-            "title": "Thermal Energy",
             "state": "green",
             "value": 10
         },
@@ -170,6 +166,16 @@ export class DashboardComponent implements OnInit {
             "state": "green",
             "value": 30
         },
+        "Lithium Plating": {
+            "title": "Lithium Plating",
+            "state": "green",
+            "value": 30         
+        },
+        "Thermal Runaway": {
+            "title": "Thermal Runaway",
+            "state": "green",
+            "value": 30         
+        }
     };
     initialFaultDetections = {
         "AcceleratedAging": {
@@ -526,7 +532,7 @@ export class DashboardComponent implements OnInit {
         // const initialFaultDetections = this.initialFaultDetections
         // this.faultDetections = initialFaultDetections;
 
-        this.getFaultDetections(batteryInfo.BatteryId);
+        this.getFaultDetections('VSTG4323PMC000011');
 
         this.showSpinner = true;
         this.showError = false;
@@ -571,20 +577,7 @@ export class DashboardComponent implements OnInit {
     }
 
     getFaultDetections(batteryId: string) {
-        this.dataService.getFaults(batteryId).subscribe({
-            next: (data: any[]) => {
-                this.faultData = data;
-
-                data.forEach((fault: any) => {
-                    const faultName: string = fault.name;
-                    this.faultDetections[faultName as keyof typeof this.faultDetections]["state"] = fault.state;
-                })
-            }
-        });
         this.websocketService.receiveMessage().subscribe((message: any) => {
-            // this.faultDetections["OverTemp"]["state"] = message.OverTemp_Status == 1 ? "danger" : "green";
-            // this.faultDetections["Overvoltage"]["state"] = message.OverVolt_Status == 1 ? "danger" : "green";
-            // this.faultDetections["Overcurrent"]["state"] = message.OverCurrent_Status == 1 ? "danger" : "green";
 
             if (message.test_vehicle) {
                 const faultData = message.test_vehicle;
@@ -595,12 +588,12 @@ export class DashboardComponent implements OnInit {
                         const faultName: string = faultKey;
                     const fault: any = faultData[faultKey];
                     this.faultDetections[faultName as keyof typeof this.faultDetections]["state"] = fault.state;
-                    this.faultData[faultName as keyof typeof this.faultData] = fault.data;
-                    // this.faultDetections[faultName as keyof typeof this.faultDetections]["value"] = fault.data.count;
+                    this.faultRealTimeData[faultName as keyof typeof this.faultData] = fault.data;
                 });
             }
         }
         );
+        this.faultData = this.dataService.getFaults(batteryId);
     }
 
     updateFaultDetection() {
@@ -839,30 +832,25 @@ export class DashboardComponent implements OnInit {
     }
 
     showFaultHistory(faultType: string, state: string, faultKey: string) {
-        this.currentFaultData = this.faultData[faultKey];
-        // populate highchart option property of this component - realTimeFaultHistory
-
-        this.isFaultsBatchData = this.currentFaultData.realtime;
-        !this.isFaultsBatchData && this.setFaultLineChartOptions(this.currentFaultData.data);
-
-        if (this.isFaultsBatchData) {
-            this.faultStatistics = this.currentFaultData.statistics;
-        }
+        this.currentRealTimeFaultData = this.faultRealTimeData[faultKey];
+                
         
+        this.currentFaultData = this.faultData.find((model: { modelName: string; }) => model.modelName === faultKey).data;
+        const type = faultKey === 'Thermal Runaway' ? 'datetime' : 'number';
+        this.setFaultLineChartOptions(this.currentFaultData, type);
 
         this.faultDetectionTitle = faultType;
         this.showFaultDetectionDetails = true;
     }
 
-    private setFaultLineChartOptions(data: any[]) {
-        console.log(data);
-        
+    private setFaultLineChartOptions(data: any[], x_type: string) {
+             
         this.faultLineChartOptions = {
             series: [
                 {
                     data: data,
                     color: '#38EF7D',
-                    name: 'Voltage',
+                    name: 'Probabilities',
                     type: 'line'
                 },
             ],
@@ -897,7 +885,7 @@ export class DashboardComponent implements OnInit {
                     },
                 },
                 title: {
-                    text: 'Battery (V)',
+                    text: 'Probability (%)',
                     style: {
                         color: '#fff'
                     }
@@ -906,7 +894,7 @@ export class DashboardComponent implements OnInit {
                 gridLineWidth: 1,
             },
             xAxis: {
-                type: 'datetime',
+                type: x_type,
                 labels: {
                     style: {
                         color: '#fff'
@@ -923,7 +911,7 @@ export class DashboardComponent implements OnInit {
                     // @ts-ignore
                     const y: any = this.y;
                     if (x && y) {
-                        return `<div><strong>Timestamp: </strong>${x}</div><div><strong>Sensor value:</strong> ${y}%</div>`
+                        return `<div><strong>Cell Index: </strong>${x}</div><div><strong>Probability:</strong> ${y}%</div>`
                     } else {
                         return;
                     }
@@ -956,4 +944,8 @@ export class DashboardComponent implements OnInit {
             }
         })
     }
+    navigateToAnalytics() {
+        // annotation timestamp
+        this.router.navigate(['/analytics', this.selectedBattery, '2023-12-01T01:48:00.000Z']);
+      }
 }

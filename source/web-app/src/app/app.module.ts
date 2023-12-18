@@ -48,6 +48,8 @@ import { DatasetSelectionComponent } from './components/pipeline/components/data
 import { TabsComponent } from './components/pipeline/components/tabs/tabs.component';
 import { PluginSelectionComponent } from './components/pipeline/components/plugin-selection/plugin-selection.component';
 import { BatteryInfoComponent } from './components/dashboard/components/battery-info/battery-info.component';
+import { AnalyticsComponent } from "./components/dashboard/components/analytics/analytics.component";
+
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { WebsocketService } from './services/websocket.service';
@@ -120,6 +122,7 @@ function appInitializer(metadataService: ConfigService, authService: AuthService
         LoginComponent,
         PipelineComponent,
         DashboardComponent,
+        AnalyticsComponent,
         TrackerComponent,
         IndicatorComponent,
         HistoryComponent,

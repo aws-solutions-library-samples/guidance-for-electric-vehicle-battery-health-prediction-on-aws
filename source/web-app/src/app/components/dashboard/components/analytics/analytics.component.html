@@ -1,0 +1,47 @@
+<app-header></app-header>
+<div class="container">
+  <div class="title-container">
+    <h2 class="chart-title">Sensor Analytics</h2>
+  </div>
+
+<div class="select-container">
+    <div class="time-picker-container">
+        <div class="time-picker">
+          <label for="startTimePicker" class="label">Start Time:</label>
+          <input type="datetime-local" id="startTimePicker" [(ngModel)]="selectedStartTime" (change)="updateAllCharts()">
+        </div>
+      
+        <div class="time-picker">
+          <label for="endTimePicker" class="label">End Time:</label>
+          <input type="datetime-local" id="endTimePicker" [(ngModel)]="selectedEndTime" (change)="updateAllCharts()">
+        </div>
+      </div>
+  </div>
+  <div class="charts-container">
+    <fieldset class="graph-container">
+      <legend class="legend">Vehicle</legend>
+      <label for="analyticsDropdown1" class="label">Selected Sensor:</label>
+      <select id="analyticsDropdown1" [(ngModel)]="selectedVehicleOption" class="custom-dropdown" (change)="updateChart1Options()">>
+        <option *ngFor="let option of vehicleOptions" [value]="option">{{ option }}</option>
+      </select>
+      <highcharts-chart *ngIf="analyticsLineChartOptions1" [Highcharts]="highcharts" [options]="analyticsLineChartOptions1" [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
+    </fieldset>
+    <fieldset class="graph-container">
+      <legend class="legend">Battery</legend>
+      <label for="analyticsDropdown2" class="label">Selected Sensor:</label>
+      <select id="analyticsDropdown2" [(ngModel)]="selectedBatteryOption" class="custom-dropdown" (change)="updateChart2Options()">>
+        <option *ngFor="let option of batteryOptions" [value]="option">{{ option }}</option>
+      </select>
+      <highcharts-chart *ngIf="analyticsLineChartOptions2" [Highcharts]="highcharts" [options]="analyticsLineChartOptions2" [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
+    </fieldset>
+  
+    <fieldset class="graph-container">
+      <legend class="legend">Cell</legend>
+      <label for="analyticsDropdown3" class="label">Selected Sensor:</label>
+      <select id="analyticsDropdown3" [(ngModel)]="selectedCellOption" class="custom-dropdown" (change)="updateChart3Options()">>
+        <option *ngFor="let option of cellOptions" [value]="option">{{ option }}</option>
+      </select>
+      <highcharts-chart *ngIf="analyticsLineChartOptions3" [Highcharts]="highcharts" [options]="analyticsLineChartOptions3" [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
+    </fieldset>
+  </div>
+</div>
