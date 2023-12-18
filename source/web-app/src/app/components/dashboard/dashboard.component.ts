@@ -164,7 +164,12 @@ export class DashboardComponent implements OnInit {
             "title": "Over Current",
             "state": "green",
             "value": 30
-        }
+        },
+        "AccDeg": {
+            "title": "Accelerated Degradation",
+            "state": "green",
+            "value": 30
+        },
     };
     initialFaultDetections = {
         "AcceleratedAging": {
@@ -577,9 +582,23 @@ export class DashboardComponent implements OnInit {
             }
         });
         this.websocketService.receiveMessage().subscribe((message: any) => {
-            this.faultDetections["OverTemp"]["state"] = message.OverTemp_Status == 1 ? "danger" : "green";
-            this.faultDetections["Overvoltage"]["state"] = message.OverVolt_Status == 1 ? "danger" : "green";
-            this.faultDetections["Overcurrent"]["state"] = message.OverCurrent_Status == 1 ? "danger" : "green";
+            // this.faultDetections["OverTemp"]["state"] = message.OverTemp_Status == 1 ? "danger" : "green";
+            // this.faultDetections["Overvoltage"]["state"] = message.OverVolt_Status == 1 ? "danger" : "green";
+            // this.faultDetections["Overcurrent"]["state"] = message.OverCurrent_Status == 1 ? "danger" : "green";
+
+            if (message.test_vehicle) {
+                const faultData = message.test_vehicle;
+                Object.keys(faultData).forEach((faultKey: string) => {
+                    if (faultKey === "timestamp") {
+                        return;
+                    }
+                        const faultName: string = faultKey;
+                    const fault: any = faultData[faultKey];
+                    this.faultDetections[faultName as keyof typeof this.faultDetections]["state"] = fault.state;
+                    this.faultData[faultName as keyof typeof this.faultData] = fault.data;
+                    // this.faultDetections[faultName as keyof typeof this.faultDetections]["value"] = fault.data.count;
+                });
+            }
         }
         );
     }
@@ -821,8 +840,13 @@ export class DashboardComponent implements OnInit {
 
     showFaultHistory(faultType: string, state: string, faultKey: string) {
         this.isFaultsBatchData = faultKey === 'ThermalEnergy';
-
-        this.currentFaultData = this.faultData.find((fault: any) => fault.name === faultKey);
+        console.log(this.isFaultsBatchData);
+        console.log(`Fault type: ${faultType}, state: ${state}, faultKey: ${faultKey}`);
+        console.log(this.faultData);
+        // this.currentFaultData = this.faultData.find((fault: any) => fault.name === faultKey);
+        this.currentFaultData = this.faultData[faultKey];
+        console.log("-----------------")
+        console.log(this.currentFaultData);
         // populate highchart option property of this component - realTimeFaultHistory
 
         !this.isFaultsBatchData && this.setFaultLineChartOptions(this.currentFaultData.data);
@@ -830,6 +854,7 @@ export class DashboardComponent implements OnInit {
         if (this.isFaultsBatchData) {
             this.faultStatistics = this.currentFaultData.statistics;
         }
+        
 
         this.faultDetectionTitle = faultType;
         this.showFaultDetectionDetails = true;
