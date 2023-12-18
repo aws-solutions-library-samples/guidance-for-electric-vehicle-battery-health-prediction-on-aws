@@ -295,7 +295,7 @@
             <span>{{ faultDetectionTitle }} History</span>
         </div>
 
-        <div >
+        <div *ngIf="currentFaultData">
             <table>
                 <thead>
                     <tr>
@@ -314,11 +314,6 @@
                     </tr>
                 </tbody>
             </table>
-            <!-- count: {{ currentFaultData.count }}
-            {{ currentFaultData.period }} -->
-            {{ currentFaultData.lastOccurTimestamp }}
-            {{ currentFaultData.duration }}
-            {{ currentFaultData.AverageDuration }}
         </div>
 
         <!-- <div *ngIf="!isFaultsBatchData">

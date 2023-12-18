@@ -839,16 +839,10 @@ export class DashboardComponent implements OnInit {
     }
 
     showFaultHistory(faultType: string, state: string, faultKey: string) {
-        this.isFaultsBatchData = faultKey === 'ThermalEnergy';
-        console.log(this.isFaultsBatchData);
-        console.log(`Fault type: ${faultType}, state: ${state}, faultKey: ${faultKey}`);
-        console.log(this.faultData);
-        // this.currentFaultData = this.faultData.find((fault: any) => fault.name === faultKey);
         this.currentFaultData = this.faultData[faultKey];
-        console.log("-----------------")
-        console.log(this.currentFaultData);
         // populate highchart option property of this component - realTimeFaultHistory
 
+        this.isFaultsBatchData = this.currentFaultData.realtime;
         !this.isFaultsBatchData && this.setFaultLineChartOptions(this.currentFaultData.data);
 
         if (this.isFaultsBatchData) {
