@@ -295,15 +295,36 @@
             <span>{{ faultDetectionTitle }} History</span>
         </div>
 
-        <div *ngIf="isFaultsBatchData">
-            {{ faultStatistics.occurences }}
-            {{ faultStatistics.period }}
+        <div >
+            <table>
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Occurances</th>
+                        <th>Last Error Duration</th>
+                        <th>Average Error Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr >
+                        <td>{{ currentFaultData.lastOccurTimestamp }}</td>
+                        <td>{{ currentFaultData.count }}</td>
+                        <td>{{ currentFaultData.duration }}</td>
+                        <td>{{ currentFaultData.AverageDuration }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- count: {{ currentFaultData.count }}
+            {{ currentFaultData.period }} -->
+            {{ currentFaultData.lastOccurTimestamp }}
+            {{ currentFaultData.duration }}
+            {{ currentFaultData.AverageDuration }}
         </div>
 
-        <div *ngIf="!isFaultsBatchData">
+        <!-- <div *ngIf="!isFaultsBatchData">
             <highcharts-chart *ngIf="faultLineChartOptions" [Highcharts]="highcharts" [options]="faultLineChartOptions"
                 [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
-        </div>
+        </div> -->
 
         <div class="retrain-action">
             <button class="upload-action-secondary" (click)="showFaultDetectionDetails = false;">Close</button>
