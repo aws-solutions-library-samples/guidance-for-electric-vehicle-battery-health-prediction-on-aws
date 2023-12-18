@@ -69,14 +69,13 @@ export class AnalyticsComponent implements OnInit {
         this.route.params.subscribe((params: any) => {
             this.selectedBattery = params.id ?? '';
             this.annotationTimestamp = params.annotationTimestamp ?? '';
-            this.selectedStartTime = params.timeStart ?? '';
-            this.selectedEndTime = params.timeEnd ?? '';
+            console.log(Date.parse(this.annotationTimestamp));
         });
     }
 
     ngOnInit(): void {
-        //this.selectedStartTime = this.selectedStartTime === '' ? this.getFormattedDate(new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)) : this.selectedStartTime;
-        //this.selectedEndTime = this.selectedEndTime === '' ? this.getFormattedDate(new Date()) : this.selectedEndTime;
+        this.selectedStartTime = this.selectedStartTime === '' ? this.getFormattedDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)) : this.selectedStartTime;
+        this.selectedEndTime = this.selectedEndTime === '' ? this.getFormattedDate(new Date()) : this.selectedEndTime;
         this.updateAllCharts()
     }
     chartCallback: Highcharts.ChartCallbackFunction = (chart) => {
@@ -122,7 +121,6 @@ export class AnalyticsComponent implements OnInit {
     }
 
     private setAnalyticsLineChart1Options(data: any[]) {
-        console.log(data)
         this.analyticsLineChartOptions1 = {
             series: [
                 {
@@ -187,6 +185,9 @@ export class AnalyticsComponent implements OnInit {
                     zIndex: 5,
                 }]
             },
+            legend: {
+                enabled: false
+            },
             tooltip: {
                 backgroundColor: '#2D343D',
                 style: { color: '#fff' },
@@ -241,6 +242,9 @@ export class AnalyticsComponent implements OnInit {
             credits: {
                 enabled: false
             },
+            legend: {
+                enabled: false
+            },
             yAxis: {
                 labels: {
                     style: {
@@ -263,7 +267,14 @@ export class AnalyticsComponent implements OnInit {
                         color: '#fff'
                     },
                     rotation: -45
-                }
+                },
+                plotLines: [{
+                    color: 'red',
+                    dashStyle: 'dash',
+                    value: Date.parse(this.annotationTimestamp),
+                    width: 2,
+                    zIndex: 5,
+                }]
             },
             tooltip: {
                 backgroundColor: '#2D343D',
@@ -344,6 +355,9 @@ export class AnalyticsComponent implements OnInit {
                     zIndex: 5,
                 }]
             },
+            legend: {
+                enabled: false
+            },
             tooltip: {
                 backgroundColor: '#2D343D',
                 style: { color: '#fff' },
@@ -366,20 +380,17 @@ export class AnalyticsComponent implements OnInit {
 
     parseAnalytics() {
         //const response = this.dataService.getAnalytics(this.selectedBattery, this.selectedStartTime, this.selectedEndTime);
-        this.dataService.getAnalytics('VSTG4323PMC000011', this.selectedStartTime, this.selectedEndTime).subscribe({
-            next: (data: any) => {
-                if (data) {
-                    const { vehicle, battery, cell } = data.message;
-                    console.log(data.message)
-                    this.vehicleData = vehicle
-                    this.batteryData = battery
-                    this.cellData = cell
-                }
-                this.updateChart1Options();
-                this.updateChart2Options();
-                this.updateChart3Options();
-            }
-          })
+        const data = this.dataService.getAnalytics('VSTG4323PMC000011', this.selectedStartTime, this.selectedEndTime);
+
+        const { vehicle, battery, cell } = data.message;
+        this.vehicleData = vehicle
+        this.batteryData = battery
+        this.cellData = cell
+        
+        this.updateChart1Options();
+        this.updateChart2Options();
+        this.updateChart3Options();
+
     }
 
     getFormattedDate(date: Date): string {
