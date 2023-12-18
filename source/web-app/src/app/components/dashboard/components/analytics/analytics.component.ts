@@ -2,7 +2,6 @@ import { Component, OnInit } from "@angular/core";
 import Highcharts from "highcharts";
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from "../../../../services/data.service";
-import { time } from "console";
 
 interface VehicleData {
     bucket: string;
@@ -54,8 +53,8 @@ export class AnalyticsComponent implements OnInit {
     selectedCellOption: string = this.cellOptions[0];
     selectedStartTime: string = '';
     selectedEndTime: string = '';
-    vehicleData = {} as VehicleData[]
-    batteryData = {} as BatteryData[]
+    vehicleData = [] as VehicleData[]
+    batteryData = [] as BatteryData[]
     cellData = {} as CellData
     highcharts = Highcharts;
     annotationTimestamp: string = '';
@@ -76,6 +75,8 @@ export class AnalyticsComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        //this.selectedStartTime = this.selectedStartTime === '' ? this.getFormattedDate(new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)) : this.selectedStartTime;
+        //this.selectedEndTime = this.selectedEndTime === '' ? this.getFormattedDate(new Date()) : this.selectedEndTime;
         this.updateAllCharts()
     }
     chartCallback: Highcharts.ChartCallbackFunction = (chart) => {
@@ -85,17 +86,19 @@ export class AnalyticsComponent implements OnInit {
         const data = this.vehicleData.map((entry: { [x: string]: any; bucket: any; }) => [
                 (new Date(entry.bucket)).getTime(),
                 entry[this.selectedVehicleOption]
-          ]);
-        
-        console.log(data)
+        ]);
         this.setAnalyticsLineChart1Options(data);
+    
+
     }
     updateChart2Options() {
         const data = this.batteryData.map((entry: { [x: string]: any; bucket: any; }) => [
             (new Date(entry.bucket)).getTime(),
                 entry[this.selectedBatteryOption]
-          ]);
+        ]);
+        console.log(typeof (data));
         this.setAnalyticsLineChart2Options(data);
+    
     }
     updateChart3Options() {
         const seriesEntries = Object.keys(this.cellData).map(cellId => {
@@ -113,14 +116,13 @@ export class AnalyticsComponent implements OnInit {
           });
         this.setAnalyticsLineChart3Options(seriesEntries);
     }
+    
     updateAllCharts() {
         this.parseAnalytics();
-        this.updateChart1Options();
-        this.updateChart2Options();
-        this.updateChart3Options();
     }
 
     private setAnalyticsLineChart1Options(data: any[]) {
+        console.log(data)
         this.analyticsLineChartOptions1 = {
             series: [
                 {
@@ -261,14 +263,7 @@ export class AnalyticsComponent implements OnInit {
                         color: '#fff'
                     },
                     rotation: -45
-                },
-                plotLines: [{
-                    color: 'red',
-                    dashStyle: 'dash',
-                    value: Date.parse(this.annotationTimestamp),
-                    width: 2,
-                    zIndex: 5,
-                }]
+                }
             },
             tooltip: {
                 backgroundColor: '#2D343D',
@@ -370,12 +365,30 @@ export class AnalyticsComponent implements OnInit {
     }
 
     parseAnalytics() {
-        const data = this.dataService.getAnalytics(this.selectedBattery, this.selectedStartTime, this.selectedEndTime);
-        if (data) {
-            const { vehicle, battery, cell } = data;
-            this.vehicleData = vehicle
-            this.batteryData = battery
-            this.cellData = cell
-        }
+        //const response = this.dataService.getAnalytics(this.selectedBattery, this.selectedStartTime, this.selectedEndTime);
+        this.dataService.getAnalytics('VSTG4323PMC000011', this.selectedStartTime, this.selectedEndTime).subscribe({
+            next: (data: any) => {
+                if (data) {
+                    const { vehicle, battery, cell } = data.message;
+                    console.log(data.message)
+                    this.vehicleData = vehicle
+                    this.batteryData = battery
+                    this.cellData = cell
+                }
+                this.updateChart1Options();
+                this.updateChart2Options();
+                this.updateChart3Options();
+            }
+          })
+    }
+
+    getFormattedDate(date: Date): string {
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        const hours = ('0' + date.getHours()).slice(-2);
+        const minutes = ('0' + date.getMinutes()).slice(-2);
+    
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
 }

@@ -107,7 +107,6 @@ export class DashboardComponent implements OnInit {
     batteryVoltages: number[] = [];
     batteryTemperature: number[] = [];
     faultHistory: any[any] = []
-    isFaultsBatchData = false;
     faultData: any = {};
     currentFaultData: any = {};
     faultLineChartOptions: any = {};
@@ -162,6 +161,11 @@ export class DashboardComponent implements OnInit {
             "title": "Over Current",
             "state": "green",
             "value": 30
+        },
+        "Lithium Plating": {
+            "title": "Lithium Plating",
+            "state": "green",
+            "value": 30         
         }
     };
     initialFaultDetections = {
@@ -517,7 +521,7 @@ export class DashboardComponent implements OnInit {
         // const initialFaultDetections = this.initialFaultDetections
         // this.faultDetections = initialFaultDetections;
 
-        this.getFaultDetections(batteryInfo.BatteryId);
+        this.getFaultDetections('VSTG4323PMC000011');
 
         this.showSpinner = true;
         this.showError = false;
@@ -562,16 +566,11 @@ export class DashboardComponent implements OnInit {
     }
 
     getFaultDetections(batteryId: string) {
-        this.dataService.getFaults(batteryId).subscribe({
-            next: (data: any[]) => {
-                this.faultData = data;
-
-                data.forEach((fault: any) => {
-                    const faultName: string = fault.name;
-                    this.faultDetections[faultName as keyof typeof this.faultDetections]["state"] = fault.state;
-                })
+        this.faultData = this.dataService.getFaults(batteryId).subscribe({
+            next: (data: any) => {
+              console.log('faultdetections', data.message)
             }
-        });
+          })
     }
 
     updateFaultDetection() {
@@ -810,30 +809,21 @@ export class DashboardComponent implements OnInit {
     }
 
     showFaultHistory(faultType: string, state: string, faultKey: string) {
-        this.isFaultsBatchData = faultKey === 'ThermalEnergy';
-
-        this.currentFaultData = this.faultData.find((fault: any) => fault.name === faultKey);
-        // populate highchart option property of this component - realTimeFaultHistory
-
-        !this.isFaultsBatchData && this.setFaultLineChartOptions(this.currentFaultData.data);
-
-        if (this.isFaultsBatchData) {
-            this.faultStatistics = this.currentFaultData.statistics;
-        }
+        this.currentFaultData = this.faultData.find((model: { modelName: string; }) => model.modelName === faultKey).probabilities;
+        
+        this.setFaultLineChartOptions(this.currentFaultData);
 
         this.faultDetectionTitle = faultType;
         this.showFaultDetectionDetails = true;
     }
 
-    private setFaultLineChartOptions(data: any[]) {
-        console.log(data);
-        
+    private setFaultLineChartOptions(data: any[]) {        
         this.faultLineChartOptions = {
             series: [
                 {
                     data: data,
                     color: '#38EF7D',
-                    name: 'Voltage',
+                    name: 'Probabilities',
                     type: 'line'
                 },
             ],
@@ -868,7 +858,7 @@ export class DashboardComponent implements OnInit {
                     },
                 },
                 title: {
-                    text: 'Battery (V)',
+                    text: 'Probability (%)',
                     style: {
                         color: '#fff'
                     }
@@ -877,7 +867,7 @@ export class DashboardComponent implements OnInit {
                 gridLineWidth: 1,
             },
             xAxis: {
-                type: 'datetime',
+                type: 'number',
                 labels: {
                     style: {
                         color: '#fff'
@@ -894,7 +884,7 @@ export class DashboardComponent implements OnInit {
                     // @ts-ignore
                     const y: any = this.y;
                     if (x && y) {
-                        return `<div><strong>Timestamp: </strong>${x}</div><div><strong>Sensor value:</strong> ${y}%</div>`
+                        return `<div><strong>Cell Index: </strong>${x}</div><div><strong>Probability:</strong> ${y}%</div>`
                     } else {
                         return;
                     }
@@ -928,6 +918,7 @@ export class DashboardComponent implements OnInit {
         })
     }
     navigateToAnalytics() {
+        // annotation timestamp , starttime, endtime
         this.router.navigate(['/analytics', this.selectedBattery]);
       }
 }

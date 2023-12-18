@@ -761,6 +761,7 @@
   z-index: 1000;
 
   .charging-target-container {
+    width: 50%;
     border-radius: 8px;
     background: #2D343D;
     box-shadow: 2px 2px 2px #1B1E20;
@@ -939,4 +940,9 @@
   margin-right: auto;
   margin-bottom: 1%;
   cursor: pointer;
+}
+
+.analytics-button.far-right {
+  margin-left: auto;
+  margin-right: 2%;
 }

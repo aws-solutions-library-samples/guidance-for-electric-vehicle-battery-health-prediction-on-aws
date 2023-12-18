@@ -297,12 +297,7 @@
             <span>{{ faultDetectionTitle }} History</span>
         </div>
 
-        <div *ngIf="isFaultsBatchData">
-            {{ faultStatistics.occurences }}
-            {{ faultStatistics.period }}
-        </div>
-
-        <div *ngIf="!isFaultsBatchData">
+        <div>
             <highcharts-chart *ngIf="faultLineChartOptions" [Highcharts]="highcharts" [options]="faultLineChartOptions"
                 [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
         </div>
@@ -310,7 +305,7 @@
         <div class="retrain-action">
             <button class="upload-action-secondary" (click)="showFaultDetectionDetails = false;">Close</button>
         </div>
-
+        <button (click)="navigateToAnalytics()" class="analytics-button far-right">See Analytics</button>
     </div>
 </div>
 <div class="retrain-pipeline-modal" *ngIf="selectedBattery && retrain">
