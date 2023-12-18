@@ -77,7 +77,7 @@ export class DataService {
         "message": [
             {
                 "modelName": "Thermal Runaway",
-                "status": 2,
+                "status": 1,
                 "data": [
                     [
                         "2022-12-13",

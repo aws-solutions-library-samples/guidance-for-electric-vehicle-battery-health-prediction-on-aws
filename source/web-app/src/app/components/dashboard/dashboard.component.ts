@@ -594,6 +594,9 @@ export class DashboardComponent implements OnInit {
         }
         );
         this.faultData = this.dataService.getFaults(batteryId);
+        this.faultData.forEach((model: { modelName: string; }) => {
+            this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
+            }) 
     }
 
     updateFaultDetection() {
@@ -833,14 +836,18 @@ export class DashboardComponent implements OnInit {
 
     showFaultHistory(faultType: string, state: string, faultKey: string) {
         this.currentRealTimeFaultData = this.faultRealTimeData[faultKey];
-                
         
+        
+        this.showFaultDetectionDetails = true;
+        this.faultDetectionTitle = faultType;
+        if (this.currentRealTimeFaultData) {
+            return;
+        }
         this.currentFaultData = this.faultData.find((model: { modelName: string; }) => model.modelName === faultKey).data;
+        
         const type = faultKey === 'Thermal Runaway' ? 'datetime' : 'number';
         this.setFaultLineChartOptions(this.currentFaultData, type);
 
-        this.faultDetectionTitle = faultType;
-        this.showFaultDetectionDetails = true;
     }
 
     private setFaultLineChartOptions(data: any[], x_type: string) {
