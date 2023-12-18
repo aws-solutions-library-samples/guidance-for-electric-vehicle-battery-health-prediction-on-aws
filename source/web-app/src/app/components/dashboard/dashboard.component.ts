@@ -117,11 +117,6 @@ export class DashboardComponent implements OnInit {
             "state": "green",
             "value": 10
         },
-        "ThermalEnergy": {
-            "title": "Thermal Energy",
-            "state": "green",
-            "value": 10
-        },
         "ExternalShortCircuit": {
             "title": "External Short Circuit",
             "state": "green",
@@ -164,6 +159,11 @@ export class DashboardComponent implements OnInit {
         },
         "Lithium Plating": {
             "title": "Lithium Plating",
+            "state": "green",
+            "value": 30         
+        },
+        "Thermal Runaway": {
+            "title": "Thermal Runaway",
             "state": "green",
             "value": 30         
         }
@@ -566,11 +566,7 @@ export class DashboardComponent implements OnInit {
     }
 
     getFaultDetections(batteryId: string) {
-        this.faultData = this.dataService.getFaults(batteryId).subscribe({
-            next: (data: any) => {
-              console.log('faultdetections', data.message)
-            }
-          })
+        this.faultData = this.dataService.getFaults(batteryId);
     }
 
     updateFaultDetection() {
@@ -809,15 +805,17 @@ export class DashboardComponent implements OnInit {
     }
 
     showFaultHistory(faultType: string, state: string, faultKey: string) {
-        this.currentFaultData = this.faultData.find((model: { modelName: string; }) => model.modelName === faultKey).probabilities;
-        
-        this.setFaultLineChartOptions(this.currentFaultData);
+
+        this.currentFaultData = this.faultData.find((model: { modelName: string; }) => model.modelName === faultKey).data;
+        const type = faultKey === 'Thermal Runaway' ? 'datetime' : 'number';
+        this.setFaultLineChartOptions(this.currentFaultData, type);
 
         this.faultDetectionTitle = faultType;
         this.showFaultDetectionDetails = true;
     }
 
-    private setFaultLineChartOptions(data: any[]) {        
+    private setFaultLineChartOptions(data: any[], x_type: string) {
+             
         this.faultLineChartOptions = {
             series: [
                 {
@@ -867,7 +865,7 @@ export class DashboardComponent implements OnInit {
                 gridLineWidth: 1,
             },
             xAxis: {
-                type: 'number',
+                type: x_type,
                 labels: {
                     style: {
                         color: '#fff'
@@ -918,7 +916,7 @@ export class DashboardComponent implements OnInit {
         })
     }
     navigateToAnalytics() {
-        // annotation timestamp , starttime, endtime
-        this.router.navigate(['/analytics', this.selectedBattery]);
+        // annotation timestamp
+        this.router.navigate(['/analytics', this.selectedBattery, '2023-12-01T01:48:00.000Z']);
       }
 }
