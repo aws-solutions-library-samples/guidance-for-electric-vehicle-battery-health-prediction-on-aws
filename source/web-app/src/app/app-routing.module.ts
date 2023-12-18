@@ -66,7 +66,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, PersonaGuard],
     },
     {
-        path: "analytics/:id/:annotationTimestamp/:timeStart/:timeEnd",
+        path: "analytics/:id/:annotationTimestamp",
         component: AnalyticsComponent,
         canActivate: [AuthGuard, PersonaGuard],
     },
