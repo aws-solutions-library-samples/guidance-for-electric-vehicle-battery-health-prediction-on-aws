@@ -6,6 +6,7 @@
         </div>
     </div>
 </app-header>
+<router-outlet></router-outlet>
 <div class="map-container" *ngIf="batteries?.length && !selectedBattery">
     <app-map [batteries]="batteries" (batterySelectionEmitter)="updateBatteryData($event)"
         (mapCreationEmitter)="showSpinner = !$event"></app-map>
@@ -29,6 +30,7 @@
                             <img src="/assets/icons/info.png" alt="Battery details" width="15" height="15"
                                 style="cursor:pointer;" (click)="showBatteryInfo = !showBatteryInfo" />
                         </h3>
+                        <button (click)="navigateToAnalytics()" class="analytics-button">See Analytics</button>
                         <h4>{{ dtc_message }}</h4>
                         <h4>{{ battery?.numberOfModules }} Modules</h4>
                     </div>
@@ -295,20 +297,36 @@
             <span>{{ faultDetectionTitle }} History</span>
         </div>
 
-        <div *ngIf="isFaultsBatchData">
-            {{ faultStatistics.occurences }}
-            {{ faultStatistics.period }}
+        <div *ngIf="currentRealTimeFaultData" style="justify-content: center;display: flex;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Occurances</th>
+                        <th>Last Error Duration</th>
+                        <th>Average Error Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr >
+                        <td>{{ currentRealTimeFaultData.lastOccurTimestamp }}</td>
+                        <td>{{ currentRealTimeFaultData.count }}</td>
+                        <td>{{ currentRealTimeFaultData.duration }}</td>
+                        <td>{{ currentRealTimeFaultData.AverageDuration }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <div *ngIf="!isFaultsBatchData">
+         <div *ngIf="!currentRealTimeFaultData">
             <highcharts-chart *ngIf="faultLineChartOptions" [Highcharts]="highcharts" [options]="faultLineChartOptions"
                 [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
-        </div>
+        </div> 
 
         <div class="retrain-action">
             <button class="upload-action-secondary" (click)="showFaultDetectionDetails = false;">Close</button>
         </div>
-
+        <button (click)="navigateToAnalytics()" class="analytics-button far-right">See Analytics</button>
     </div>
 </div>
 <div class="retrain-pipeline-modal" *ngIf="selectedBattery && retrain">
