@@ -156,64 +156,70 @@ export class AnalyticsComponent implements OnInit {
         }
     }
 
+    updateVehicleChart() {
+        const vehicleData = this.vehicleData.map((entry: { [x: string]: any; bucket: any; }) => [
+            (new Date(entry.bucket)).getTime(),
+            entry[this.selectedVehicleOption]
+        ]);
+        this.vehicleLineChartOptions = {
+            series: [{
+                type: 'line',
+                color: '#38EF7D',
+                name: this.selectedVehicleOption,
+                data: vehicleData
+            }],
+            ...this.analyticsOptionsInitialize()
+        };
+    }
+
+    updateBatteryChart() {
+        const batteryData = this.batteryData.map((entry: { [x: string]: any; bucket: any; }) => [
+            (new Date(entry.bucket)).getTime(),
+            entry[this.selectedBatteryOption]
+        ]);
+
+        this.batteryLineChartOptions = {
+            series: [{
+                type: 'line',
+                color: '#FF9900',
+                name: this.selectedBatteryOption,
+                data: batteryData
+            }],
+            ...this.analyticsOptionsInitialize()
+        };
+    }
+
+    updateCellChart() {
+        const seriesEntries = Object.keys(this.cellData).map((cellId): Highcharts.SeriesOptionsType => {
+            const cellData = this.cellData[cellId].map((entry: { [x: string]: any; bucket: any; }) => ([
+              (new Date(entry.bucket)).getTime(),
+              entry[this.selectedCellOption]
+            ]));
+        
+            return {
+              data: cellData,
+              color: '#DF2A5D',
+              name: this.selectedCellOption + " (" + cellId +")",
+              type: 'line'
+            };
+          });
+
+        this.cellLineChartOptions = {
+            series: seriesEntries,
+            ...this.analyticsOptionsInitialize()
+        };
+    }
+
     updateAllCharts() {
-        //const response = this.dataService.getAnalytics(this.selectedBattery, this.selectedStartTime, this.selectedEndTime);
         const data = this.dataService.getAnalytics('VSTG4323PMC000011', this.selectedStartTime, this.selectedEndTime).subscribe((data: any) => {
             this.vehicleData = data.message.vehicle;
-            // draw vehicle chart
-            
-            const vehicleData = this.vehicleData.map((entry: { [x: string]: any; bucket: any; }) => [
-                (new Date(entry.bucket)).getTime(),
-                entry[this.selectedVehicleOption]
-            ]);
-            this.vehicleLineChartOptions = {
-                series: [{
-                    type: 'line',
-                    color: '#38EF7D',
-                    name: this.selectedVehicleOption,
-                    data: vehicleData
-                }],
-                ...this.analyticsOptionsInitialize()
-            };
-
-            // draw battery chart
             this.batteryData = data.message.battery;
-            const batteryData = this.batteryData.map((entry: { [x: string]: any; bucket: any; }) => [
-                (new Date(entry.bucket)).getTime(),
-                entry[this.selectedBatteryOption]
-            ]);
-
-            this.batteryLineChartOptions = {
-                series: [{
-                    type: 'line',
-                    color: '#FF9900',
-                    name: this.selectedBatteryOption,
-                    data: batteryData
-                }],
-                ...this.analyticsOptionsInitialize()
-            };
-
-            // draw cell chart
             this.cellData = data.message.cell;
- 
-            const seriesEntries = Object.keys(this.cellData).map((cellId): Highcharts.SeriesOptionsType => {
-                const cellData = this.cellData[cellId].map((entry: { [x: string]: any; bucket: any; }) => ([
-                  (new Date(entry.bucket)).getTime(),
-                  entry[this.selectedCellOption]
-                ]));
             
-                return {
-                  data: cellData,
-                  color: '#DF2A5D',
-                  name: this.selectedCellOption + " (" + cellId +")",
-                  type: 'line'
-                };
-              });
-
-            this.cellLineChartOptions = {
-                series: seriesEntries,
-                ...this.analyticsOptionsInitialize()
-            };
+            this.updateVehicleChart();
+            this.updateBatteryChart();
+            this.updateCellChart();
+            
 
         });
 

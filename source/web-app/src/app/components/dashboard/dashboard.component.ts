@@ -529,10 +529,8 @@ export class DashboardComponent implements OnInit {
 
     updateBatteryData(batteryInfo: any) {
         this.displayText = 'Loading Dashboard...';
-        // const initialFaultDetections = this.initialFaultDetections
-        // this.faultDetections = initialFaultDetections;
-
-        this.getFaultDetections('VSTG4323PMC000011');
+        // this vehicle subscribe is for fault detection will be uncommented later
+        //this.getFaultDetections('VSTG4323PMC000011');
 
         this.showSpinner = true;
         this.showError = false;
@@ -593,10 +591,13 @@ export class DashboardComponent implements OnInit {
             }
         }
         );
-        this.faultData = this.dataService.getFaults(batteryId);
-        this.faultData.forEach((model: { modelName: string; }) => {
-            this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
+        this.dataService.getFaults(batteryId).subscribe((data: any) => {
+            this.faultData = data.message;
+            this.faultData.forEach((model: { modelName: string; }) => {
+                this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
             }) 
+        });
+        
     }
 
     updateFaultDetection() {

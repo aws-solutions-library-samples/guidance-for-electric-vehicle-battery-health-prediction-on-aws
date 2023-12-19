@@ -21,7 +21,7 @@
     <fieldset class="graph-container">
       <legend class="legend">Vehicle</legend>
       <label for="analyticsDropdown1" class="label">Selected Sensor:</label>
-      <select id="analyticsDropdown1" [(ngModel)]="selectedVehicleOption" class="custom-dropdown" (change)="updateAllCharts()">>
+      <select id="analyticsDropdown1" [(ngModel)]="selectedVehicleOption" class="custom-dropdown" (change)="updateVehicleChart()">>
         <option *ngFor="let option of vehicleOptions" [value]="option">{{ option }}</option>
       </select>
       <highcharts-chart *ngIf="vehicleLineChartOptions" [Highcharts]="highcharts" [options]="vehicleLineChartOptions" [callbackFunction]="vehicleChartCallback" style="display: block;"></highcharts-chart>
@@ -29,7 +29,7 @@
     <fieldset class="graph-container">
       <legend class="legend">Battery</legend>
       <label for="analyticsDropdown2" class="label">Selected Sensor:</label>
-      <select id="analyticsDropdown2" [(ngModel)]="selectedBatteryOption" class="custom-dropdown" (change)="updateAllCharts()">>
+      <select id="analyticsDropdown2" [(ngModel)]="selectedBatteryOption" class="custom-dropdown" (change)="updateBatteryChart()">>
         <option *ngFor="let option of batteryOptions" [value]="option">{{ option }}</option>
       </select>
       <highcharts-chart *ngIf="batteryLineChartOptions" [Highcharts]="highcharts" [options]="batteryLineChartOptions" [callbackFunction]="batteryChartCallback" style="display: block;"></highcharts-chart>
@@ -38,7 +38,7 @@
     <fieldset class="graph-container">
       <legend class="legend">Cell</legend>
       <label for="analyticsDropdown3" class="label">Selected Sensor:</label>
-      <select id="analyticsDropdown3" [(ngModel)]="selectedCellOption" class="custom-dropdown" (change)="updateAllCharts()">>
+      <select id="analyticsDropdown3" [(ngModel)]="selectedCellOption" class="custom-dropdown" (change)="updateCellChart()">>
         <option *ngFor="let option of cellOptions" [value]="option">{{ option }}</option>
       </select>
       <highcharts-chart *ngIf="cellLineChartOptions" [Highcharts]="highcharts" [options]="cellLineChartOptions" [callbackFunction]="cellChartCallback" style="display: block;"></highcharts-chart>
