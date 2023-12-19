@@ -58,11 +58,13 @@ export class AnalyticsComponent implements OnInit {
     cellData = {} as CellData
     highcharts = Highcharts;
     annotationTimestamp: string = '';
-    private chartRef: any;
+    private vehicleChartRef: any;
+    private batteryChartRef: any;
+    private cellChartRef: any;
     selectedBattery: string = '';
-    analyticsLineChartOptions1: any = {};
-    analyticsLineChartOptions2: any = {};
-    analyticsLineChartOptions3: any = {};
+    vehicleLineChartOptions: Highcharts.Options| undefined = undefined;
+    batteryLineChartOptions: Highcharts.Options| undefined = undefined;
+    cellLineChartOptions: Highcharts.Options| undefined = undefined;
 
     constructor(private route: ActivatedRoute,
                 private dataService: DataService) {
@@ -78,112 +80,24 @@ export class AnalyticsComponent implements OnInit {
         this.selectedEndTime = this.selectedEndTime === '' ? this.getFormattedDate(new Date()) : this.selectedEndTime;
         this.updateAllCharts()
     }
-    chartCallback: Highcharts.ChartCallbackFunction = (chart) => {
-        this.chartRef = chart;
+    vehicleChartCallback: Highcharts.ChartCallbackFunction = (chart) => {
+        this.vehicleChartRef = chart;
     }
-    updateChart1Options() {
-        const data = this.vehicleData.map((entry: { [x: string]: any; bucket: any; }) => [
-                (new Date(entry.bucket)).getTime(),
-                entry[this.selectedVehicleOption]
-        ]);
-        this.setAnalyticsLineChart1Options(data);
-    
-
+    batteryChartCallback: Highcharts.ChartCallbackFunction = (chart) => {
+        this.batteryChartRef = chart;
     }
-    updateChart2Options() {
-        const data = this.batteryData.map((entry: { [x: string]: any; bucket: any; }) => [
-            (new Date(entry.bucket)).getTime(),
-                entry[this.selectedBatteryOption]
-        ]);
-        console.log(typeof (data));
-        this.setAnalyticsLineChart2Options(data);
-    
-    }
-    updateChart3Options() {
-        const seriesEntries = Object.keys(this.cellData).map(cellId => {
-            const cellData = this.cellData[cellId].map((entry: { [x: string]: any; bucket: any; }) => ({
-              x: (new Date(entry.bucket)).getTime(),
-              y: entry[this.selectedCellOption]
-            }));
-        
-            return {
-              data: cellData,
-              color: '#DF2A5D',
-              name: this.selectedCellOption + " (" + cellId +")",
-              type: 'line'
-            };
-          });
-        this.setAnalyticsLineChart3Options(seriesEntries);
-    }
-    
-    updateAllCharts() {
-        this.parseAnalytics();
+    cellChartCallback: Highcharts.ChartCallbackFunction = (chart) => {
+        this.cellChartRef = chart;
     }
 
-    private setAnalyticsLineChart1Options(data: any[]) {
-        this.analyticsLineChartOptions1 = {
-            series: [
-                {
-                    data: data,
-                    color: '#38EF7D',
-                    name: this.selectedVehicleOption,
-                    type: 'line'
-                },
-            ],
+    analyticsOptionsInitialize(): Highcharts.Options {
+        return {
             chart: {
                 type: 'line',
                 backgroundColor: '#2D343D',
                 zoomType: 'x',
-                panning: true,
                 panKey: 'shift',
                 reflow: false,
-            },
-            colorAxis: [{
-                gridLineColor: '#e6e6e6'
-            }],
-            title: {
-                text: '',
-                style: {
-                    fontSize: 24,
-                    textAlign: 'left',
-                    color: 'white',
-                },
-                useHTML: true,
-                align: 'left',
-            },
-            credits: {
-                enabled: false
-            },
-            yAxis: {
-                labels: {
-                    style: {
-                        color: '#fff'
-                    },
-                },
-                title: {
-                    text: this.selectedVehicleOption,
-                    style: {
-                        color: '#fff'
-                    }
-                },
-                gridLineColor: '#888',
-                gridLineWidth: 1,
-            },
-            xAxis: {
-                type: 'datetime',
-                labels: {
-                    style: {
-                        color: '#fff'
-                    },
-                    rotation: -45
-                },
-                plotLines: [{
-                    color: 'red',
-                    dashStyle: 'dash',
-                    value: Date.parse(this.annotationTimestamp),
-                    width: 2,
-                    zIndex: 5,
-                }]
             },
             legend: {
                 enabled: false
@@ -204,122 +118,6 @@ export class AnalyticsComponent implements OnInit {
                     }
                 },
                 useHTML: true
-            }
-        }
-    }
-
-    private setAnalyticsLineChart2Options(data: any[]) {
-        this.analyticsLineChartOptions2 = {
-            series: [
-                {
-                    data: data,
-                    color: '#FF9900',
-                    name: this.selectedBatteryOption,
-                    type: 'line'
-                },
-            ],
-            chart: {
-                type: 'line',
-                backgroundColor: '#2D343D',
-                zoomType: 'x',
-                panning: true,
-                panKey: 'shift',
-                reflow: false,
-            },
-            colorAxis: [{
-                gridLineColor: '#e6e6e6'
-            }],
-            title: {
-                text: '',
-                style: {
-                    fontSize: 24,
-                    textAlign: 'left',
-                    color: 'white',
-                },
-                useHTML: true,
-                align: 'left',
-            },
-            credits: {
-                enabled: false
-            },
-            legend: {
-                enabled: false
-            },
-            yAxis: {
-                labels: {
-                    style: {
-                        color: '#fff'
-                    },
-                },
-                title: {
-                    text: this.selectedBatteryOption,
-                    style: {
-                        color: '#fff'
-                    }
-                },
-                gridLineColor: '#888',
-                gridLineWidth: 1,
-            },
-            xAxis: {
-                type: 'datetime',
-                labels: {
-                    style: {
-                        color: '#fff'
-                    },
-                    rotation: -45
-                },
-                plotLines: [{
-                    color: 'red',
-                    dashStyle: 'dash',
-                    value: Date.parse(this.annotationTimestamp),
-                    width: 2,
-                    zIndex: 5,
-                }]
-            },
-            tooltip: {
-                backgroundColor: '#2D343D',
-                style: { color: '#fff' },
-                //@ts-ignore
-                formatter: function () {
-                    // @ts-ignore
-                    const x: any = this.x;
-                    // @ts-ignore
-                    const y: any = this.y;
-                    if (x && y) {
-                        return `<div><strong>Timestamp: </strong>${(new Date(x).toISOString())}</div><div><strong>Sensor value:</strong> ${y}</div>`
-                    } else {
-                        return;
-                    }
-                },
-                useHTML: true
-            }
-        }
-    }
-
-    private setAnalyticsLineChart3Options(data: any[]) {
-        
-        this.analyticsLineChartOptions3 = {
-            series: data,
-            chart: {
-                type: 'line',
-                backgroundColor: '#2D343D',
-                zoomType: 'x',
-                panning: true,
-                panKey: 'shift',
-                reflow: false,
-            },
-            colorAxis: [{
-                gridLineColor: '#e6e6e6'
-            }],
-            title: {
-                text: '',
-                style: {
-                    fontSize: 24,
-                    textAlign: 'left',
-                    color: 'white',
-                },
-                useHTML: true,
-                align: 'left',
             },
             credits: {
                 enabled: false
@@ -349,47 +147,76 @@ export class AnalyticsComponent implements OnInit {
                 },
                 plotLines: [{
                     color: 'red',
-                    dashStyle: 'dash',
+                    dashStyle: 'Dash',
                     value: Date.parse(this.annotationTimestamp),
                     width: 2,
                     zIndex: 5,
                 }]
             },
-            legend: {
-                enabled: false
-            },
-            tooltip: {
-                backgroundColor: '#2D343D',
-                style: { color: '#fff' },
-                //@ts-ignore
-                formatter: function () {
-                    // @ts-ignore
-                    const x: any = this.x;
-                    // @ts-ignore
-                    const y: any = this.y;
-                    if (x && y) {
-                        return `<div><strong>Timestamp: </strong>${(new Date(x).toISOString())}</div><div><strong>Sensor value:</strong> ${y}</div>`
-                    } else {
-                        return;
-                    }
-                },
-                useHTML: true
-            }
         }
     }
 
-    parseAnalytics() {
+    updateAllCharts() {
         //const response = this.dataService.getAnalytics(this.selectedBattery, this.selectedStartTime, this.selectedEndTime);
-        const data = this.dataService.getAnalytics('VSTG4323PMC000011', this.selectedStartTime, this.selectedEndTime);
+        const data = this.dataService.getAnalytics('VSTG4323PMC000011', this.selectedStartTime, this.selectedEndTime).subscribe((data: any) => {
+            this.vehicleData = data.message.vehicle;
+            // draw vehicle chart
+            
+            const vehicleData = this.vehicleData.map((entry: { [x: string]: any; bucket: any; }) => [
+                (new Date(entry.bucket)).getTime(),
+                entry[this.selectedVehicleOption]
+            ]);
+            this.vehicleLineChartOptions = {
+                series: [{
+                    type: 'line',
+                    color: '#38EF7D',
+                    name: this.selectedVehicleOption,
+                    data: vehicleData
+                }],
+                ...this.analyticsOptionsInitialize()
+            };
 
-        const { vehicle, battery, cell } = data.message;
-        this.vehicleData = vehicle
-        this.batteryData = battery
-        this.cellData = cell
-        
-        this.updateChart1Options();
-        this.updateChart2Options();
-        this.updateChart3Options();
+            // draw battery chart
+            this.batteryData = data.message.battery;
+            const batteryData = this.batteryData.map((entry: { [x: string]: any; bucket: any; }) => [
+                (new Date(entry.bucket)).getTime(),
+                entry[this.selectedBatteryOption]
+            ]);
+
+            this.batteryLineChartOptions = {
+                series: [{
+                    type: 'line',
+                    color: '#FF9900',
+                    name: this.selectedBatteryOption,
+                    data: batteryData
+                }],
+                ...this.analyticsOptionsInitialize()
+            };
+
+            // draw cell chart
+            this.cellData = data.message.cell;
+ 
+            const seriesEntries = Object.keys(this.cellData).map((cellId): Highcharts.SeriesOptionsType => {
+                const cellData = this.cellData[cellId].map((entry: { [x: string]: any; bucket: any; }) => ([
+                  (new Date(entry.bucket)).getTime(),
+                  entry[this.selectedCellOption]
+                ]));
+            
+                return {
+                  data: cellData,
+                  color: '#DF2A5D',
+                  name: this.selectedCellOption + " (" + cellId +")",
+                  type: 'line'
+                };
+              });
+
+            this.cellLineChartOptions = {
+                series: seriesEntries,
+                ...this.analyticsOptionsInitialize()
+            };
+
+        });
+
 
     }
 
