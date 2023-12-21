@@ -211,12 +211,11 @@
                             </div>
                         </div>
                         <div style="display: flex; justify-content: space-between;font-size: 12px;">
-                            <input (click)="resetData()"type="button" value="Reset">
-                            <input (click)="scenario1()"type="button" value="Voltage Scenario">
-                            <input (click)="scenario2()"type="button" value="Temperature Scenario">
+                            <span>Trigger Anomaly Models</span>
+                            <app-switch (click)="toggleAnomalyModelSwitch()"
+                                [currentState]="anomalyModels"></app-switch>
                         </div>
                     </div>
-    
 
                 </div>
             </div>
