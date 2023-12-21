@@ -205,7 +205,7 @@
                         <div class="highchart-groups">
                             <div *ngFor="let item of faultDetections | keyvalue">
                                 <div class="fd-label {{item.value['state']}} fault-tile"
-                                    (click)="showFaultHistory(item.value['title'],item.value['state'],item.key);">
+                                    (click)="item.value['state'] !== 'green' ? showFaultHistory(item.value['title'],item.value['state'],item.key) : null;">
                                     <span>{{item.value['title']}}</span>
                                 </div>
                             </div>
