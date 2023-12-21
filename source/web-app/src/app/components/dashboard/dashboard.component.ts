@@ -861,7 +861,7 @@ export class DashboardComponent implements OnInit {
         })
     }
     navigateToAnalytics() {
-        // annotation timestamp
-        this.router.navigate(['/analytics', this.selectedBattery, '2023-12-01T01:48:00.000Z']);
-      }
+        const annotationTimestamp = this.faultData.find((model: { modelName: string; }) => model.modelName === this.faultDetectionTitle).annotationTimestamp;
+        this.router.navigate(['/analytics', this.selectedBattery, annotationTimestamp]);
+    }
 }
