@@ -74,6 +74,18 @@ export class DataService {
       return this.http.get<any>(`${localhost_URL}/faults/?batteryId=VSTG4323PMC000011`);
     }
 
+    getThermalRunawayResults(batteryId: string) {
+        const localhost_URL = "http://localhost:3000";
+        const params = { batteryId: "VSTG4323PMC000011" };
+        return this.http.get<any>(`${localhost_URL}/lithium-plating`, { params: params });
+    }
+
+    getLithiumPlatingResults(batteryId: string) {
+        const localhost_URL = "http://localhost:3000";
+        const params = { batteryId: "VSTG4323PMC000011" };
+        return this.http.get<any>(`${localhost_URL}/thermal-runaway`, { params: params });
+    }
+
     getAnalytics(batteryId: string, startTime: string, endTime: string): Observable<any> {
         //const response =this.http.get<any>(`${this.EATRON_API_URL}/batteries/${batteryId}/faults`, {
         //});
