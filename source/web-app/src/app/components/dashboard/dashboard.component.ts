@@ -57,6 +57,7 @@ export class DashboardComponent implements OnInit {
     drift = 0;
     moduleId: any;
     dtc_message: string = "";
+    private intervalId: any;
     private streamingInterval: any;
     private sohData: any[] = [];
     private futureSOHData: any[] = [];
@@ -420,6 +421,19 @@ export class DashboardComponent implements OnInit {
 
     toggleAnomalyModelSwitch() {
         this.anomalyModels = !this.anomalyModels;
+        if (this.anomalyModels) {
+            this.intervalId = setInterval(() => {
+              this.sendTriggerModelsRequest();
+            }, 30000);
+          } else {
+            clearInterval(this.intervalId);
+          }
+    }
+
+    private sendTriggerModelsRequest() {
+        this.dataService.getTriggerAnomalyResult(this.selectedBattery).subscribe(response => {
+           console.log(response);
+        });
     }
 
     setBatteryVoltageTemp() {
@@ -476,6 +490,7 @@ export class DashboardComponent implements OnInit {
     }
 
     getFaultDetections(batteryId: string) {
+        /*
         this.websocketService.receiveMessage().subscribe((message: any) => {
 
             if (message.test_vehicle) {
@@ -492,7 +507,7 @@ export class DashboardComponent implements OnInit {
             }
         }
         );
-        
+        */
         this.dataService.getLithiumPlatingResults(batteryId).subscribe((data: any) => {
             this.faultData.push(data.message);
             this.faultData.forEach((model: { modelName: string; }) => {
