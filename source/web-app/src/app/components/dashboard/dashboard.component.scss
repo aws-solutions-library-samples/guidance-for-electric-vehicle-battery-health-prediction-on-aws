@@ -761,6 +761,7 @@
   z-index: 1000;
 
   .charging-target-container {
+    width: 50%;
     border-radius: 8px;
     background: #2D343D;
     box-shadow: 2px 2px 2px #1B1E20;
@@ -916,4 +917,32 @@
 .sup {
   font-size: 12px !important;
   padding: 0 2px;
+}
+
+.fault-tile {
+  cursor: pointer;
+}
+
+.analytics-button {
+  display: inline-block;
+  background-color: green;
+  color: #fff;
+  min-width: 120px;
+  max-width: 120px;
+  border: 2px solid #fff;
+  border-radius: 16px;
+  height: 26px;
+  font-size: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 2%;
+  margin-right: auto;
+  margin-bottom: 1%;
+  cursor: pointer;
+}
+
+.analytics-button.far-right {
+  margin-left: auto;
+  margin-right: 2%;
 }

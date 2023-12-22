@@ -48,6 +48,14 @@ import { DatasetSelectionComponent } from './components/pipeline/components/data
 import { TabsComponent } from './components/pipeline/components/tabs/tabs.component';
 import { PluginSelectionComponent } from './components/pipeline/components/plugin-selection/plugin-selection.component';
 import { BatteryInfoComponent } from './components/dashboard/components/battery-info/battery-info.component';
+import { AnalyticsComponent } from "./components/dashboard/components/analytics/analytics.component";
+
+
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { WebsocketService } from './services/websocket.service';
+
+const config: SocketIoConfig = { url: 'https://cloud.us.eatron.com', options: {path: '/realtime/v1/ws'} };
+
 
 function getMapInfo(config: any) {
     const geo: any = {
@@ -114,6 +122,7 @@ function appInitializer(metadataService: ConfigService, authService: AuthService
         LoginComponent,
         PipelineComponent,
         DashboardComponent,
+        AnalyticsComponent,
         TrackerComponent,
         IndicatorComponent,
         HistoryComponent,
@@ -140,6 +149,7 @@ function appInitializer(metadataService: ConfigService, authService: AuthService
         MatIconModule,
         MatPaginatorModule,
         MatCheckboxModule,
+        SocketIoModule.forRoot(config)
     ],
     providers: [
         {
@@ -149,6 +159,7 @@ function appInitializer(metadataService: ConfigService, authService: AuthService
             deps: [ConfigService, AuthService],
         },
         {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+        WebsocketService
     ],
     bootstrap: [AppComponent],
 })

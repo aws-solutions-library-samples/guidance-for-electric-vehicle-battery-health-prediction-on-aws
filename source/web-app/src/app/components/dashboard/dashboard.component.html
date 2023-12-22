@@ -6,6 +6,7 @@
         </div>
     </div>
 </app-header>
+<router-outlet></router-outlet>
 <div class="map-container" *ngIf="batteries?.length && !selectedBattery">
     <app-map [batteries]="batteries" (batterySelectionEmitter)="updateBatteryData($event)"
         (mapCreationEmitter)="showSpinner = !$event"></app-map>
@@ -13,7 +14,7 @@
 <div class="retrain-message-container" *ngIf="selectedBattery && battery && showRetrainMessage">
     <img src="assets/icons/info.png" alt="info icon">
     <div class="retrain-message">
-        <span>Pipline is retraining. This dashboard will be updated with new data once retraining is completed.</span>
+        <span>Pipeline is retraining. This dashboard will be updated with new data once retraining is completed.</span>
         <span (click)="showPipelineStatus = true">View retraining status</span>
     </div>
 </div>
@@ -29,6 +30,7 @@
                             <img src="/assets/icons/info.png" alt="Battery details" width="15" height="15"
                                 style="cursor:pointer;" (click)="showBatteryInfo = !showBatteryInfo" />
                         </h3>
+                        <button (click)="navigateToAnalytics()" class="analytics-button">See Analytics</button>
                         <h4>{{ dtc_message }}</h4>
                         <h4>{{ battery?.numberOfModules }} Modules</h4>
                     </div>
@@ -202,19 +204,18 @@
                         </h4>
                         <div class="highchart-groups">
                             <div *ngFor="let item of faultDetections | keyvalue">
-                                <div class="fd-label {{item.value['state']}}"
-                                    (click)="showFaultHistory(item.value['title'],item.value['state']);">
+                                <div class="fd-label {{item.value['state']}} fault-tile"
+                                    (click)="item.value['state'] !== 'green' ? showFaultHistory(item.value['title'],item.value['state'],item.key) : null;">
                                     <span>{{item.value['title']}}</span>
                                 </div>
                             </div>
                         </div>
                         <div style="display: flex; justify-content: space-between;font-size: 12px;">
-                            <input (click)="resetData()"type="button" value="Reset">
-                            <input (click)="scenario1()"type="button" value="Voltage Scenario">
-                            <input (click)="scenario2()"type="button" value="Temperature Scenario">
+                            <span>Trigger Anomaly Models</span>
+                            <app-switch (click)="toggleAnomalyModelSwitch()"
+                                [currentState]="anomalyModels"></app-switch>
                         </div>
                     </div>
-    
 
                 </div>
             </div>
@@ -294,25 +295,37 @@
         <div class="charging-target-header">
             <span>{{ faultDetectionTitle }} History</span>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Time</th>
-                    <th>Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of faultHistory">
-                    <td>{{ item[0] | date : 'yyyy-MM-dd HH:mm:ss'}}</td>
-                    <td>{{ item[1] }}</td>
-                </tr>
-                
-            </tbody>
-        </table>
+
+        <div *ngIf="currentRealTimeFaultData" style="justify-content: center;display: flex;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Occurances</th>
+                        <th>Last Error Duration</th>
+                        <th>Average Error Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr >
+                        <td>{{ currentRealTimeFaultData.lastOccurTimestamp }}</td>
+                        <td>{{ currentRealTimeFaultData.count }}</td>
+                        <td>{{ currentRealTimeFaultData.duration }}</td>
+                        <td>{{ currentRealTimeFaultData.AverageDuration }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+         <div *ngIf="!currentRealTimeFaultData">
+            <highcharts-chart *ngIf="faultLineChartOptions" [Highcharts]="highcharts" [options]="faultLineChartOptions"
+                [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
+        </div> 
+
         <div class="retrain-action">
             <button class="upload-action-secondary" (click)="showFaultDetectionDetails = false;">Close</button>
         </div>
-
+        <button (click)="navigateToAnalytics()" class="analytics-button far-right">See Analytics</button>
     </div>
 </div>
 <div class="retrain-pipeline-modal" *ngIf="selectedBattery && retrain">

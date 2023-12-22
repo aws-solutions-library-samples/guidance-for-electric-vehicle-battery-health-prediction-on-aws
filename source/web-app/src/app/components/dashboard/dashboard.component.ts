@@ -25,6 +25,8 @@ import SolidGauge from 'highcharts/modules/solid-gauge';
 import HC_more from "highcharts/highcharts-more";
 import { Auth } from "aws-amplify";
 
+import { WebsocketService } from '../../services/websocket.service';
+
 AnnotationsModule(Highcharts);
 HC_more(Highcharts);
 SolidGauge(Highcharts);
@@ -55,6 +57,7 @@ export class DashboardComponent implements OnInit {
     drift = 0;
     moduleId: any;
     dtc_message: string = "";
+    private intervalId: any;
     private streamingInterval: any;
     private sohData: any[] = [];
     private futureSOHData: any[] = [];
@@ -107,14 +110,15 @@ export class DashboardComponent implements OnInit {
     batteryVoltages: number[] = [];
     batteryTemperature: number[] = [];
     faultHistory: any[any] = []
+    faultData: any = [];
+    faultRealTimeData: any = {};
+    currentFaultData: any = {};
+    currentRealTimeFaultData: any = {};
+    faultLineChartOptions: any = {};
+    faultStatistics: any = {};
     faultDetections = {
         "AcceleratedAging": {
             "title": "Accelerated Aging",
-            "state": "green",
-            "value": 10
-        },
-        "ThermalEnergy": {
-            "title": "Thermal Energy",
             "state": "green",
             "value": 10
         },
@@ -157,6 +161,21 @@ export class DashboardComponent implements OnInit {
             "title": "Over Current",
             "state": "green",
             "value": 30
+        },
+        "AccDeg": {
+            "title": "Accelerated Degradation",
+            "state": "green",
+            "value": 30
+        },
+        "Lithium Plating": {
+            "title": "Lithium Plating",
+            "state": "green",
+            "value": 30         
+        },
+        "Thermal Runaway": {
+            "title": "Thermal Runaway",
+            "state": "green",
+            "value": 30         
         }
     };
     initialFaultDetections = {
@@ -239,12 +258,14 @@ export class DashboardComponent implements OnInit {
     cellBalancing = false;
     startCooling = true;
     startHeating = false;
+    anomalyModels = false;
     eolDate: Date | undefined;
 
     constructor(private apiService: APIService,
         private dataService: DataService,
         private activatedRoute: ActivatedRoute,
-        private router: Router) {
+        private router: Router,
+        private websocketService: WebsocketService) {
         this.activatedRoute.queryParams.subscribe((params: any) => {
             if (params.uuid) {
                 this.pipelineId = params.uuid;
@@ -253,6 +274,7 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.websocketService.connect();
         Auth.currentUserInfo().then(user => {
             this.username = user.username.split('@')[0];
             if (!this.pipelineId) {
@@ -368,101 +390,6 @@ export class DashboardComponent implements OnInit {
     }
 
 
-    async scenario1() {
-        this.resetData();
-        this.battery.modulesUnderWarning = [];
-        this.battery.modulesInDanger = [];
-        this.dtc_message = "Possible DTC detected. Command to disconnect the Battery sent.";
-        // const initialFaultDetections = this.initialFaultDetections
-        // this.faultDetections = initialFaultDetections;
-        this.faultDetections["OverTemp"]["state"] = "green";
-        this.faultDetections["Overvoltage"]["state"] = "green";
-        while (this.battery.modulesUnderWarning.length < 4) {
-            let randInt = this.getRandomInt(1, this.battery?.numberOfModules + 1);
-            if (this.battery.modulesUnderWarning.includes(randInt) == false) {
-                this.battery.modulesUnderWarning.push(randInt);
-            }
-        }
-
-        // this.battery.modulesUnderWarning = this.getMultipleRandom(4);
-        this.faultDetections["Overvoltage"]["state"] = "warning";
-
-        this.battery.modulesUnderWarning.forEach((element: number) => {
-            this.batteryVoltages[element - 1] = this.getRandomFloat(4.5, 5, 2);
-        });
-        // for (let k=0; k<this.battery.modulesUnderWarning.length; k++){
-        //     this.batteryVoltages[k] = this.getRandomFloat(4.5,5,2);
-        // }
-
-        this.battery.modulesInDanger = [];
-
-        setTimeout(() => {
-            this.battery.modulesInDanger = this.battery.modulesUnderWarning;
-            this.battery.modulesUnderWarning = [];
-            this.battery.modulesInDanger.forEach((element: number) => {
-                this.batteryVoltages[element - 1] = this.getRandomFloat(5.3, 5.6, 2);
-            });
-
-            this.faultDetections["Overvoltage"]["state"] = "danger";
-            for (let i = 0; i < this.battery?.numberOfModules + 1; i++) {
-                setTimeout(() => {
-                    this.battery.modulesInDanger.push(i);
-                    this.dtc_message = "DTC : Err_overvoltage_Module_1";
-                    // this.batteryVoltages[k] = this.getRandomFloat(5.3,5.6,2);
-                }, i * 3000);
-            }
-        }, 120000);
-    }
-
-    scenario2() {
-        this.resetData();
-        this.battery.modulesUnderWarning = [];
-        this.battery.modulesInDanger = [];
-        this.dtc_message = "Possible DTC detected. Command to disconnect the Battery sent.";
-        this.faultDetections["OverTemp"]["state"] = "green";
-        this.faultDetections["Overvoltage"]["state"] = "green";
-        // const initialFaultDetections = this.initialFaultDetections
-        // this.faultDetections = initialFaultDetections;
-        while (this.battery.modulesUnderWarning.length < 4) {
-            let randInt = this.getRandomInt(1, this.battery?.numberOfModules + 1);
-            if (this.battery.modulesUnderWarning.includes(randInt) == false) {
-                this.battery.modulesUnderWarning.push(randInt);
-            }
-        }
-
-        // this.battery.modulesUnderWarning = this.getMultipleRandom(4);
-        this.faultDetections["OverTemp"]["state"] = "warning";
-
-        this.battery.modulesInDanger = [];
-        this.battery.modulesUnderWarning.forEach((element: number) => {
-            this.batteryTemperature[element - 1] = this.getRandomInt(45, 56);
-        });
-
-        // for (let k=0; k<this.battery.modulesUnderWarning.length; k++){
-        //     this.batteryTemperature[k] = this.getRandomInt(45,56);
-        // }
-
-        setTimeout(() => {
-            this.battery.modulesInDanger = this.battery.modulesUnderWarning;
-            this.battery.modulesUnderWarning = [];
-            this.faultDetections["OverTemp"]["state"] = "danger";
-            this.battery.modulesInDanger.forEach((element: number) => {
-                this.batteryTemperature[element - 1] = this.getRandomInt(57, 60);
-            });
-
-            // for (let k=0; k<this.battery.modulesInDanger.length; k++){
-            //     this.batteryTemperature[k] = this.getRandomInt(57,60);
-            // }
-            for (let i = 0; i < this.battery?.numberOfModules + 1; i++) {
-                setTimeout(() => {
-                    this.battery.modulesInDanger.push(i);
-                    this.dtc_message = "DTC : Err_overtemperature_Module_1";
-                }, i * 3000);
-            }
-        }, 120000);
-    }
-
-
     retrainPipeline() {
         this.snoozedRetrain = false;
         this.showRetrainMessage = true;
@@ -491,15 +418,25 @@ export class DashboardComponent implements OnInit {
         this.forecastedStateOfCharge = 0;
         this.stopStreaming();
     }
-    resetData() {
-        this.faultDetections["OverTemp"]["state"] = "green";
-        this.faultDetections["Overvoltage"]["state"] = "green";
-        this.dtc_message = "";
-        this.battery.modulesUnderWarning = [];
-        this.battery.modulesInDanger = [];
-        this.setBatteryVoltageTemp();
 
+    toggleAnomalyModelSwitch() {
+        this.anomalyModels = !this.anomalyModels;
+        if (this.anomalyModels) {
+            this.sendTriggerModelsRequest();
+            this.intervalId = setInterval(() => {
+              this.sendTriggerModelsRequest();
+            }, 30000);
+          } else {
+            clearInterval(this.intervalId);
+          }
     }
+
+    private sendTriggerModelsRequest() {
+        this.dataService.getTriggerAnomalyResult(this.selectedBattery).subscribe(response => {
+           console.log(response);
+        });
+    }
+
     setBatteryVoltageTemp() {
         for (let i = 0; i < this.battery?.numberOfModules + 1; i++) {
             this.batteryVoltages.push(this.getRandomFloat(3, 4.2, 2));
@@ -509,10 +446,9 @@ export class DashboardComponent implements OnInit {
 
     updateBatteryData(batteryInfo: any) {
         this.displayText = 'Loading Dashboard...';
-        // const initialFaultDetections = this.initialFaultDetections
-        // this.faultDetections = initialFaultDetections;
-        this.faultDetections["OverTemp"]["state"] = "green";
-        this.faultDetections["Overvoltage"]["state"] = "green";
+        // this vehicle subscribe is for fault detection will be uncommented later
+        this.getFaultDetections(batteryInfo.VIN, batteryInfo.BatteryId);
+
         this.showSpinner = true;
         this.showError = false;
         this.selectedBattery = batteryInfo.BatteryId;
@@ -553,6 +489,39 @@ export class DashboardComponent implements OnInit {
         this.stopStreaming();
         this.setBatteryVoltageTemp();
         // this.vehicleSubscribe();
+    }
+
+    getFaultDetections(VIN: string, batteryId: string) {
+        this.websocketService.receiveMessage().subscribe((message: any) => {
+
+            if (message[VIN]) {
+                const faultData = message[VIN];
+                Object.keys(faultData).forEach((faultKey: string) => {
+                    if (faultKey === "timestamp") {
+                        return;
+                    }
+                        const faultName: string = faultKey;
+                    const fault: any = faultData[faultKey];
+                    this.faultDetections[faultName as keyof typeof this.faultDetections]["state"] = fault.state;
+                    this.faultRealTimeData[faultName as keyof typeof this.faultData] = fault.data;
+                });
+            }
+        }
+        );
+        
+        this.dataService.getLithiumPlatingResults(batteryId).subscribe((data: any) => {
+            this.faultData.push(data.message);
+            this.faultData.forEach((model: { modelName: string; }) => {
+                this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
+            })
+        });
+
+        this.dataService.getThermalRunawayResults(batteryId).subscribe((data: any) => {
+            this.faultData.push(data.message);
+            this.faultData.forEach((model: { modelName: string; }) => {
+                this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
+            })
+        });
     }
 
     updateFaultDetection() {
@@ -764,8 +733,8 @@ export class DashboardComponent implements OnInit {
     private handleError(err?: Error) {
         this.showSpinner = false;
         this.showPipelineStatus = false;
-        this.showError = true;
-        this.reset()();
+        // this.showError = true;
+        // this.reset()();
         console.log(err);
     }
 
@@ -790,31 +759,98 @@ export class DashboardComponent implements OnInit {
         this.eolDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + numberOfCyclesLeft);
     }
 
-    showFaultHistory(faultType: string, state: string) {
-        var tstamp = (new Date()).getTime();
-        let fault_history_array = [];
-        for (let i = 0; i < 10; i++) {
-            if (faultType == "Over Temp") {
-                fault_history_array.push([
-                    new Date(tstamp - i * 15000),
-                    this.getRandomInt(20, 55)
-                ]);
-            }
-            else if (faultType == "Over Voltage") {
-                fault_history_array.push([
-                    new Date(tstamp - i * 15000),
-                    this.getRandomFloat(2.2, 5, 2)
-                ]);
-            } else {
-                fault_history_array.push([
-                    new Date(tstamp - i * 15000),
-                    this.getRandomInt(3, 20)
-                ]);
-            }
-        }
-        this.faultHistory = fault_history_array;
-        this.faultDetectionTitle = faultType;
+    showFaultHistory(faultType: string, state: string, faultKey: string) {
+        this.currentRealTimeFaultData = this.faultRealTimeData[faultKey];
+        
+        
         this.showFaultDetectionDetails = true;
+        this.faultDetectionTitle = faultType;
+        if (this.currentRealTimeFaultData) {
+            return;
+        }
+        this.currentFaultData = this.faultData.find((model: { modelName: string; }) => model.modelName === faultKey).data;
+        
+        const type = faultKey === 'Thermal Runaway' ? 'datetime' : 'number';
+        this.setFaultLineChartOptions(this.currentFaultData, type);
+
+    }
+
+    private setFaultLineChartOptions(data: any[], x_type: string) {
+             
+        this.faultLineChartOptions = {
+            series: [
+                {
+                    data: data,
+                    color: '#38EF7D',
+                    name: 'Probabilities',
+                    type: 'line'
+                },
+            ],
+            chart: {
+                type: 'line',
+                backgroundColor: '#2D343D',
+                zoomType: 'x',
+                panning: true,
+                panKey: 'shift',
+                reflow: false,
+            },
+            colorAxis: [{
+                gridLineColor: '#e6e6e6'
+            }],
+            title: {
+                text: '',
+                style: {
+                    fontSize: 24,
+                    textAlign: 'left',
+                    color: 'white',
+                },
+                useHTML: true,
+                align: 'left',
+            },
+            credits: {
+                enabled: false
+            },
+            yAxis: {
+                labels: {
+                    style: {
+                        color: '#fff'
+                    },
+                },
+                title: {
+                    text: 'Probability (%)',
+                    style: {
+                        color: '#fff'
+                    }
+                },
+                gridLineColor: '#888',
+                gridLineWidth: 1,
+            },
+            xAxis: {
+                type: x_type,
+                labels: {
+                    style: {
+                        color: '#fff'
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: '#2D343D',
+                style: { color: '#fff' },
+                //@ts-ignore
+                formatter: function () {
+                    // @ts-ignore
+                    const x: any = this.x;
+                    // @ts-ignore
+                    const y: any = this.y;
+                    if (x && y) {
+                        return `<div><strong>Cell Index: </strong>${x}</div><div><strong>Probability:</strong> ${y}%</div>`
+                    } else {
+                        return;
+                    }
+                },
+                useHTML: true
+            }
+        };
     }
 
     async vehicleSubscribe() {
@@ -839,5 +875,9 @@ export class DashboardComponent implements OnInit {
                 }
             }
         })
+    }
+    navigateToAnalytics() {
+        const annotationTimestamp = this.faultData.find((model: { modelName: string; }) => model.modelName === this.faultDetectionTitle).annotationTimestamp;
+        this.router.navigate(['/analytics', this.selectedBattery, annotationTimestamp]);
     }
 }

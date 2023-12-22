@@ -231,7 +231,6 @@ def get_avg_qd(df):
 
 
 # Store original Qd values for each battery in dictionary
-# {'b3': 1.0652467558781307, 'b1': 1.0782249867916107}
 def calc_qd_orig(df):
     min_cycle = df.select(min_("cycle")).first().asDict()['min(cycle)']
     df_min = df.filter(df['cycle'] == min_cycle).drop('cycle')
