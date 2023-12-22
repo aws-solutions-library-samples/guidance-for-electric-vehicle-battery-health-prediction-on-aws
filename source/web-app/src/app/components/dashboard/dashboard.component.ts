@@ -57,6 +57,7 @@ export class DashboardComponent implements OnInit {
     drift = 0;
     moduleId: any;
     dtc_message: string = "";
+    private intervalId: any;
     private streamingInterval: any;
     private sohData: any[] = [];
     private futureSOHData: any[] = [];
@@ -109,7 +110,7 @@ export class DashboardComponent implements OnInit {
     batteryVoltages: number[] = [];
     batteryTemperature: number[] = [];
     faultHistory: any[any] = []
-    faultData: any = {};
+    faultData: any = [];
     faultRealTimeData: any = {};
     currentFaultData: any = {};
     currentRealTimeFaultData: any = {};
@@ -257,6 +258,7 @@ export class DashboardComponent implements OnInit {
     cellBalancing = false;
     startCooling = true;
     startHeating = false;
+    anomalyModels = false;
     eolDate: Date | undefined;
 
     constructor(private apiService: APIService,
@@ -388,101 +390,6 @@ export class DashboardComponent implements OnInit {
     }
 
 
-    async scenario1() {
-        this.resetData();
-        this.battery.modulesUnderWarning = [];
-        this.battery.modulesInDanger = [];
-        this.dtc_message = "Possible DTC detected. Command to disconnect the Battery sent.";
-        // const initialFaultDetections = this.initialFaultDetections
-        // this.faultDetections = initialFaultDetections;
-        this.faultDetections["OverTemp"]["state"] = "green";
-        this.faultDetections["Overvoltage"]["state"] = "green";
-        while (this.battery.modulesUnderWarning.length < 4) {
-            let randInt = this.getRandomInt(1, this.battery?.numberOfModules + 1);
-            if (this.battery.modulesUnderWarning.includes(randInt) == false) {
-                this.battery.modulesUnderWarning.push(randInt);
-            }
-        }
-
-        // this.battery.modulesUnderWarning = this.getMultipleRandom(4);
-        this.faultDetections["Overvoltage"]["state"] = "warning";
-
-        this.battery.modulesUnderWarning.forEach((element: number) => {
-            this.batteryVoltages[element - 1] = this.getRandomFloat(4.5, 5, 2);
-        });
-        // for (let k=0; k<this.battery.modulesUnderWarning.length; k++){
-        //     this.batteryVoltages[k] = this.getRandomFloat(4.5,5,2);
-        // }
-
-        this.battery.modulesInDanger = [];
-
-        setTimeout(() => {
-            this.battery.modulesInDanger = this.battery.modulesUnderWarning;
-            this.battery.modulesUnderWarning = [];
-            this.battery.modulesInDanger.forEach((element: number) => {
-                this.batteryVoltages[element - 1] = this.getRandomFloat(5.3, 5.6, 2);
-            });
-
-            this.faultDetections["Overvoltage"]["state"] = "danger";
-            for (let i = 0; i < this.battery?.numberOfModules + 1; i++) {
-                setTimeout(() => {
-                    this.battery.modulesInDanger.push(i);
-                    this.dtc_message = "DTC : Err_overvoltage_Module_1";
-                    // this.batteryVoltages[k] = this.getRandomFloat(5.3,5.6,2);
-                }, i * 3000);
-            }
-        }, 120000);
-    }
-
-    scenario2() {
-        this.resetData();
-        this.battery.modulesUnderWarning = [];
-        this.battery.modulesInDanger = [];
-        this.dtc_message = "Possible DTC detected. Command to disconnect the Battery sent.";
-        this.faultDetections["OverTemp"]["state"] = "green";
-        this.faultDetections["Overvoltage"]["state"] = "green";
-        // const initialFaultDetections = this.initialFaultDetections
-        // this.faultDetections = initialFaultDetections;
-        while (this.battery.modulesUnderWarning.length < 4) {
-            let randInt = this.getRandomInt(1, this.battery?.numberOfModules + 1);
-            if (this.battery.modulesUnderWarning.includes(randInt) == false) {
-                this.battery.modulesUnderWarning.push(randInt);
-            }
-        }
-
-        // this.battery.modulesUnderWarning = this.getMultipleRandom(4);
-        this.faultDetections["OverTemp"]["state"] = "warning";
-
-        this.battery.modulesInDanger = [];
-        this.battery.modulesUnderWarning.forEach((element: number) => {
-            this.batteryTemperature[element - 1] = this.getRandomInt(45, 56);
-        });
-
-        // for (let k=0; k<this.battery.modulesUnderWarning.length; k++){
-        //     this.batteryTemperature[k] = this.getRandomInt(45,56);
-        // }
-
-        setTimeout(() => {
-            this.battery.modulesInDanger = this.battery.modulesUnderWarning;
-            this.battery.modulesUnderWarning = [];
-            this.faultDetections["OverTemp"]["state"] = "danger";
-            this.battery.modulesInDanger.forEach((element: number) => {
-                this.batteryTemperature[element - 1] = this.getRandomInt(57, 60);
-            });
-
-            // for (let k=0; k<this.battery.modulesInDanger.length; k++){
-            //     this.batteryTemperature[k] = this.getRandomInt(57,60);
-            // }
-            for (let i = 0; i < this.battery?.numberOfModules + 1; i++) {
-                setTimeout(() => {
-                    this.battery.modulesInDanger.push(i);
-                    this.dtc_message = "DTC : Err_overtemperature_Module_1";
-                }, i * 3000);
-            }
-        }, 120000);
-    }
-
-
     retrainPipeline() {
         this.snoozedRetrain = false;
         this.showRetrainMessage = true;
@@ -511,15 +418,25 @@ export class DashboardComponent implements OnInit {
         this.forecastedStateOfCharge = 0;
         this.stopStreaming();
     }
-    resetData() {
-        this.faultDetections["OverTemp"]["state"] = "green";
-        this.faultDetections["Overvoltage"]["state"] = "green";
-        this.dtc_message = "";
-        this.battery.modulesUnderWarning = [];
-        this.battery.modulesInDanger = [];
-        this.setBatteryVoltageTemp();
 
+    toggleAnomalyModelSwitch() {
+        this.anomalyModels = !this.anomalyModels;
+        if (this.anomalyModels) {
+            this.sendTriggerModelsRequest();
+            this.intervalId = setInterval(() => {
+              this.sendTriggerModelsRequest();
+            }, 30000);
+          } else {
+            clearInterval(this.intervalId);
+          }
     }
+
+    private sendTriggerModelsRequest() {
+        this.dataService.getTriggerAnomalyResult(this.selectedBattery).subscribe(response => {
+           console.log(response);
+        });
+    }
+
     setBatteryVoltageTemp() {
         for (let i = 0; i < this.battery?.numberOfModules + 1; i++) {
             this.batteryVoltages.push(this.getRandomFloat(3, 4.2, 2));
@@ -530,7 +447,7 @@ export class DashboardComponent implements OnInit {
     updateBatteryData(batteryInfo: any) {
         this.displayText = 'Loading Dashboard...';
         // this vehicle subscribe is for fault detection will be uncommented later
-        this.getFaultDetections(batteryInfo.VIN, 'VSTG4323PMC000011');
+        this.getFaultDetections(batteryInfo.VIN, batteryInfo.BatteryId);
 
         this.showSpinner = true;
         this.showError = false;
@@ -577,7 +494,6 @@ export class DashboardComponent implements OnInit {
     getFaultDetections(VIN: string, batteryId: string) {
         this.websocketService.receiveMessage().subscribe((message: any) => {
 
-            
             if (message[VIN]) {
                 const faultData = message[VIN];
                 Object.keys(faultData).forEach((faultKey: string) => {
@@ -592,13 +508,20 @@ export class DashboardComponent implements OnInit {
             }
         }
         );
-        this.dataService.getFaults(batteryId).subscribe((data: any) => {
-            this.faultData = data.message;
+        
+        this.dataService.getLithiumPlatingResults(batteryId).subscribe((data: any) => {
+            this.faultData.push(data.message);
             this.faultData.forEach((model: { modelName: string; }) => {
                 this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
-            }) 
+            })
         });
-        
+
+        this.dataService.getThermalRunawayResults(batteryId).subscribe((data: any) => {
+            this.faultData.push(data.message);
+            this.faultData.forEach((model: { modelName: string; }) => {
+                this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
+            })
+        });
     }
 
     updateFaultDetection() {
@@ -810,8 +733,8 @@ export class DashboardComponent implements OnInit {
     private handleError(err?: Error) {
         this.showSpinner = false;
         this.showPipelineStatus = false;
-        this.showError = true;
-        this.reset()();
+        // this.showError = true;
+        // this.reset()();
         console.log(err);
     }
 
@@ -954,7 +877,7 @@ export class DashboardComponent implements OnInit {
         })
     }
     navigateToAnalytics() {
-        // annotation timestamp
-        this.router.navigate(['/analytics', this.selectedBattery, '2023-12-01T01:48:00.000Z']);
-      }
+        const annotationTimestamp = this.faultData.find((model: { modelName: string; }) => model.modelName === this.faultDetectionTitle).annotationTimestamp;
+        this.router.navigate(['/analytics', this.selectedBattery, annotationTimestamp]);
+    }
 }

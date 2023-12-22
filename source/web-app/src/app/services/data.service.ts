@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
 
@@ -22,7 +22,7 @@ import {Observable} from "rxjs";
 })
 export class DataService {
     API_URL: string = "";
-    EATRON_API_URL = "";
+    EATRON_API_URL: string = "";
 
     constructor(private http: HttpClient) {
         if (environment.development && environment.API_GW_URL!= "") {
@@ -31,8 +31,7 @@ export class DataService {
             this.API_URL = environment.NG_APP_API;
         }
 
-        // this.EATRON_API_URL = "https://cloud.dev.eatron.com/bmc/v2";
-        this.EATRON_API_URL = "http://localhost:4000/bmc/v2";
+        this.EATRON_API_URL = "https://cloud.us.eatron.com/api/v1";
     }
 
     getSignedUrl(key: string): Observable<any> {
@@ -69,12 +68,24 @@ export class DataService {
         return this.http.post<any>(`${this.API_URL}/api/refresh?battery=${battery}`,null);
     }
 
-    getFaults(batteryId: string) {
-      const localhost_URL = "http://localhost:3000";
-      return this.http.get<any>(`${localhost_URL}/faults/?batteryId=${batteryId}`);
+    getThermalRunawayResults(batteryId: string) {
+        const params = { batteryId: batteryId };
+        return this.http.get<any>(`${this.EATRON_API_URL}/lithium-plating`, { params: params });
+    }
+
+    getLithiumPlatingResults(batteryId: string) {
+        const params = new HttpParams().set('batteryId', batteryId);
+        return this.http.get<any>(`${this.EATRON_API_URL}/thermal-runaway`, { params: params });
     }
 
     getAnalytics(batteryId: string, startTime: string, endTime: string): Observable<any> {
-        return this.http.get<any>(`https://cloud.us.eatron.com/api/v1/analytics/?batteryId=${batteryId}&startTime=${startTime}&endTime=${endTime}`);
+        return this.http.get<any>(`${this.EATRON_API_URL}/analytics/?batteryId=${batteryId}&startTime=${startTime}&endTime=${endTime}`);
+    }
+
+    getTriggerAnomalyResult(batteryId: string): Observable<any> {
+        const URL= "https://m8afpaf8w4.execute-api.us-east-1.amazonaws.com/v1/trigger-anomaly"
+        const headers = new HttpHeaders().set('x-api-key', '7AittF0Dde1b12mcRW2qV55Erwbqs6tS985BrENN');
+        const params = new HttpParams().set('vehicleId', batteryId);
+        return this.http.get<any>(`${URL}`, { headers: headers, params: params });
     }
 }
