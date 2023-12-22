@@ -530,7 +530,7 @@ export class DashboardComponent implements OnInit {
     updateBatteryData(batteryInfo: any) {
         this.displayText = 'Loading Dashboard...';
         // this vehicle subscribe is for fault detection will be uncommented later
-        //this.getFaultDetections('VSTG4323PMC000011');
+        this.getFaultDetections(batteryInfo.VIN, 'VSTG4323PMC000011');
 
         this.showSpinner = true;
         this.showError = false;
@@ -574,11 +574,12 @@ export class DashboardComponent implements OnInit {
         // this.vehicleSubscribe();
     }
 
-    getFaultDetections(batteryId: string) {
+    getFaultDetections(VIN: string, batteryId: string) {
         this.websocketService.receiveMessage().subscribe((message: any) => {
 
-            if (message.test_vehicle) {
-                const faultData = message.test_vehicle;
+            
+            if (message[VIN]) {
+                const faultData = message[VIN];
                 Object.keys(faultData).forEach((faultKey: string) => {
                     if (faultKey === "timestamp") {
                         return;
