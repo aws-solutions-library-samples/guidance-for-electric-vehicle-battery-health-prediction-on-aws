@@ -211,7 +211,7 @@ export class AnalyticsComponent implements OnInit {
     }
 
     updateAllCharts() {
-        const data = this.dataService.getAnalytics('VSTG4323PMC000011', this.selectedStartTime, this.selectedEndTime).subscribe((data: any) => {
+        const data = this.dataService.getAnalytics(this.selectedBattery, this.selectedStartTime, this.selectedEndTime).subscribe((data: any) => {
             this.vehicleData = data.message.vehicle;
             this.batteryData = data.message.battery;
             this.cellData = data.message.cell;

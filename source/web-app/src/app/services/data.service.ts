@@ -69,23 +69,23 @@ export class DataService {
     }
 
     getThermalRunawayResults(batteryId: string) {
-        const params = { batteryId: "VSTG4323PMC000011" };
+        const params = { batteryId: batteryId };
         return this.http.get<any>(`${this.EATRON_API_URL}/lithium-plating`, { params: params });
     }
 
     getLithiumPlatingResults(batteryId: string) {
-        const params = new HttpParams().set('batteryId', "VSTG4323PMC000011");
+        const params = new HttpParams().set('batteryId', batteryId);
         return this.http.get<any>(`${this.EATRON_API_URL}/thermal-runaway`, { params: params });
     }
 
     getAnalytics(batteryId: string, startTime: string, endTime: string): Observable<any> {
-        return this.http.get<any>(`${this.EATRON_API_URL}/analytics/?batteryId=VSTG4323PMC000011&startTime=2023-12-01 00:00:00&endTime=2023-12-03 00:00:00`);
+        return this.http.get<any>(`${this.EATRON_API_URL}/analytics/?batteryId=${batteryId}&startTime=${startTime}&endTime=${endTime}`);
     }
 
     getTriggerAnomalyResult(batteryId: string): Observable<any> {
         const URL= "https://m8afpaf8w4.execute-api.us-east-1.amazonaws.com/v1/trigger-anomaly"
         const headers = new HttpHeaders().set('x-api-key', '7AittF0Dde1b12mcRW2qV55Erwbqs6tS985BrENN');
-        const params = new HttpParams().set('vehicleId', "KNADE163966083101");
+        const params = new HttpParams().set('vehicleId', batteryId);
         return this.http.get<any>(`${URL}`, { headers: headers, params: params });
     }
 }

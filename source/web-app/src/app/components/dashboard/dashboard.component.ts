@@ -422,6 +422,7 @@ export class DashboardComponent implements OnInit {
     toggleAnomalyModelSwitch() {
         this.anomalyModels = !this.anomalyModels;
         if (this.anomalyModels) {
+            this.sendTriggerModelsRequest();
             this.intervalId = setInterval(() => {
               this.sendTriggerModelsRequest();
             }, 30000);
@@ -446,7 +447,7 @@ export class DashboardComponent implements OnInit {
     updateBatteryData(batteryInfo: any) {
         this.displayText = 'Loading Dashboard...';
         // this vehicle subscribe is for fault detection will be uncommented later
-        this.getFaultDetections(batteryInfo.VIN, 'VSTG4323PMC000011');
+        this.getFaultDetections(batteryInfo.VIN, batteryInfo.BatteryId);
 
         this.showSpinner = true;
         this.showError = false;
@@ -732,8 +733,8 @@ export class DashboardComponent implements OnInit {
     private handleError(err?: Error) {
         this.showSpinner = false;
         this.showPipelineStatus = false;
-        this.showError = true;
-        this.reset()();
+        // this.showError = true;
+        // this.reset()();
         console.log(err);
     }
 
