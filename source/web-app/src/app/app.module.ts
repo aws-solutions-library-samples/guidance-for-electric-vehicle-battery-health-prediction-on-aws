@@ -54,7 +54,7 @@ import { AnalyticsComponent } from "./components/dashboard/components/analytics/
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { WebsocketService } from './services/websocket.service';
 
-const config: SocketIoConfig = { url: 'localhost:3500', options: {} };
+const config: SocketIoConfig = { url: 'https://cloud.us.eatron.com', options: {path: '/realtime/v1/ws'} };
 
 
 function getMapInfo(config: any) {

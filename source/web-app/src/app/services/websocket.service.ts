@@ -23,6 +23,6 @@ export class WebsocketService {
   receiveMessage() {
     console.log("receiveMessage");
     // Listen for incoming messages from the WebSocket server
-    return this.socket.fromEvent('message');
+    return this.socket.fromEvent('modelResults');
   }
 }
