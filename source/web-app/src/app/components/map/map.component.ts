@@ -61,9 +61,9 @@ export class MapComponent implements AfterViewInit {
             const pulse = document.createElement('div');
             loc.classList.add('loc');
             pin.classList.add("pin");
-            if (l.BatteryId === 'b1')
+            if (l.BatteryId === 'KNADE163966083101')
                 pin.classList.add('charging')
-            else if (l.BatteryId === 'b2')
+            else if (l.BatteryId === 'KNADE16396608312')
                 pin.classList.add('not-charging')
             else
                 pin.classList.add('need-charging')
