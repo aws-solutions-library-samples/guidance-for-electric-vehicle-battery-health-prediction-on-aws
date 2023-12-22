@@ -71,14 +71,10 @@ export class DataService {
 
     getFaults(batteryId: string) {
       const localhost_URL = "http://localhost:3000";
-      return this.http.get<any>(`${localhost_URL}/faults/?batteryId=VSTG4323PMC000011`);
+      return this.http.get<any>(`${localhost_URL}/faults/?batteryId=${batteryId}`);
     }
 
     getAnalytics(batteryId: string, startTime: string, endTime: string): Observable<any> {
-        //const response =this.http.get<any>(`${this.EATRON_API_URL}/batteries/${batteryId}/faults`, {
-        //});
-        // return response.data.success ? response.data.message : {}
-        const localhost_URL = "http://localhost:3000";
-        return this.http.get<any>(`http://localhost:3000/analytics/?batteryId=VSTG4323PMC000011&startTime=2023-12-01 00:00:00&endTime=2023-12-03 00:00:00`);
+        return this.http.get<any>(`https://cloud.us.eatron.com/api/v1/analytics/?batteryId=${batteryId}&startTime=${startTime}&endTime=${endTime}`);
     }
 }
