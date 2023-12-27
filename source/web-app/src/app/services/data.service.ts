@@ -84,8 +84,10 @@ export class DataService {
 
     getTriggerAnomalyResult(batteryId: string): Observable<any> {
         const URL= "https://m8afpaf8w4.execute-api.us-east-1.amazonaws.com/v1/trigger-anomaly"
-        const headers = new HttpHeaders().set('x-api-key', '7AittF0Dde1b12mcRW2qV55Erwbqs6tS985BrENN');
-        const params = new HttpParams().set('vehicleId', batteryId);
-        return this.http.get<any>(`${URL}`, { headers: headers, params: params });
+        const headers = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'x-api-key':  '7AittF0Dde1b12mcRW2qV55Erwbqs6tS985BrENN'
+        });
+        return this.http.post<any>(`${URL}`, {'vehicleId': batteryId}, { headers: headers });
     }
 }
