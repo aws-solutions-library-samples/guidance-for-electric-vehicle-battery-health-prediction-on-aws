@@ -877,7 +877,12 @@ export class DashboardComponent implements OnInit {
         })
     }
     navigateToAnalytics() {
-        const annotationTimestamp = this.faultData.find((model: { modelName: string; }) => model.modelName === this.faultDetectionTitle).annotationTimestamp;
-        this.router.navigate(['/analytics', this.selectedBattery, annotationTimestamp]);
+        const annotationTimestamp = this.faultData?.find((model: { modelName: string; }) => model.modelName === this.faultDetectionTitle)?.annotationTimestamp;
+        if(annotationTimestamp) {
+            this.router.navigate(['/analytics', this.selectedBattery, annotationTimestamp]);
+        }
+        else {
+            this.router.navigate(['/analytics', this.selectedBattery]);
+        }
     }
 }
