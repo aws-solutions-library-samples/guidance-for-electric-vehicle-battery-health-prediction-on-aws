@@ -12,39 +12,42 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-import {Injectable} from "@angular/core";
-import {Auth} from "aws-amplify";
-import {Router} from "@angular/router";
+import { Injectable } from "@angular/core";
+import { Auth } from "aws-amplify";
+import { Router } from "@angular/router";
 
 @Injectable({
-    providedIn: "root",
+  providedIn: "root",
 })
 export class AuthService {
-    isLoggedIn = false;
-    currentSession: any;
+  isLoggedIn = false;
+  currentSession: any;
 
-    constructor(private router: Router) {}
+  constructor(private router: Router) {}
 
-    async getLoginStatus() {
-        const currentSession = await Auth.currentSession();
-        return (this.isLoggedIn = currentSession.isValid());
-    }
+  async getLoginStatus() {
+    const currentSession = await Auth.currentSession();
+    return (this.isLoggedIn = currentSession.isValid());
+  }
 
-    logout() {
-        Auth.signOut().then(() => {
-            this.router.navigate(["/login"]).then();
-        });
-    }
+  logout() {
+    Auth.signOut().then(() => {
+      this.router.navigate(["/login"]).then();
+    });
+  }
 
-    getToken() {
-        return this.currentSession?.idToken?.jwtToken;
-    }
+  getToken() {
+    return this.currentSession?.idToken?.jwtToken;
+  }
 
-    setCurrentSession() {
-        Auth.currentSession().then((session) => {
-            this.isLoggedIn = true;
-            this.currentSession = session;
-            console.log('Successfully set the session');
-        }, () => console.log('User needs to log in'));
-    }
+  setCurrentSession() {
+    Auth.currentSession().then(
+      (session) => {
+        this.isLoggedIn = true;
+        this.currentSession = session;
+        console.log("Successfully set the session");
+      },
+      () => console.log("User needs to log in")
+    );
+  }
 }

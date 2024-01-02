@@ -13,7 +13,7 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 */
 
-import { GlueClient, GetJobRunCommand } from "@aws-sdk/client-glue";
+import { GetJobRunCommand, GlueClient } from "@aws-sdk/client-glue";
 import { fromEnv } from "@aws-sdk/credential-providers";
 import { AppSyncClient } from "./appsync";
 
@@ -82,7 +82,7 @@ export async function handler(event?: any, context?: any) {
     if (status === "SUCCEEDED") {
       await update_ddb(pipeId, {
         CleaningFinishedAt: event["time"],
-        PipelineRetraining: false
+        PipelineRetraining: false,
       });
       data.push(`Pipeline status updated to ${process.env.PIPELINE_STATUS}`);
     } else {

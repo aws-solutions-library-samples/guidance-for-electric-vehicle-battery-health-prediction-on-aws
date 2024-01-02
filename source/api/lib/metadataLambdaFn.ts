@@ -14,8 +14,13 @@
  */
 const csv = require("csv-parser");
 
-import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
-import {CopyObjectCommand, GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import {
+  CopyObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 
 const s3 = new S3Client({ region: process.env.AWS_REGION });
 
@@ -47,26 +52,26 @@ async function getMetadata(event: any) {
     try {
       const getObjectParams = {
         Bucket: process.env.CDK_BUCKET,
-        Key: process.env.KEY
+        Key: process.env.KEY,
       };
       const getObjectCommand = new GetObjectCommand(getObjectParams);
-      const response: any = await s3.send(getObjectCommand)
+      const response: any = await s3.send(getObjectCommand);
       // Store all data chunks returned from the response data stream
       // into an array then use Array#join() to use the returned contents as a String
       let responseDataChunks: string[] = [];
 
       // Handle an error while streaming the response body
-      response.Body.once('error', (err: any) => reject(err))
+      response.Body.once("error", (err: any) => reject(err));
 
       // Attach a 'data' listener to add the chunks of data to our array
       // Each chunk is a Buffer instance
-      response.Body.on('data', (chunk: any) => responseDataChunks.push(chunk))
+      response.Body.on("data", (chunk: any) => responseDataChunks.push(chunk));
 
       // Once the stream has no more data, join the chunks into a string and return the string
-      response.Body.once('end', () => resolve(responseDataChunks.join('')))
+      response.Body.once("end", () => resolve(responseDataChunks.join("")));
     } catch (err) {
       // Handle the error or throw
-      return reject(err)
+      return reject(err);
     }
   });
 }
@@ -107,14 +112,14 @@ function getBatteryData(event: any) {
 async function copyDataset(event: any) {
   const s3Uri = event.queryStringParameters.uri;
   const Key = event.queryStringParameters.key;
-  let CopySource = '';
+  let CopySource = "";
   if (s3Uri) {
     CopySource = s3Uri.replace("s3://", "");
   }
   const params = {
     CopySource,
     Key,
-    Bucket: process.env.BUCKET
+    Bucket: process.env.BUCKET,
   };
   const copyObjectCommand = new CopyObjectCommand(params);
   await s3.send(copyObjectCommand);

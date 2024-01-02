@@ -14,7 +14,7 @@
  */
 const csv = require("csv-parser");
 
-import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 const s3 = new S3Client({ region: process.env.AWS_REGION });
 
@@ -30,11 +30,12 @@ function getBatteryData(event: any) {
         Bucket: process.env.BUCKET,
         Key: process.env.KEY,
       };
-      const getObjectCommand = new GetObjectCommand(getObjectParams)
+      const getObjectCommand = new GetObjectCommand(getObjectParams);
       const resp = await s3.send(getObjectCommand);
       const file_stream: any = resp.Body;
 
-      file_stream.pipe(csv(["BatteryId", "Lng", "Lat", "Country", "City", "VIN"]))
+      file_stream
+        .pipe(csv(["BatteryId", "Lng", "Lat", "Country", "City", "VIN"]))
         .on("data", (data: any) => {
           locationData.push(data);
         })

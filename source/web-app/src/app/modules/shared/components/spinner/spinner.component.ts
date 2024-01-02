@@ -16,18 +16,21 @@
 import { Component, Input, OnChanges, SimpleChanges } from "@angular/core";
 
 @Component({
-    selector: "app-spinner",
-    templateUrl: "./spinner.component.html",
-    styleUrls: ["./spinner.component.scss"],
+  selector: "app-spinner",
+  templateUrl: "./spinner.component.html",
+  styleUrls: ["./spinner.component.scss"],
 })
 export class SpinnerComponent implements OnChanges {
-    @Input() displayText: string | undefined;
-    @Input() position: 'fixed' | 'inline' = 'fixed';
-    status = "";
+  @Input() displayText: string | undefined;
+  @Input() position: "fixed" | "inline" = "fixed";
+  status = "";
 
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes["displayText"].currentValue !== changes["displayText"].previousValue) {
-            this.status += `<p>${changes["displayText"].currentValue}</p>`;
-        }
+  ngOnChanges(changes: SimpleChanges) {
+    if (
+      changes["displayText"].currentValue !==
+      changes["displayText"].previousValue
+    ) {
+      this.status += `<p>${changes["displayText"].currentValue}</p>`;
     }
+  }
 }

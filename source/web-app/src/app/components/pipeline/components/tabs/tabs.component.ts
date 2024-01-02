@@ -13,17 +13,17 @@
  * permissions and limitations under the License.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 
 @Component({
-  selector: 'app-tabs',
-  templateUrl: './tabs.component.html',
-  styleUrls: ['./tabs.component.scss']
+  selector: "app-tabs",
+  templateUrl: "./tabs.component.html",
+  styleUrls: ["./tabs.component.scss"],
 })
 export class TabsComponent {
   selectedTab = 1;
 
-  @Input('tabs')tabs: any[] | undefined;
+  @Input("tabs") tabs: any[] | undefined;
   @Output() tabSelectionNotifier = new EventEmitter<number>();
 
   notifySelection(tabId: number) {

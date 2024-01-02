@@ -13,67 +13,66 @@
  * permissions and limitations under the License.
  */
 
-import {NgModule} from "@angular/core";
-import {RouterModule, Routes} from "@angular/router";
-import {AuthGuard} from "./guards/auth.guard";
-import {PipelineComponent} from "./components/pipeline/pipeline.component";
-import {DashboardComponent} from "./components/dashboard/dashboard.component";
-import {LoginComponent} from "./components/login/login.component";
-import {TrackerComponent} from "./components/tracker/tracker.component";
-import {HistoryComponent} from "./components/history/history.component";
-import {PersonaGuard} from "./guards/persona.guard";
-import {AnalyticsComponent} from "./components/dashboard/components/analytics/analytics.component";
-
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
+import { AuthGuard } from "./guards/auth.guard";
+import { PipelineComponent } from "./components/pipeline/pipeline.component";
+import { DashboardComponent } from "./components/dashboard/dashboard.component";
+import { LoginComponent } from "./components/login/login.component";
+import { TrackerComponent } from "./components/tracker/tracker.component";
+import { HistoryComponent } from "./components/history/history.component";
+import { PersonaGuard } from "./guards/persona.guard";
+import { AnalyticsComponent } from "./components/dashboard/components/analytics/analytics.component";
 
 const routes: Routes = [
-    {
-        path: "",
-        redirectTo: "dashboard",
-        pathMatch: "full",
-    },
-    {
-        path: "login",
-        component: LoginComponent,
-        pathMatch: "full",
-    },
-    {
-        path: "pipeline",
-        component: PipelineComponent,
-        pathMatch: "full",
-        canActivate: [AuthGuard, PersonaGuard],
-    },
-    {
-        path: "dashboard",
-        component: DashboardComponent,
-        pathMatch: "full",
-        canActivate: [AuthGuard],
-    },
-    {
-        path: "tracker/:id",
-        component: TrackerComponent,
-        pathMatch: "full",
-        canActivate: [AuthGuard, PersonaGuard],
-    },
-    {
-        path: "history",
-        component: HistoryComponent,
-        pathMatch: "full",
-        canActivate: [AuthGuard, PersonaGuard],
-    },
-    {
-        path: "analytics/:id",
-        component: AnalyticsComponent,
-        canActivate: [AuthGuard, PersonaGuard],
-    },
-    {
-        path: "analytics/:id/:annotationTimestamp",
-        component: AnalyticsComponent,
-        canActivate: [AuthGuard, PersonaGuard],
-    },
+  {
+    path: "",
+    redirectTo: "dashboard",
+    pathMatch: "full",
+  },
+  {
+    path: "login",
+    component: LoginComponent,
+    pathMatch: "full",
+  },
+  {
+    path: "pipeline",
+    component: PipelineComponent,
+    pathMatch: "full",
+    canActivate: [AuthGuard, PersonaGuard],
+  },
+  {
+    path: "dashboard",
+    component: DashboardComponent,
+    pathMatch: "full",
+    canActivate: [AuthGuard],
+  },
+  {
+    path: "tracker/:id",
+    component: TrackerComponent,
+    pathMatch: "full",
+    canActivate: [AuthGuard, PersonaGuard],
+  },
+  {
+    path: "history",
+    component: HistoryComponent,
+    pathMatch: "full",
+    canActivate: [AuthGuard, PersonaGuard],
+  },
+  {
+    path: "analytics/:id",
+    component: AnalyticsComponent,
+    canActivate: [AuthGuard, PersonaGuard],
+  },
+  {
+    path: "analytics/:id/:annotationTimestamp",
+    component: AnalyticsComponent,
+    canActivate: [AuthGuard, PersonaGuard],
+  },
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes)],
-    exports: [RouterModule],
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}

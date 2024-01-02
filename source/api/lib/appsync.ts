@@ -23,6 +23,7 @@ import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
 import { fetchJson, NonRetryableFetchError } from "./https";
 import { Agent } from "https";
 import WebSocket = require("ws");
+
 export { ResponseTimeoutError } from "./https";
 
 export type TypedReadable<T> = Readable & {

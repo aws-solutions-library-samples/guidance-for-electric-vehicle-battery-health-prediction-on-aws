@@ -11,10 +11,10 @@ source ${CURRENT_PATH}/helpers.sh
 # - AWS_ACCOUNT_ID
 # - AWS_USER
 # - AWS_REGION
-# 
+#
 # Run '.factory/go.sh check' to view all available parameters
 
-# Tutorial: Using this we can specifically name the stack. Be aware of what this is as 
+# Tutorial: Using this we can specifically name the stack. Be aware of what this is as
 # it's used to retrieve outputs later to give to the user
 STACK_NAME="$DEMO_ID"
 

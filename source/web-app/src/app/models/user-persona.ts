@@ -14,6 +14,6 @@
  */
 
 export enum UserPersona {
-    FLEET_OPERATOR = 1,
-    DEVELOPER
+  FLEET_OPERATOR = 1,
+  DEVELOPER,
 }

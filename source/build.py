@@ -1,4 +1,4 @@
-""" 
+"""
 Copyright 2022 Amazon.com, Inc. and its affiliates. All Rights Reserved.
 
 Licensed under the Amazon Software License (the "License").
@@ -13,10 +13,10 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
 
+import argparse
 import os
 import subprocess
 import sys
-import argparse
 
 
 def exit_on_failure(exit_code, msg):
@@ -32,7 +32,6 @@ def change_dir_with_return(dir):
 
 
 def build_api():
-
     return_dir = change_dir_with_return("./api")
 
     cmd = [sys.executable, "build.py"]
@@ -43,7 +42,6 @@ def build_api():
 
 
 def build_web_app():
-
     return_dir = change_dir_with_return("./web-app")
     cmd = [sys.executable, "build.py"]
     proc = subprocess.run(cmd, stderr=subprocess.STDOUT)

@@ -27,9 +27,9 @@ There are two stacks to this template.  A WAF CloudFront ACL can only be install
 
 <INTERNAL> Use the isengardcli assume to assume a role in the destination account
 
-## Build 
+## Build
 
-The top level package.json is only for easy to use top level commands and doesn't contain any packages so there is no reason to install it.  When pulling latest its always best to run a build all to ensure you have the latest code. 
+The top level package.json is only for easy to use top level commands and doesn't contain any packages so there is no reason to install it.  When pulling latest its always best to run a build all to ensure you have the latest code.
 
 To build the entire project run:
 
@@ -153,6 +153,6 @@ proc = subprocess.run(cmd, stderr=subprocess.STDOUT)
 
 ### Build fails during a docker step due to `OSError: [Errno 28] No space left on device:` or something similar.
 
-Open docker desktop, click on `Images`, click on `Clean up`, check `Unused` and `Dangling`, then click `Remove`.   
+Open docker desktop, click on `Images`, click on `Clean up`, check `Unused` and `Dangling`, then click `Remove`.
 
 or run from the command line: `docker image prune -a`

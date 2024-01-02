@@ -12,7 +12,7 @@ shopt -s expand_aliases
 # - AWS_ACCOUNT_ID
 # - AWS_USER
 # - AWS_REGION
-# 
+#
 # Run '.factory/go.sh check' to view all available parameters
 # Tutorial: In addition to these we added ADMIN_EMAIL so we can use this environment variable as well
 echo $ADMIN_EMAIL

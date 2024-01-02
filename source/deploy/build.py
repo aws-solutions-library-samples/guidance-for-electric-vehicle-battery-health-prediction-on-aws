@@ -1,4 +1,4 @@
-""" 
+"""
 Copyright 2022 Amazon.com, Inc. and its affiliates. All Rights Reserved.
 
 Licensed under the Amazon Software License (the "License").
@@ -13,10 +13,8 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
 
-import os
-import subprocess
-import sys
 import shutil
+import subprocess
 
 
 def exit_on_failure(exit_code, msg):

@@ -12,25 +12,25 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-import {Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
-import {environment} from "../../environments/environment";
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { environment } from "../../environments/environment";
 
 @Injectable({
-    providedIn: "root",
+  providedIn: "root",
 })
 export class ConfigService {
-    API_URL: string = "";
+  API_URL = "";
 
-    constructor(private http: HttpClient) {
-        if (environment.development && environment.API_GW_URL!= "") {
-            this.API_URL = environment.API_GW_URL;
-        } else {
-            this.API_URL = environment.NG_APP_API;
-        }
+  constructor(private http: HttpClient) {
+    if (environment.development && environment.API_GW_URL != "") {
+      this.API_URL = environment.API_GW_URL;
+    } else {
+      this.API_URL = environment.NG_APP_API;
     }
+  }
 
-    getConfig() {
-        return this.http.get<any>(`${this.API_URL}/api/amplify-config`);
-    }
+  getConfig() {
+    return this.http.get<any>(`${this.API_URL}/api/amplify-config`);
+  }
 }

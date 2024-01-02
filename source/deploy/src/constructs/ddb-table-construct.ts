@@ -38,7 +38,10 @@ export class DdbTableConstruct extends Construct {
     const stack = cdk.Stack.of(this);
 
     this.table = new ddb.Table(this, name, {
-      partitionKey: { name: props.hash_key_column, type: ddb.AttributeType.STRING },
+      partitionKey: {
+        name: props.hash_key_column,
+        type: ddb.AttributeType.STRING,
+      },
       tableClass: ddb.TableClass.STANDARD,
       encryption: ddb.TableEncryption.AWS_MANAGED,
       removalPolicy: RemovalPolicy.DESTROY,

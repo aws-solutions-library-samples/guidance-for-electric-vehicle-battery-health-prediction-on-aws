@@ -14,11 +14,10 @@
  */
 const csv = require("csv-parser");
 
-import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import { S3Client } from "@aws-sdk/client-s3";
+import { API } from "aws-amplify";
 
 const s3 = new S3Client({ region: process.env.AWS_REGION });
-import { API } from 'aws-amplify';
-
 
 const mutation = `
   mutation createNote(note: NoteInput!) {
@@ -28,7 +27,6 @@ const mutation = `
   }
 `;
 
-
 /**
  * Reads battery data from csv file and returns as array
  * @param event
@@ -36,9 +34,9 @@ const mutation = `
 function publishBatteryData(event: any) {
   API.graphql({
     query: mutation,
-    variables: { note: { name: 'Note 1', completed: false } }
-  })
-  console.log('note successfully created!')
+    variables: { note: { name: "Note 1", completed: false } },
+  });
+  console.log("note successfully created!");
 }
 
 /**

@@ -1,4 +1,3 @@
-
 /**
  * Copyright 2022 Amazon.com, Inc. and its affiliates. All Rights Reserved.
  *
@@ -18,18 +17,18 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 export const environment = {
-    production: false,
-    NG_APP_NAME: process.env['CUSTOMER_NAME'] ?? 'Smart Battery Manager',
-    NG_APP_LOGO: process.env['CUSTOMER_LOGO'] ?? '/assets/logos/logo.png',
-    NG_APP_API: "",
-    NG_APP_REGION: "",
-    NG_APP_USER_POOL_ID: "",
-    NG_APP_IDENTITY_POOL_ID: "",
-    NG_APP_APP_CLIENT_ID: "",
-    NG_APP_DATASET_URI: "",
-    NG_APP_PLUGIN_URI: "",
-    development: true,
-    API_GW_URL: "",
+  production: false,
+  NG_APP_NAME: process.env["CUSTOMER_NAME"] ?? "Smart Battery Manager",
+  NG_APP_LOGO: process.env["CUSTOMER_LOGO"] ?? "/assets/logos/logo.png",
+  NG_APP_API: "",
+  NG_APP_REGION: "us-west-2",
+  NG_APP_USER_POOL_ID: "us-east-1_oTzbNUedD",
+  NG_APP_IDENTITY_POOL_ID: "us-east-1:8aa0b8b3-c4e8-4b02-9083-511c5c5eede0",
+  NG_APP_APP_CLIENT_ID: "",
+  NG_APP_DATASET_URI: "",
+  NG_APP_PLUGIN_URI: "",
+  development: true,
+  API_GW_URL: "https://3kx2dga4fg.execute-api.us-east-1.amazonaws.com",
 };
 
 /*

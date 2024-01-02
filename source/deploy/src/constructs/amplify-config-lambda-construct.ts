@@ -156,7 +156,7 @@ export class AmplifyConfigLambdaConstruct extends Construct {
 
   private getAuthorizerLambdaCode(): string {
     return `
-def lambda_handler(event, context): 
+def lambda_handler(event, context):
     return {
         "isAuthorized": True
     }

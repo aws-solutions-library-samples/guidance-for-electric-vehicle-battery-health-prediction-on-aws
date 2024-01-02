@@ -23,6 +23,7 @@ import { suppressCdkNagRules } from "./cdk-nag-suppressions";
 
 // Custom config providers.
 import { getConfigProvider } from "./config/index";
+
 const gitContext = getConfigProvider("git")();
 
 process.env.CDK_DEBUG = "true";

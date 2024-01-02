@@ -19,7 +19,6 @@ import * as appsync from "aws-cdk-lib/aws-appsync";
 import path from "path";
 import { IUserPool } from "aws-cdk-lib/aws-cognito";
 import { ITable } from "aws-cdk-lib/aws-dynamodb";
-import { IFunction } from "aws-cdk-lib/aws-lambda";
 
 export interface LambdaAppSyncConstructProps extends cdk.StackProps {
   /**
@@ -240,27 +239,29 @@ export class LambdaAppSyncConstruct extends Construct {
       responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
     });
 
-    const resolver_path = path.join(__dirname, '/battery-resolver.js')
+    const resolver_path = path.join(__dirname, "/battery-resolver.js");
 
     batteryDS.createResolver("OnUpdateBatteryHealth", {
       typeName: "Subscription",
       fieldName: "onUpdateBatteryHealth",
       code: new appsync.AssetCode(resolver_path),
-      runtime: appsync.FunctionRuntime.JS_1_0_0
+      runtime: appsync.FunctionRuntime.JS_1_0_0,
     });
 
     batteryDS.createResolver("GetBatteryHealth", {
       typeName: "Query",
       fieldName: "getBatteryHealth",
       code: new appsync.AssetCode(resolver_path),
-      runtime: appsync.FunctionRuntime.JS_1_0_0
+      runtime: appsync.FunctionRuntime.JS_1_0_0,
     });
 
     batteryDS.createResolver("UpdateBatteryHealth", {
       typeName: "Mutation",
       fieldName: "updateBatteryHealth",
-      code: new appsync.AssetCode(path.join(__dirname, '/update-battery-resolver.js')),
-      runtime: appsync.FunctionRuntime.JS_1_0_0
+      code: new appsync.AssetCode(
+        path.join(__dirname, "/update-battery-resolver.js")
+      ),
+      runtime: appsync.FunctionRuntime.JS_1_0_0,
     });
 
     lambdaDS.createResolver("GetLocationData", {

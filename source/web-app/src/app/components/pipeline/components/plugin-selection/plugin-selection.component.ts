@@ -13,99 +13,102 @@
  * permissions and limitations under the License.
  */
 
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {faBug, faCircleCheck} from "@fortawesome/free-solid-svg-icons";
-import {faPython} from "@fortawesome/free-brands-svg-icons";
+import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
+import { faBug, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import { faPython } from "@fortawesome/free-brands-svg-icons";
 
 @Component({
-    selector: 'app-plugin-selection',
-    templateUrl: './plugin-selection.component.html',
-    styleUrls: ['../../pipeline.component.scss', 'plugin-selection.component.scss']
+  selector: "app-plugin-selection",
+  templateUrl: "./plugin-selection.component.html",
+  styleUrls: [
+    "../../pipeline.component.scss",
+    "plugin-selection.component.scss",
+  ],
 })
 export class PluginSelectionComponent implements OnInit {
-    pluginSelectionTab = 1;
-    faCheck = faCircleCheck;
-    faBug = faBug;
-    faPython = faPython;
-    showUploadError = false;
-    plugin: any;
-    s3Uri: string | undefined;
-    existingPlugin: any;
-    showHelp = false;
+  pluginSelectionTab = 1;
+  faCheck = faCircleCheck;
+  faBug = faBug;
+  faPython = faPython;
+  showUploadError = false;
+  plugin: any;
+  s3Uri: string | undefined;
+  existingPlugin: any;
+  showHelp = false;
 
-    @Input() uri: any;
-    @ViewChild("pluginInput") pluginInput: ElementRef | undefined;
+  @Input() uri: any;
+  @ViewChild("pluginInput") pluginInput: ElementRef | undefined;
 
-    toggleHelp = () => {
-        this.showHelp = false;
-        this.removeClickEvent()
+  toggleHelp = () => {
+    this.showHelp = false;
+    this.removeClickEvent();
+  };
+  toggleHelpBind = this.toggleHelp.bind(this);
+
+  ngOnInit(): void {
+    this.s3Uri = this.uri;
+  }
+
+  dragEnterHandler(event: DragEvent) {
+    event.preventDefault();
+    const container = document.querySelector(".plugin-upload");
+    if (container) {
+      container.classList.add("drop-enter");
     }
-    toggleHelpBind = this.toggleHelp.bind(this);
+  }
 
-    ngOnInit(): void {
-        this.s3Uri = this.uri;
+  dragLeaveHandler(event: DragEvent) {
+    event.preventDefault();
+    const container = document.querySelector(".plugin-upload");
+    if (container) {
+      container.classList.remove("drop-enter");
     }
+  }
 
-    dragEnterHandler(event: DragEvent) {
-        event.preventDefault();
-        const container = document.querySelector(".plugin-upload");
-        if (container) {
-            container.classList.add("drop-enter");
-        }
-    }
+  dragOverHandler(event: DragEvent) {
+    event.preventDefault();
+  }
 
-    dragLeaveHandler(event: DragEvent) {
-        event.preventDefault();
-        const container = document.querySelector(".plugin-upload");
-        if (container) {
-            container.classList.remove("drop-enter");
-        }
+  dropHandler(event: any) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.showUploadError = false;
+    const files: any = Array.from(event.dataTransfer.files) || [];
+    if (this.validateUpload(files[0])) {
+      this.plugin = files[0];
+    } else {
+      this.showUploadError = true;
     }
+    const container = document.querySelector(".plugin-upload");
+    if (container) {
+      container.classList.remove("drop-enter");
+    }
+  }
 
-    dragOverHandler(event: DragEvent) {
-        event.preventDefault();
-    }
+  triggerPluginInput() {
+    this.pluginInput?.nativeElement.click();
+  }
 
-    dropHandler(event: any) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.showUploadError = false;
-        const files: any = Array.from(event.dataTransfer.files) || [];
-        if (this.validateUpload(files[0])) {
-            this.plugin = files[0];
-        } else {
-            this.showUploadError = true;
-        }
-        const container = document.querySelector(".plugin-upload");
-        if (container) {
-            container.classList.remove("drop-enter");
-        }
-    }
+  onPluginUpload(event: any) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.plugin = event.target.files[0];
+  }
 
-    triggerPluginInput() {
-        this.pluginInput?.nativeElement.click();
-    }
+  validateUpload(file: File) {
+    return file.name.includes(".py");
+  }
 
-    onPluginUpload(event: any) {
-        event.stopPropagation();
-        event.preventDefault();
-        this.plugin = event.target.files[0];
+  helpHandler() {
+    this.showHelp = !this.showHelp;
+    if (this.showHelp) {
+      setTimeout(() => {
+        window.addEventListener("click", this.toggleHelpBind);
+      });
     }
+  }
 
-    validateUpload(file: File) {
-        return file.name.includes('.py');
-    }
-
-    helpHandler() {
-        this.showHelp = !this.showHelp;
-        if(this.showHelp) {
-            setTimeout(() => {
-                window.addEventListener('click', this.toggleHelpBind);
-            });
-        }
-    }
-
-    private removeClickEvent() {
-        window.removeEventListener('click', this.toggleHelpBind);
-    }
+  private removeClickEvent() {
+    window.removeEventListener("click", this.toggleHelpBind);
+  }
 }

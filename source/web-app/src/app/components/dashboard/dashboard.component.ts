@@ -13,19 +13,19 @@
  * permissions and limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
-import { APIService, GetPipelineByIdQuery, GetPipelinesByUserQuery, PipelineData } from "../../services/api.service";
-import { DataService } from "../../services/data.service";
+import {Component, OnInit} from '@angular/core';
+import {APIService, GetPipelineByIdQuery, GetPipelinesByUserQuery, PipelineData} from "../../services/api.service";
+import {DataService} from "../../services/data.service";
 // @ts-ignore
 import * as Highcharts from 'highcharts';
-import { ActivatedRoute, Router } from "@angular/router";
-import { forkJoin } from "rxjs";
+import {ActivatedRoute, Router} from "@angular/router";
+import {forkJoin} from "rxjs";
 import AnnotationsModule from 'highcharts/modules/annotations';
 import SolidGauge from 'highcharts/modules/solid-gauge';
 import HC_more from "highcharts/highcharts-more";
-import { Auth } from "aws-amplify";
+import {Auth} from "aws-amplify";
 
-import { WebsocketService } from '../../services/websocket.service';
+import {WebsocketService} from '../../services/websocket.service';
 
 AnnotationsModule(Highcharts);
 HC_more(Highcharts);

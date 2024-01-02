@@ -100,14 +100,14 @@ cognito_add_user_to_group() {
     --user-pool-id $1 \
     --username $2 \
     --group-name $3
-  echo "Finish: Adding '$2' to '$3' group in Cognito user pool '$1'"   
+  echo "Finish: Adding '$2' to '$3' group in Cognito user pool '$1'"
 }
 
 ###############################
 # CodeCommit Helper Functions #
 ###############################
 # Download and upload a folder to CodeCommit then delete the CodeCommit repo
-# Inputs: 
+# Inputs:
 # 1: AWS Region
 # 2: CodeCommit repository name
 # Example: upload_codecommit $AWS_REGION $REPO_NAME $SOURCE_DIR
@@ -135,7 +135,7 @@ check_amplify_status () {
     check_aws_creds
     sleep 60
   done
-  if [[ "$AMPLIFY_STATUS" == "FAILED" ]] ; then 
+  if [[ "$AMPLIFY_STATUS" == "FAILED" ]] ; then
     echo "========================================================="
     echo "Error: Amplify deployment failed."
     echo "========================================================="

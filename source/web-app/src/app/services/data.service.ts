@@ -12,82 +12,121 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import {environment} from "../../environments/environment";
-import {Observable} from "rxjs";
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { environment } from "../../environments/environment";
+import { Observable } from "rxjs";
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: "root",
 })
 export class DataService {
-    API_URL: string = "";
-    EATRON_API_URL: string = "";
+  API_URL = "";
+  EATRON_API_URL = "";
 
-    constructor(private http: HttpClient) {
-        if (environment.development && environment.API_GW_URL!= "") {
-            this.API_URL = environment.API_GW_URL;
-        } else {
-            this.API_URL = environment.NG_APP_API;
-        }
-
-        this.EATRON_API_URL = "https://cloud.us.eatron.com/api/v1";
+  constructor(private http: HttpClient) {
+    if (environment.development && environment.API_GW_URL != "") {
+      this.API_URL = environment.API_GW_URL;
+    } else {
+      this.API_URL = environment.NG_APP_API;
     }
 
-    getSignedUrl(key: string): Observable<any> {
-        return this.http.get<any>(`${this.API_URL}/api/link?fileName=${key}&action=GSU`);
-    }
+    this.EATRON_API_URL = "https://cloud.us.eatron.com/api/v1";
+  }
 
-    getMetadata(key: string, uuid: string): Observable<any> {
-        return this.http.get<any>(`${this.API_URL}/api/metadata?key=${key}&uuid=${uuid}&action=GM`)
-    }
+  getSignedUrl(key: string): Observable<any> {
+    return this.http.get<any>(
+      `${this.API_URL}/api/link?fileName=${key}&action=GSU`
+    );
+  }
 
-    getBatteryData(key: string, uuid: string, battery: string, type: string): Observable<any> {
-        return this.http.get<any>(`${this.API_URL}/api/metadata?key=${key}&uuid=${uuid}&battery=${battery}&type=${type}&action=GBD`)
-    }
+  getMetadata(key: string, uuid: string): Observable<any> {
+    return this.http.get<any>(
+      `${this.API_URL}/api/metadata?key=${key}&uuid=${uuid}&action=GM`
+    );
+  }
 
-    uploadFile(signedURL: string, file: File, contentType: string): Observable<any> {
-        return this.http.put<any>(signedURL, file, {
-            headers: new HttpHeaders({"Content-Type": contentType}),
-        });
-    }
+  getBatteryData(
+    key: string,
+    uuid: string,
+    battery: string,
+    type: string
+  ): Observable<any> {
+    return this.http.get<any>(
+      `${this.API_URL}/api/metadata?key=${key}&uuid=${uuid}&battery=${battery}&type=${type}&action=GBD`
+    );
+  }
 
-    simulate(id: string, fileName: string): Observable<any> {
-        return this.http.get(`${this.API_URL}/api/simulation?key=${id}&file=${fileName}&action=SS`);
-    }
+  uploadFile(
+    signedURL: string,
+    file: File,
+    contentType: string
+  ): Observable<any> {
+    return this.http.put<any>(signedURL, file, {
+      headers: new HttpHeaders({ "Content-Type": contentType }),
+    });
+  }
 
-    copyFile(uri: string | undefined, key: string | undefined) {
-        return this.http.get<any>(`${this.API_URL}/api/metadata?uri=${uri}&key=${key}&action=CD`);
-    }
+  simulate(id: string, fileName: string): Observable<any> {
+    return this.http.get(
+      `${this.API_URL}/api/simulation?key=${id}&file=${fileName}&action=SS`
+    );
+  }
 
-    retrainPipeline(checkpoint: number, uuid: string) {
-        return this.http.get<any>(`${this.API_URL}/api/retrain?checkpoint=${checkpoint}&uuid=${uuid}`);
-    }
+  copyFile(uri: string | undefined, key: string | undefined) {
+    return this.http.get<any>(
+      `${this.API_URL}/api/metadata?uri=${uri}&key=${key}&action=CD`
+    );
+  }
 
-    refreshBatteryHealth(battery: string) {
-        return this.http.post<any>(`${this.API_URL}/api/refresh?battery=${battery}`,null);
-    }
+  retrainPipeline(checkpoint: number, uuid: string) {
+    return this.http.get<any>(
+      `${this.API_URL}/api/retrain?checkpoint=${checkpoint}&uuid=${uuid}`
+    );
+  }
 
-    getThermalRunawayResults(batteryId: string) {
-        const params = { batteryId: batteryId };
-        return this.http.get<any>(`${this.EATRON_API_URL}/lithium-plating`, { params: params });
-    }
+  refreshBatteryHealth(battery: string) {
+    return this.http.post<any>(
+      `${this.API_URL}/api/refresh?battery=${battery}`,
+      null
+    );
+  }
 
-    getLithiumPlatingResults(batteryId: string) {
-        const params = new HttpParams().set('batteryId', batteryId);
-        return this.http.get<any>(`${this.EATRON_API_URL}/thermal-runaway`, { params: params });
-    }
+  getThermalRunawayResults(batteryId: string) {
+    const params = { batteryId: batteryId };
+    return this.http.get<any>(`${this.EATRON_API_URL}/lithium-plating`, {
+      params: params,
+    });
+  }
 
-    getAnalytics(batteryId: string, startTime: string, endTime: string): Observable<any> {
-        return this.http.get<any>(`${this.EATRON_API_URL}/analytics/?batteryId=${batteryId}&startTime=${startTime}&endTime=${endTime}`);
-    }
+  getLithiumPlatingResults(batteryId: string) {
+    const params = new HttpParams().set("batteryId", batteryId);
+    return this.http.get<any>(`${this.EATRON_API_URL}/thermal-runaway`, {
+      params: params,
+    });
+  }
 
-    getTriggerAnomalyResult(batteryId: string): Observable<any> {
-        const URL= "https://m8afpaf8w4.execute-api.us-east-1.amazonaws.com/v1/trigger-anomaly"
-        const headers = new HttpHeaders({
-            'Content-Type': 'application/json',
-            'x-api-key':  '7AittF0Dde1b12mcRW2qV55Erwbqs6tS985BrENN'
-        });
-        return this.http.post<any>(`${URL}`, {'vehicleId': batteryId}, { headers: headers });
-    }
+  getAnalytics(
+    batteryId: string,
+    startTime: string,
+    endTime: string
+  ): Observable<any> {
+    return this.http.get<any>(
+      `${this.EATRON_API_URL}/analytics/?batteryId=${batteryId}&startTime=${startTime}&endTime=${endTime}`
+    );
+  }
+
+  getTriggerAnomalyResult(batteryId: string): Observable<any> {
+    const URL =
+      "https://m8afpaf8w4.execute-api.us-east-1.amazonaws.com/v1/trigger-anomaly";
+    const headers = new HttpHeaders({
+      "Content-Type": "application/json",
+      "x-api-key": "7AittF0Dde1b12mcRW2qV55Erwbqs6tS985BrENN",
+    });
+    return this.http.post<any>(
+      `${URL}`,
+      { vehicleId: batteryId },
+      { headers: headers }
+    );
+  }
 }

@@ -13,20 +13,20 @@
  * permissions and limitations under the License.
  */
 
-import {Component, ViewChild} from "@angular/core";
-import {faFileCsv,} from "@fortawesome/free-solid-svg-icons";
-import {faPython} from "@fortawesome/free-brands-svg-icons";
-import {DataService} from "../../services/data.service";
+import { Component, ViewChild } from "@angular/core";
+import { faFileCsv } from "@fortawesome/free-solid-svg-icons";
+import { faPython } from "@fortawesome/free-brands-svg-icons";
+import { DataService } from "../../services/data.service";
 // @ts-ignore
-import {v4 as uuidv4} from "uuid";
-import {APIService, PipelineRequestInput} from "../../services/api.service";
-import {ActivatedRoute, Router} from "@angular/router";
-import {AuthService} from "../../services/auth.service";
-import {Auth} from "aws-amplify";
-import {forkJoin} from "rxjs";
-import {DatasetSelectionComponent} from "./components/dataset-selection/dataset-selection.component";
-import {PluginSelectionComponent} from "./components/plugin-selection/plugin-selection.component";
-import {environment} from "../../../environments/environment";
+import { v4 as uuidv4 } from "uuid";
+import { APIService, PipelineRequestInput } from "../../services/api.service";
+import { ActivatedRoute, Router } from "@angular/router";
+import { AuthService } from "../../services/auth.service";
+import { Auth } from "aws-amplify";
+import { forkJoin } from "rxjs";
+import { DatasetSelectionComponent } from "./components/dataset-selection/dataset-selection.component";
+import { PluginSelectionComponent } from "./components/plugin-selection/plugin-selection.component";
+import { environment } from "../../../environments/environment";
 
 @Component({
   selector: "app-pipeline",
@@ -46,8 +46,12 @@ export class PipelineComponent {
   datasetURI = environment.NG_APP_DATASET_URI;
   pluginURI = environment.NG_APP_PLUGIN_URI;
 
-  @ViewChild("datasetComponent") datasetComponent: DatasetSelectionComponent | undefined;
-  @ViewChild("pluginComponent") pluginComponent: PluginSelectionComponent | undefined;
+  @ViewChild("datasetComponent") datasetComponent:
+    | DatasetSelectionComponent
+    | undefined;
+  @ViewChild("pluginComponent") pluginComponent:
+    | PluginSelectionComponent
+    | undefined;
 
   constructor(
     private apiService: APIService,
@@ -65,7 +69,7 @@ export class PipelineComponent {
     this.displayText = "Creating Pipeline...";
     this.showSpinner = true;
     const userInfo = await Auth.currentUserInfo();
-    const userName = userInfo.username.split('@')[0];
+    const userName = userInfo.username.split("@")[0];
     let pipelineId = this.pipelineId ?? uuidv4();
     pipelineId = pipelineId.split("-")[0];
     const csvKey = `${userName}/${pipelineId}/raw_dataset.csv`;
@@ -74,49 +78,75 @@ export class PipelineComponent {
     const pipelineReq: PipelineRequestInput = {
       Id: pipelineId,
       StatusUpdatedAt: statusUpdatedAt,
-      PipelineStatus: 'UPLOADED_DATASET',
-      OriginalDatasetName: this.datasetComponent?.file ?
-          this.datasetComponent?.file.name :
-          this.datasetComponent?.s3Uri?.substr(this.datasetComponent?.s3Uri.lastIndexOf('/') + 1),
-      OriginalPluginName: this.pluginComponent?.plugin ?
-          this.pluginComponent?.plugin.name :
-          this.pluginComponent?.s3Uri?.substr(this.pluginComponent?.s3Uri.lastIndexOf('/') + 1),
+      PipelineStatus: "UPLOADED_DATASET",
+      OriginalDatasetName: this.datasetComponent?.file
+        ? this.datasetComponent?.file.name
+        : this.datasetComponent?.s3Uri?.substr(
+            this.datasetComponent?.s3Uri.lastIndexOf("/") + 1
+          ),
+      OriginalPluginName: this.pluginComponent?.plugin
+        ? this.pluginComponent?.plugin.name
+        : this.pluginComponent?.s3Uri?.substr(
+            this.pluginComponent?.s3Uri.lastIndexOf("/") + 1
+          ),
     };
     const observables: any[] = [];
-    if (this.pluginComponent?.pluginSelectionTab === 2) observables.push(this.dataService.getSignedUrl(pluginKey));
-    if (this.datasetComponent?.datasetSelectionTab === 2) observables.push(this.dataService.getSignedUrl(csvKey));
+    if (this.pluginComponent?.pluginSelectionTab === 2)
+      observables.push(this.dataService.getSignedUrl(pluginKey));
+    if (this.datasetComponent?.datasetSelectionTab === 2)
+      observables.push(this.dataService.getSignedUrl(csvKey));
 
     if (observables.length) {
       forkJoin(observables).subscribe({
         next: (signedURLS: any[]) => {
           this.router.navigate(["/tracker", pipelineId]).then(() => {
             const pluginObservable = [
-              this.pluginComponent?.pluginSelectionTab === 2 ?
-                this.dataService.uploadFile(signedURLS[0], this.pluginComponent?.plugin, "text/x-python") :
-                this.dataService.copyFile(this.pluginComponent?.s3Uri, pluginKey)
-              ];
+              this.pluginComponent?.pluginSelectionTab === 2
+                ? this.dataService.uploadFile(
+                    signedURLS[0],
+                    this.pluginComponent?.plugin,
+                    "text/x-python"
+                  )
+                : this.dataService.copyFile(
+                    this.pluginComponent?.s3Uri,
+                    pluginKey
+                  ),
+            ];
             forkJoin(pluginObservable).subscribe(() => {
-              const signedUrl = this.pluginComponent?.plugin ? signedURLS[1] : signedURLS[0];
+              const signedUrl = this.pluginComponent?.plugin
+                ? signedURLS[1]
+                : signedURLS[0];
               const datasetObservable = [
-                this.datasetComponent?.datasetSelectionTab === 2 ?
-                  this.dataService.uploadFile(signedUrl, this.datasetComponent?.file, "text/csv") :
-                  this.dataService.copyFile(this.datasetComponent?.s3Uri, csvKey)
+                this.datasetComponent?.datasetSelectionTab === 2
+                  ? this.dataService.uploadFile(
+                      signedUrl,
+                      this.datasetComponent?.file,
+                      "text/csv"
+                    )
+                  : this.dataService.copyFile(
+                      this.datasetComponent?.s3Uri,
+                      csvKey
+                    ),
               ];
               forkJoin(datasetObservable).subscribe(() => {
                 this.apiService.Pipeline(pipelineReq).then();
               });
             });
           });
-      },
-      error: ()=> this.showSpinner = false
-    });
+        },
+        error: () => (this.showSpinner = false),
+      });
     } else {
       this.router.navigate(["/tracker", pipelineId]).then(() => {
-        this.dataService.copyFile(this.pluginComponent?.s3Uri, pluginKey).subscribe(() => {
-          this.dataService.copyFile(this.datasetComponent?.s3Uri, csvKey).subscribe(() => {
-            this.apiService.Pipeline(pipelineReq).then();
-          })
-        })
+        this.dataService
+          .copyFile(this.pluginComponent?.s3Uri, pluginKey)
+          .subscribe(() => {
+            this.dataService
+              .copyFile(this.datasetComponent?.s3Uri, csvKey)
+              .subscribe(() => {
+                this.apiService.Pipeline(pipelineReq).then();
+              });
+          });
       });
     }
   }
@@ -135,7 +165,9 @@ export class PipelineComponent {
     if (this.datasetComponent?.file) {
       this.originalDatasetFileName = this.datasetComponent?.file.name;
     } else if (this.datasetComponent?.s3Uri) {
-     this.originalDatasetFileName = this.datasetComponent?.s3Uri?.substring(this.datasetComponent?.s3Uri.lastIndexOf('/') + 1);
+      this.originalDatasetFileName = this.datasetComponent?.s3Uri?.substring(
+        this.datasetComponent?.s3Uri.lastIndexOf("/") + 1
+      );
     }
   }
 
@@ -143,9 +175,11 @@ export class PipelineComponent {
     if (this.pluginComponent?.plugin) {
       this.originalPluginFileName = this.pluginComponent.plugin.name;
     } else if (this.pluginComponent?.s3Uri) {
-      this.originalPluginFileName = this.pluginComponent?.s3Uri?.substring(this.pluginComponent?.s3Uri.lastIndexOf('/') + 1);
+      this.originalPluginFileName = this.pluginComponent?.s3Uri?.substring(
+        this.pluginComponent?.s3Uri.lastIndexOf("/") + 1
+      );
     } else if (this.pluginComponent?.existingPlugin) {
-      this.originalPluginFileName = 'default_processing_plugin.py';
+      this.originalPluginFileName = "default_processing_plugin.py";
     }
   }
 }

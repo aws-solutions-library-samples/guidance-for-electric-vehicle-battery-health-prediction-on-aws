@@ -13,13 +13,12 @@
  * permissions and limitations under the License.
  */
 
-import { Injectable } from '@angular/core';
-import {UserPersona} from "../models/user-persona";
+import { Injectable } from "@angular/core";
+import { UserPersona } from "../models/user-persona";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class UserPreferenceService {
-
   currentPersona = UserPersona.DEVELOPER;
 }

@@ -1,6 +1,6 @@
 # API feature
 
-The `example-*` api's in this folder are just examples of Lambda APIs.  Only the `example` Lambda is actually used in the template to demonstrate the full loop.  The APIs should be removed after you start adding your own APIs or choose another server technology.  The custom-build and custom-container-build should only be used if LambdaPython and NodePython constructs won't work for your use case. 
+The `example-*` api's in this folder are just examples of Lambda APIs.  Only the `example` Lambda is actually used in the template to demonstrate the full loop.  The APIs should be removed after you start adding your own APIs or choose another server technology.  The custom-build and custom-container-build should only be used if LambdaPython and NodePython constructs won't work for your use case.
 
 ## CloudFront Caching
 

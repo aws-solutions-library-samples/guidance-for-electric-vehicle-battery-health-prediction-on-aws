@@ -13,33 +13,37 @@
  * permissions and limitations under the License.
  */
 
-import {Injectable} from "@angular/core";
-import {CanActivate, Router, UrlTree,} from "@angular/router";
-import {Observable} from "rxjs";
-import {AuthService} from "../services/auth.service";
-import {Auth} from "aws-amplify";
-import {CognitoUserSession} from "amazon-cognito-identity-js";
+import { Injectable } from "@angular/core";
+import { CanActivate, Router, UrlTree } from "@angular/router";
+import { Observable } from "rxjs";
+import { AuthService } from "../services/auth.service";
+import { Auth } from "aws-amplify";
+import { CognitoUserSession } from "amazon-cognito-identity-js";
 
 @Injectable({
-    providedIn: "root",
+  providedIn: "root",
 })
 export class AuthGuard implements CanActivate {
-    constructor(private authService: AuthService, private router: Router) {}
-    canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        return new Promise((resolve) => {
-            Auth.currentSession()
-                .then((session: CognitoUserSession) => {
-                    if (session.isValid()) {
-                        this.authService.isLoggedIn = true;
-                        resolve(true);
-                    } else {
-                        this.router.navigate(["/login"]);
-                        resolve(false);
-                    }
-                })
-                .catch(() => {
-                    this.router.navigate(["/login"]);
-                });
+  constructor(private authService: AuthService, private router: Router) {}
+  canActivate():
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree>
+    | boolean
+    | UrlTree {
+    return new Promise((resolve) => {
+      Auth.currentSession()
+        .then((session: CognitoUserSession) => {
+          if (session.isValid()) {
+            this.authService.isLoggedIn = true;
+            resolve(true);
+          } else {
+            this.router.navigate(["/login"]);
+            resolve(false);
+          }
+        })
+        .catch(() => {
+          this.router.navigate(["/login"]);
         });
-    }
+    });
+  }
 }

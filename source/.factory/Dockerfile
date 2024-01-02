@@ -7,13 +7,13 @@ FROM public.ecr.aws/amazonlinux/amazonlinux:2
  RUN curl -sL https://rpm.nodesource.com/setup_16.x | bash -
 
 # Add common tools
-RUN yum -q -y clean all && \ 
+RUN yum -q -y clean all && \
     yum update -q -y && \
     yum install -q -y jq zip unzip tar gzip nodejs python3 git && \
     yum -q -y clean all && \
     yum install -q -y yum-utils && \
     yum install -q -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    
+
 
 # Add latest aws-cli
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
@@ -34,7 +34,7 @@ RUN curl https://github.com/mikefarah/yq/releases/download/v4.7.0/yq_linux_amd64
 RUN ln -s /usr/bin/pip3 /usr/bin/pip
 
 # Install Git Remote CodeCommit
-RUN pip install git-remote-codecommit 
+RUN pip install git-remote-codecommit
 
 ADD . /src
 WORKDIR /src

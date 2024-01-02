@@ -12,18 +12,18 @@
 # permissions and limitations under the License.
 
 import sys
+from datetime import datetime, timedelta
+from random import sample
+
+import boto3
+from awsglue.context import GlueContext
+from awsglue.dynamicframe import DynamicFrame
+from awsglue.job import Job
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
-from awsglue.dynamicframe import DynamicFrameCollection
-from awsglue.dynamicframe import DynamicFrame
-from pyspark.sql.functions import col, udf
+from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
-from datetime import datetime, date, timedelta
-from random import sample
-import boto3
 
 # Parameter for removing sparsely timed data
 # Useful only when data has varied timeseries lengths
@@ -41,30 +41,35 @@ FORECAST_HORIZON = 30
 CELLS_PER_BATTERY = 5
 
 # Directory to put plot data while pipeline is running
-OUTPUT_DIR = 'tmp'
+OUTPUT_DIR = "tmp"
 
-args = getResolvedOptions(sys.argv, [
-    'JOB_NAME',
-    's3_bucket',
-    'raw_dataset_key',
-    'data_checkpoint',
-])
+args = getResolvedOptions(
+    sys.argv,
+    [
+        "JOB_NAME",
+        "s3_bucket",
+        "raw_dataset_key",
+        "data_checkpoint",
+    ],
+)
 
 sc = SparkContext.getOrCreate()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 job = Job(glueContext)
-job.init(args['JOB_NAME'], args)
+job.init(args["JOB_NAME"], args)
 
-s3 = boto3.client('s3')
-bucket = args['s3_bucket']
-base = args['raw_dataset_key'].rsplit('/', 1)[0]
+s3 = boto3.client("s3")
+bucket = args["s3_bucket"]
+base = args["raw_dataset_key"].rsplit("/", 1)[0]
+
 
 def get_account_id():
     return boto3.client("sts").get_caller_identity()["Account"]
 
+
 def get_cutoff(df):
-    return df.approxQuantile(['cycle_life'], [QUANTILE_CUTOFF], 0)[0][0]
+    return df.approxQuantile(["cycle_life"], [QUANTILE_CUTOFF], 0)[0][0]
 
 
 # Treat int as day number offset from starting date of Jan 1, 2000
@@ -79,13 +84,13 @@ def day_num_to_date(day_num):
 
 # Randomly sample cells that have data spanning the forecast horizon
 def get_test_set(df, cutoff, sampling=False):
-    trunc_df = df[df['cycle_no'] == (cutoff + FORECAST_HORIZON)]
-    poss_cells = [r[0] for r in trunc_df.select('battery_name').distinct().collect()]
-    
+    trunc_df = df[df["cycle_no"] == (cutoff + FORECAST_HORIZON)]
+    poss_cells = [r[0] for r in trunc_df.select("battery_name").distinct().collect()]
+
     if not sampling:
         return poss_cells
-    
-    poss_batts  = {}
+
+    poss_batts = {}
     for cell in poss_cells:
         pre = cell[:2]
         if pre not in poss_batts:
@@ -95,7 +100,7 @@ def get_test_set(df, cutoff, sampling=False):
     test_cells = []
     for cell_set in poss_batts.values():
         test_cells.extend(sample(cell_set, CELLS_PER_BATTERY))
-    
+
     return test_cells
 
 
@@ -109,10 +114,10 @@ def rename_files(s3_path):
 
     for f in files["Contents"]:
         f_name = f["Key"]
-        p_name = f_name.rsplit('/', 1)[0]
+        p_name = f_name.rsplit("/", 1)[0]
 
-        if '=' in p_name:
-            cell_id = p_name.split('=', 1)[1]
+        if "=" in p_name:
+            cell_id = p_name.split("=", 1)[1]
             p_name = f"{p_name.rsplit('/', 1)[0]}/{cell_id}.csv"
 
         s3.copy_object(
@@ -120,27 +125,29 @@ def rename_files(s3_path):
             CopySource=f"{bucket}/{f_name}",
             Key=p_name,
             ExpectedBucketOwner=owner,
-            ExpectedSourceBucketOwner=owner
+            ExpectedSourceBucketOwner=owner,
         )
 
         s3.delete_object(Bucket=bucket, Key=f_name)
-    
+
 
 # Script generated for ConvertTS Transform
 def ConvertTS_Transform(glueContext, dynamicFrame) -> DynamicFrame:
     df = dynamicFrame.toDF()
-    
+
     # Cast columns to ensure numerical sorting
-    df = df.withColumn('cycle_no', df['cycle_no'].cast('int')) \
-           .withColumn('cycle_life', df['cycle_life'].cast('int')) \
-           .withColumn('qd', df['QD'].cast('float'))
+    df = (
+        df.withColumn("cycle_no", df["cycle_no"].cast("int"))
+        .withColumn("cycle_life", df["cycle_life"].cast("int"))
+        .withColumn("qd", df["QD"].cast("float"))
+    )
 
     # Sort values by cycle_no (timestamp) to adhere to Forecast expectations
-    df = df.sort(['cycle_no', 'battery_name'])
-    
+    df = df.sort(["cycle_no", "battery_name"])
+
     # Change cycle_no to fake incremental days. Ex: day_num_to_date("1") -> 2000-01-01
-    toDateUDF = udf(lambda i: day_num_to_date(i), StringType()) 
-    df = df.withColumn('date', toDateUDF(df['cycle_no']))
+    toDateUDF = udf(lambda i: day_num_to_date(i), StringType())
+    df = df.withColumn("date", toDateUDF(df["cycle_no"]))
 
     return DynamicFrame.fromDF(df, glueContext, "timeseries_set")
 
@@ -148,16 +155,16 @@ def ConvertTS_Transform(glueContext, dynamicFrame) -> DynamicFrame:
 # Script generated for ExtractTrain Transform
 def ExtractTrain_Transform(glueContext, dynamicFrame, plotData) -> DynamicFrame:
     df = dynamicFrame.toDF()
-    cutoff = int(args['data_checkpoint']) #get_cutoff(df)
+    cutoff = int(args["data_checkpoint"])  # get_cutoff(df)
     test_set = get_test_set(df, cutoff)
-    
-    if plotData:
-        df = df[df['battery_name'].isin(test_set)]
 
-    df_train = df[df['cycle_no'] <= cutoff]
-    
-    ts_column = 'cycle_no' if plotData else 'date'
-    df_train = df_train[[ts_column, 'battery_name', 'qd']]
+    if plotData:
+        df = df[df["battery_name"].isin(test_set)]
+
+    df_train = df[df["cycle_no"] <= cutoff]
+
+    ts_column = "cycle_no" if plotData else "date"
+    df_train = df_train[[ts_column, "battery_name", "qd"]]
     return DynamicFrame.fromDF(df_train, glueContext, "training_set")
 
 
@@ -165,18 +172,18 @@ def ExtractTrain_Transform(glueContext, dynamicFrame, plotData) -> DynamicFrame:
 # Option to get all possible test cells, or only a sub-sample
 def ExtractTest_Transform(glueContext, dynamicFrame, plotData) -> DynamicFrame:
     df = dynamicFrame.toDF()
-    cutoff = int(args['data_checkpoint']) #get_cutoff(df)
+    cutoff = int(args["data_checkpoint"])  # get_cutoff(df)
     test_set = get_test_set(df, cutoff)
-    
-    df_test = df[df['battery_name'].isin(test_set)]
-    df_test = df_test[df_test['cycle_no'] > cutoff]
-    df_test = df_test[df_test['cycle_no'] <= (cutoff + FORECAST_HORIZON)]
+
+    df_test = df[df["battery_name"].isin(test_set)]
+    df_test = df_test[df_test["cycle_no"] > cutoff]
+    df_test = df_test[df_test["cycle_no"] <= (cutoff + FORECAST_HORIZON)]
 
     # DF should exactly span the forecast horizon for each test cell
     assert df_test.count() == FORECAST_HORIZON * len(test_set)
-    
-    ts_column = 'cycle_no' if plotData else 'date'
-    df_test = df_test[[ts_column, 'battery_name', 'qd']]
+
+    ts_column = "cycle_no" if plotData else "date"
+    df_test = df_test[[ts_column, "battery_name", "qd"]]
     return DynamicFrame.fromDF(df_test, glueContext, "testing_set")
 
 
@@ -184,7 +191,7 @@ def ExtractTest_Transform(glueContext, dynamicFrame, plotData) -> DynamicFrame:
 # Needed by Forecast to generate a sub-sample for given IDs
 def ExtractIds_Transform(glueContext, dynamicFrame) -> DynamicFrame:
     df = dynamicFrame.toDF()
-    df_ids = df[['battery_name']].drop_duplicates()
+    df_ids = df[["battery_name"]].drop_duplicates()
     return DynamicFrame.fromDF(df_ids, glueContext, "cell_ids")
 
 
@@ -192,23 +199,17 @@ def ExtractIds_Transform(glueContext, dynamicFrame) -> DynamicFrame:
 def SaveData_Transform(input_node, s3_path, partition_key=None):
     header = True if partition_key else False
     partition_key = [partition_key] if partition_key else []
-    
+
     glueContext.write_dynamic_frame.from_options(
         frame=input_node.coalesce(1),
         connection_type="s3",
         format="csv",
-        format_options={
-            "quoteChar": -1,
-            "writeHeader": header
-        }, 
-        connection_options={
-            "path": f"s3://{bucket}/{s3_path}",
-            "partitionKeys": partition_key
-        },
+        format_options={"quoteChar": -1, "writeHeader": header},
+        connection_options={"path": f"s3://{bucket}/{s3_path}", "partitionKeys": partition_key},
     )
-    
+
     rename_files(s3_path)
-    
+
 
 # Import raw dataset from S3 bucket
 InputRaw_Node = glueContext.create_dynamic_frame.from_options(
@@ -223,7 +224,7 @@ InputRaw_Node = glueContext.create_dynamic_frame.from_options(
     connection_options={
         "paths": [f"s3://{bucket}/{args['raw_dataset_key']}"],
         "recurse": True,
-    }
+    },
 )
 
 

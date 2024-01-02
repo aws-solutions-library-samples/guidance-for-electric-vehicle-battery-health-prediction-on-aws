@@ -282,7 +282,7 @@ export type Battery = {
 };
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class APIService {
   async Pipeline(input: PipelineRequestInput): Promise<PipelineMutation> {
@@ -320,7 +320,7 @@ export class APIService {
         }
       }`;
     const gqlAPIServiceArguments: any = {
-      input
+      input,
     };
     const response = (await API.graphql(
       graphqlOperation(statement, gqlAPIServiceArguments)
@@ -364,7 +364,7 @@ export class APIService {
         }
       }`;
     const gqlAPIServiceArguments: any = {
-      UserId
+      UserId,
     };
     const response = (await API.graphql(
       graphqlOperation(statement, gqlAPIServiceArguments)
@@ -406,7 +406,7 @@ export class APIService {
         }
       }`;
     const gqlAPIServiceArguments: any = {
-      Id
+      Id,
     };
     const response = (await API.graphql(
       graphqlOperation(statement, gqlAPIServiceArguments)
@@ -450,7 +450,7 @@ export class APIService {
         }
       }`;
     const gqlAPIServiceArguments: any = {
-      PostProcessingId
+      PostProcessingId,
     };
     const response = (await API.graphql(
       graphqlOperation(statement, gqlAPIServiceArguments)
@@ -517,7 +517,6 @@ export class APIService {
   >;
 
   SubscribeToBatteryHealth(battery: string): Observable<Battery> {
-
     // Grapql Subscribe statement
     const statement = `subscription onUpdateBatteryHealth($battery: String!) {
       onUpdateBatteryHealth(battery: $battery) {
@@ -531,13 +530,12 @@ export class APIService {
 
     // Grapql Subscribe variables
     const gqlAPIServiceArguments: any = {
-      battery
+      battery,
     };
 
     // Combining statement and variable for execution
-    return (API.graphql(
+    return API.graphql(
       graphqlOperation(statement, gqlAPIServiceArguments)
-    ) as unknown )as Observable<Battery>;
-
+    ) as unknown as Observable<Battery>;
   }
 }

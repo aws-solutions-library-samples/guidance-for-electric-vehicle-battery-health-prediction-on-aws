@@ -326,12 +326,12 @@
             <highcharts-chart *ngIf="faultLineChartOptions" [Highcharts]="highcharts" [options]="faultLineChartOptions"
                 [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
         </div>
-        
+
         <button (click)="navigateToAnalytics()" class="analytics-button far-right">See Analytics</button>
         <div class="retrain-action">
             <button class="upload-action-secondary" (click)="showFaultDetectionDetails = false;">Close</button>
         </div>
-        
+
     </div>
 </div>
 <div class="retrain-pipeline-modal" *ngIf="selectedBattery && retrain">

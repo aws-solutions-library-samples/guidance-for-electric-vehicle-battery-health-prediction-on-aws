@@ -29,28 +29,28 @@ import { Construct } from "constructs";
  * @returns
  */
 export function attachWafV2ToLoadBalancer(
-    /**
-     * Parent construct to assign the association to.
-     */
-    parent: Construct,
+  /**
+   * Parent construct to assign the association to.
+   */
+  parent: Construct,
 
-    /**
-     * Name of the construct
-     */
-    name: string,
+  /**
+   * Name of the construct
+   */
+  name: string,
 
-    /**
-     * WafV2 WebAcl
-     */
-    webAcl: cdk.aws_wafv2.CfnWebACL,
+  /**
+   * WafV2 WebAcl
+   */
+  webAcl: cdk.aws_wafv2.CfnWebACL,
 
-    /**
-     * load balancer to attach the web acl to
-     */
-    loadBalancer: cdk.aws_elasticloadbalancingv2.ApplicationLoadBalancer
+  /**
+   * load balancer to attach the web acl to
+   */
+  loadBalancer: cdk.aws_elasticloadbalancingv2.ApplicationLoadBalancer
 ) {
-    return new cdk.aws_wafv2.CfnWebACLAssociation(parent, name, {
-        webAclArn: webAcl.attrArn,
-        resourceArn: loadBalancer.loadBalancerArn,
-    });
+  return new cdk.aws_wafv2.CfnWebACLAssociation(parent, name, {
+    webAclArn: webAcl.attrArn,
+    resourceArn: loadBalancer.loadBalancerArn,
+  });
 }

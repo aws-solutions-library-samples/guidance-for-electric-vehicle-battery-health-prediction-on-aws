@@ -13,29 +13,33 @@
  * permissions and limitations under the License.
  */
 
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from "@angular/core";
 
 @Component({
-  selector: 'app-indicator',
-  templateUrl: './indicator.component.html',
-  styleUrls: ['./indicator.component.scss']
+  selector: "app-indicator",
+  templateUrl: "./indicator.component.html",
+  styleUrls: ["./indicator.component.scss"],
 })
 export class IndicatorComponent implements OnChanges {
-
   @Input() metric: any;
   @Input() mValue: any;
 
   ngOnChanges(changes: SimpleChanges): void {
-      if (changes && changes['mValue'].currentValue !== changes['mValue'].previousValue) {
-          this.setAnimation();
-      }
+    if (
+      changes &&
+      changes["mValue"].currentValue !== changes["mValue"].previousValue
+    ) {
+      this.setAnimation();
+    }
   }
 
-    setAnimation() {
-      const metricLine: any = document.querySelector(`.metric-bar-line.${this.metric}`);
-        if (metricLine) {
-            metricLine?.style.setProperty('--left', `${this.mValue}%`);
-            metricLine?.style.setProperty('--animation', 'none');
-        }
+  setAnimation() {
+    const metricLine: any = document.querySelector(
+      `.metric-bar-line.${this.metric}`
+    );
+    if (metricLine) {
+      metricLine?.style.setProperty("--left", `${this.mValue}%`);
+      metricLine?.style.setProperty("--animation", "none");
     }
+  }
 }

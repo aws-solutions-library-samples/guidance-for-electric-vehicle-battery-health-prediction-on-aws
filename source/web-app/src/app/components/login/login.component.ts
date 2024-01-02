@@ -13,14 +13,14 @@
  * permissions and limitations under the License.
  */
 
-import {Component} from "@angular/core";
+import { Component } from "@angular/core";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
-    selector: "app-login",
-    templateUrl: "./login.component.html",
-    styleUrls: ["./login.component.scss"],
+  selector: "app-login",
+  templateUrl: "./login.component.html",
+  styleUrls: ["./login.component.scss"],
 })
 export class LoginComponent {
-    faLock = faLock;
+  faLock = faLock;
 }

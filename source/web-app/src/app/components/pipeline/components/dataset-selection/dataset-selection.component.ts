@@ -13,78 +13,82 @@
  * permissions and limitations under the License.
  */
 
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {faBug, faCircleCheck, faFileCsv,} from "@fortawesome/free-solid-svg-icons";
-import {faPython} from "@fortawesome/free-brands-svg-icons";
+import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
+import {
+  faBug,
+  faCircleCheck,
+  faFileCsv,
+} from "@fortawesome/free-solid-svg-icons";
+import { faPython } from "@fortawesome/free-brands-svg-icons";
 
 @Component({
-    selector: 'app-dataset-selection',
-    templateUrl: './dataset-selection.component.html',
-    styleUrls: ['../../pipeline.component.scss']
+  selector: "app-dataset-selection",
+  templateUrl: "./dataset-selection.component.html",
+  styleUrls: ["../../pipeline.component.scss"],
 })
 export class DatasetSelectionComponent implements OnInit {
-    datasetSelectionTab = 1;
-    faCheck = faCircleCheck;
-    faBug = faBug;
-    faCsv = faFileCsv;
-    faPython = faPython;
-    showUploadError = false;
-    file: any;
-    s3Uri: string | undefined;
-    @Input() uri: any;
-    @ViewChild("datasetInput") datasetInput: ElementRef | undefined;
+  datasetSelectionTab = 1;
+  faCheck = faCircleCheck;
+  faBug = faBug;
+  faCsv = faFileCsv;
+  faPython = faPython;
+  showUploadError = false;
+  file: any;
+  s3Uri: string | undefined;
+  @Input() uri: any;
+  @ViewChild("datasetInput") datasetInput: ElementRef | undefined;
 
-    ngOnInit(): void {
-        this.s3Uri = this.uri;
-    }
+  ngOnInit(): void {
+    this.s3Uri = this.uri;
+  }
 
-    dragEnterHandler(event: DragEvent) {
-        event.preventDefault();
-        const container = document.querySelector(".dataset-upload");
-        if (container) {
-            container.classList.add("drop-enter");
-        }
+  dragEnterHandler(event: DragEvent) {
+    event.preventDefault();
+    const container = document.querySelector(".dataset-upload");
+    if (container) {
+      container.classList.add("drop-enter");
     }
+  }
 
-    dragLeaveHandler(event: DragEvent) {
-        event.preventDefault();
-        const container = document.querySelector(".dataset-upload");
-        if (container) {
-            container.classList.remove("drop-enter");
-        }
+  dragLeaveHandler(event: DragEvent) {
+    event.preventDefault();
+    const container = document.querySelector(".dataset-upload");
+    if (container) {
+      container.classList.remove("drop-enter");
     }
+  }
 
-    dragOverHandler(event: DragEvent) {
-        event.preventDefault();
-    }
+  dragOverHandler(event: DragEvent) {
+    event.preventDefault();
+  }
 
-    dropHandler(event: any) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.showUploadError = false;
-        const files: any = Array.from(event.dataTransfer.files) || [];
-        if (this.validateUpload(files[0])) {
-            this.file = files[0];
-        }  else {
-            this.showUploadError = true;
-        }
-        const container = document.querySelector(".dataset-upload");
-        if (container) {
-            container.classList.remove("drop-enter");
-        }
+  dropHandler(event: any) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.showUploadError = false;
+    const files: any = Array.from(event.dataTransfer.files) || [];
+    if (this.validateUpload(files[0])) {
+      this.file = files[0];
+    } else {
+      this.showUploadError = true;
     }
+    const container = document.querySelector(".dataset-upload");
+    if (container) {
+      container.classList.remove("drop-enter");
+    }
+  }
 
-    triggerInput() {
-        this.datasetInput?.nativeElement.click();
-    }
+  triggerInput() {
+    this.datasetInput?.nativeElement.click();
+  }
 
-    onDatasetUpload(event: any) {
-        event.stopPropagation();
-        event.preventDefault();
-        this.file = event.target.files[0];
-    }
+  onDatasetUpload(event: any) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.file = event.target.files[0];
+  }
 
-    validateUpload(file: File) {
-        return file.name.includes(".csv");
-    }
+  validateUpload(file: File) {
+    return file.name.includes(".csv");
+  }
 }

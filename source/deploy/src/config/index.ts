@@ -17,11 +17,13 @@ import { getGitContext } from "./git-context";
 
 // returns configuration provider functions by name
 export const getConfigProvider = (configType: "git") => {
-    switch (configType) {
-        case "git":
-            return getGitContext;
+  switch (configType) {
+    case "git":
+      return getGitContext;
 
-        default:
-            throw new Error(`Config provider ${configType} does not exist. Please choose another`);
-    }
+    default:
+      throw new Error(
+        `Config provider ${configType} does not exist. Please choose another`
+      );
+  }
 };

@@ -89,13 +89,12 @@ export class BaseStack extends cdk.Stack {
      * Create Pipeline DynamoDb database
      */
     const pipelineDdb = new DdbTableConstruct(this, "PipelineDdb", {
-      hash_key_column: "Id"
+      hash_key_column: "Id",
     });
 
     const batteryDdb = new DdbTableConstruct(this, "batteryDdb", {
-      hash_key_column: "battery"
+      hash_key_column: "battery",
     });
-
 
     /**
      * Create lambda function for location data

@@ -13,72 +13,75 @@
  * permissions and limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {AuthService} from "../../../../services/auth.service";
-import {Auth} from "aws-amplify";
-import {faUser} from "@fortawesome/free-solid-svg-icons";
-import {UserPreferenceService} from "../../../../services/user-preference.service";
-import {Router} from "@angular/router";
-import {environment} from "../../../../../environments/environment";
+import { Component, OnInit } from "@angular/core";
+import { AuthService } from "../../../../services/auth.service";
+import { Auth } from "aws-amplify";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { UserPreferenceService } from "../../../../services/user-preference.service";
+import { Router } from "@angular/router";
+import { environment } from "../../../../../environments/environment";
 
 @Component({
-    selector: "app-header",
-    templateUrl: "./header.component.html",
-    styleUrls: ["./header.component.scss"],
+  selector: "app-header",
+  templateUrl: "./header.component.html",
+  styleUrls: ["./header.component.scss"],
 })
 export class HeaderComponent implements OnInit {
-    isLoggedIn = false;
-    userName = "";
-    faUser = faUser;
-    showLogout = false;
-    showSpinner = false;
-    logoSrc = environment.NG_APP_LOGO;
-    customerName = environment.NG_APP_NAME;
-    
-    toggleMenu = () => {
-        this.showLogout = false;
-        this.removeClickEvent()
-    }
-    toggleMenuBind = this.toggleMenu.bind(this);
+  isLoggedIn = false;
+  userName = "";
+  faUser = faUser;
+  showLogout = false;
+  showSpinner = false;
+  logoSrc = environment.NG_APP_LOGO;
+  customerName = environment.NG_APP_NAME;
 
-    constructor(private authService: AuthService, public userPrefService: UserPreferenceService, private router: Router) {}
+  toggleMenu = () => {
+    this.showLogout = false;
+    this.removeClickEvent();
+  };
+  toggleMenuBind = this.toggleMenu.bind(this);
 
-    ngOnInit(): void {
-        this.authService.getLoginStatus().then(async (status) => {
-            this.isLoggedIn = status;
-            if (this.isLoggedIn) {
-                const userInfo = await Auth.currentUserInfo();
-                this.userName = userInfo.username;
-            }
-        });
-    }
+  constructor(
+    private authService: AuthService,
+    public userPrefService: UserPreferenceService,
+    private router: Router
+  ) {}
 
-    signOut() {
-        this.showSpinner = true;
-        this.authService.logout();
-    }
+  ngOnInit(): void {
+    this.authService.getLoginStatus().then(async (status) => {
+      this.isLoggedIn = status;
+      if (this.isLoggedIn) {
+        const userInfo = await Auth.currentUserInfo();
+        this.userName = userInfo.username;
+      }
+    });
+  }
 
-    switchProfile() {
-        if (this.userPrefService.currentPersona === 1)
-            this.userPrefService.currentPersona = 2;
-        else
-            this.userPrefService.currentPersona = 1;
-        this.showLogout = false;
-        if (!this.router.url.includes('/dashboard')) {
-            this.router.navigate(['/dashboard']);
-        }
-    }
+  signOut() {
+    this.showSpinner = true;
+    this.authService.logout();
+  }
 
-    navHandler() {
-        this.showLogout = !this.showLogout;
-        if(this.showLogout) {
-            setTimeout(() => {
-                window.addEventListener('click', this.toggleMenuBind);
-            });
-        }
+  switchProfile() {
+    if (this.userPrefService.currentPersona === 1)
+      this.userPrefService.currentPersona = 2;
+    else this.userPrefService.currentPersona = 1;
+    this.showLogout = false;
+    if (!this.router.url.includes("/dashboard")) {
+      this.router.navigate(["/dashboard"]);
     }
+  }
 
-    private removeClickEvent() {
-        window.removeEventListener('click', this.toggleMenuBind);
+  navHandler() {
+    this.showLogout = !this.showLogout;
+    if (this.showLogout) {
+      setTimeout(() => {
+        window.addEventListener("click", this.toggleMenuBind);
+      });
     }
+  }
+
+  private removeClickEvent() {
+    window.removeEventListener("click", this.toggleMenuBind);
+  }
 }

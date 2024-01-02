@@ -13,29 +13,34 @@
  * permissions and limitations under the License.
  */
 
-import {Injectable} from '@angular/core';
-import {CanActivate, Router, UrlTree} from '@angular/router';
-import {Observable} from 'rxjs';
-import {UserPreferenceService} from "../services/user-preference.service";
-import {UserPersona} from "../models/user-persona";
+import { Injectable } from "@angular/core";
+import { CanActivate, Router, UrlTree } from "@angular/router";
+import { Observable } from "rxjs";
+import { UserPreferenceService } from "../services/user-preference.service";
+import { UserPersona } from "../models/user-persona";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class PersonaGuard implements CanActivate {
-  constructor(private userPrefService: UserPreferenceService, private router: Router) {
-  }
-  canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+  constructor(
+    private userPrefService: UserPreferenceService,
+    private router: Router
+  ) {}
+  canActivate():
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree>
+    | boolean
+    | UrlTree {
     if (this.userPrefService.currentPersona === UserPersona.FLEET_OPERATOR) {
-        if (!this.router.url.includes('/dashboard')) {
-          this.router.navigate(['/dashboard']).then();
-          return false;
-        } else {
-          return true;
-        }
+      if (!this.router.url.includes("/dashboard")) {
+        this.router.navigate(["/dashboard"]).then();
+        return false;
+      } else {
+        return true;
+      }
     } else {
       return true;
     }
   }
-  
 }

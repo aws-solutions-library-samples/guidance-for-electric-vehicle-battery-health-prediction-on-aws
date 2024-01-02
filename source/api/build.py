@@ -1,4 +1,4 @@
-""" 
+"""
 Copyright 2022 Amazon.com, Inc. and its affiliates. All Rights Reserved.
 
 Licensed under the Amazon Software License (the "License").
@@ -15,17 +15,19 @@ permissions and limitations under the License.
 
 import os
 import shutil
-import sys
 import subprocess
+import sys
 
 # Prepares the all the lambdas for deployment
 #
 # Walks each directory looking for a build script and executes it if found
 
+
 def exit_on_failure(exit_code, msg):
     if exit_code != 0:
         print(msg)
         exit(exit_code)
+
 
 build_file_name = "build.py"
 

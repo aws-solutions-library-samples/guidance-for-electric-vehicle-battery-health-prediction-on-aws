@@ -14,8 +14,8 @@
  */
 
 import { request as httpsRequest } from "https";
-import { request as httpRequest, IncomingMessage, RequestOptions } from "http";
-import { Writable, pipeline } from "stream";
+import { IncomingMessage, request as httpRequest, RequestOptions } from "http";
+import { pipeline, Writable } from "stream";
 
 type FetchRequestOptions = RequestOptions & {
   responseTimeout?: number;

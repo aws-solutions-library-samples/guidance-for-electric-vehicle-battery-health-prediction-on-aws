@@ -10,7 +10,7 @@
           <label for="startTimePicker" class="label">Start Time:</label>
           <input type="datetime-local" id="startTimePicker" [(ngModel)]="selectedStartTime" (change)="updateAllCharts()">
         </div>
-      
+
         <div class="time-picker">
           <label for="endTimePicker" class="label">End Time:</label>
           <input type="datetime-local" id="endTimePicker" [(ngModel)]="selectedEndTime" (change)="updateAllCharts()">
@@ -34,7 +34,7 @@
       </select>
       <highcharts-chart *ngIf="batteryLineChartOptions" [Highcharts]="highcharts" [options]="batteryLineChartOptions" [callbackFunction]="batteryChartCallback" style="display: block;"></highcharts-chart>
     </fieldset>
-  
+
     <fieldset class="graph-container">
       <legend class="legend">Cell</legend>
       <label for="analyticsDropdown3" class="label">Selected Sensor:</label>

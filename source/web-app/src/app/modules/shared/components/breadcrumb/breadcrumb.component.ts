@@ -13,22 +13,21 @@
  * permissions and limitations under the License.
  */
 
-import {Component, Input} from '@angular/core';
-import {Router} from "@angular/router";
+import { Component, Input } from "@angular/core";
+import { Router } from "@angular/router";
 
 type ClickHandler = () => void;
 
 @Component({
-  selector: 'app-breadcrumb',
-  templateUrl: './breadcrumb.component.html',
-  styleUrls: ['./breadcrumb.component.scss']
+  selector: "app-breadcrumb",
+  templateUrl: "./breadcrumb.component.html",
+  styleUrls: ["./breadcrumb.component.scss"],
 })
 export class BreadcrumbComponent {
-
   @Input() text: string | undefined;
   @Input() route: any;
-  @Input() clickHandler: ClickHandler | undefined
-  constructor(private router: Router) { }
+  @Input() clickHandler: ClickHandler | undefined;
+  constructor(private router: Router) {}
 
   navigate() {
     if (this.route) {
@@ -37,5 +36,4 @@ export class BreadcrumbComponent {
       this.clickHandler();
     }
   }
-
 }

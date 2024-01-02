@@ -16,8 +16,8 @@ permissions and limitations under the License.
 import { fromEnv } from "@aws-sdk/credential-providers";
 import { AppSyncClient } from "./appsync";
 import {
-  ForecastClient,
   CreateAutoPredictorCommand,
+  ForecastClient,
 } from "@aws-sdk/client-forecast";
 
 const fcast = new ForecastClient({ region: process.env.AWS_REGION });

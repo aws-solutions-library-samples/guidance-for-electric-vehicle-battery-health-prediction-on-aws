@@ -14,8 +14,8 @@ permissions and limitations under the License.
 */
 
 import {
-  GlueClient,
   CreateJobCommand,
+  GlueClient,
   StartJobRunCommand,
 } from "@aws-sdk/client-glue";
 import { fromEnv } from "@aws-sdk/credential-providers";

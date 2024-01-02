@@ -13,10 +13,8 @@
  * permissions and limitations under the License.
  */
 
-const  DotEnv = require('dotenv-webpack');
+const DotEnv = require("dotenv-webpack");
 
 module.exports = {
-    plugins: [
-        new DotEnv({systemvars: true})
-    ]
-}
+  plugins: [new DotEnv({ systemvars: true })],
+};

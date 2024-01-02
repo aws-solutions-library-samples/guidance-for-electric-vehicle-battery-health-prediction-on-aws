@@ -39,7 +39,7 @@ keyAWSServices:
     - Amazon S3
     - Amazon DynamoDB
     - Amazon CloudFront
-    
+
 ## Which industries does this demo fall in?
 industries:
 #    - Advertising & Marketing

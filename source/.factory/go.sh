@@ -31,7 +31,7 @@ if [[ "${DOCKER_RUNNING}" != "TRUE" ]]; then
         echo "ERROR: docker is required"
         exit 2
     fi
-    
+
     DOCKERFILE="${CURRENT_PATH}/../Dockerfile"
     if [ ! -f ${DOCKERFILE} ]; then
         DOCKERFILE="${CURRENT_PATH}/Dockerfile"
@@ -43,7 +43,7 @@ if [[ "${DOCKER_RUNNING}" != "TRUE" ]]; then
     n=0
     until [ "$n" -ge 3 ]; do
         docker pull -q ${YQ_DOCKER_TAG} &> /dev/null && break
-        n=$((n+1)) 
+        n=$((n+1))
         echo "  Retry #${n}, waiting 5 seconds..."
         sleep 5
     done
@@ -88,7 +88,7 @@ if [[ "${DOCKER_RUNNING}" != "TRUE" ]]; then
             -e AWS_CONTAINER_CREDENTIALS_RELATIVE_URI \
             -v ${CURRENT_PATH}/output:/src/.factory/output \
             --entrypoint /bin/bash \
-            ${DOCKER_IMAGE} 
+            ${DOCKER_IMAGE}
         exit $?
     else
         echo "Running container from image ${DOCKER_IMAGE}:"
@@ -211,7 +211,7 @@ show_details() {
     echo "  AWS ACCOUNT ID: ${AWS_ACCOUNT_ID}"
     echo "  AWS USER:    ${AWS_USER}"
     echo "  AWS REGION:  ${AWS_REGION}"
-    
+
     if $SHOW_PARAMS; then
         echo ""
         echo "  CUSTOMER_NAME: ${CUSTOMER_NAME}"
@@ -243,7 +243,7 @@ if [[ "$command" = "check" ]]; then
     show_details
 elif [[ "$command" = "dryrun" ]]; then
     check_reqs
-    show_details 
+    show_details
     echo ""
     echo "(DRY RUN) Starting deployment process:"
     echo "  SKIP: source ${CURRENT_PATH}/_deploy.sh"
@@ -252,8 +252,8 @@ elif [[ "$command" = "dryrun" ]]; then
     echo "DONE"
 elif [[ "$command" = "deploy" ]]; then
     check_reqs
-    show_details 
-    
+    show_details
+
     # Run docker in docker -- this allows CDK and other docker enabled demos to work
     dockerd &> dockerd-logfile &
     echo ""
