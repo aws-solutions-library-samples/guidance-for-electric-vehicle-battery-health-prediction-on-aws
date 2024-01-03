@@ -230,6 +230,7 @@ export class DashboardComponent implements OnInit {
             "value": 30
         }
     };
+    currentRealTimeFaultLineChartOptions: any = {};
 
     chartCallback: Highcharts.ChartCallbackFunction = (chart) => {
         this.chartRef = chart;
@@ -774,13 +775,99 @@ export class DashboardComponent implements OnInit {
         this.showFaultDetectionDetails = true;
         this.faultDetectionTitle = faultType;
         if (this.currentRealTimeFaultData) {
+            const occurencesData = this.currentRealTimeFaultData.occurenceTimestamps.map((timestamp: any, index: number) => [(new Date(timestamp)).getTime(), index + 1]);
+            this.setCurrentRealTimeFaultLineChartOptions(occurencesData);
             return;
         }
         this.currentFaultData = this.faultData.find((model: { modelName: string; }) => model.modelName === faultKey).data;
         
-        const type = faultKey === 'Thermal Runaway' ? 'datetime' : 'number';
+        let type = 'number';
+        if (faultKey === 'Thermal Runaway') {
+            type = 'datetime';
+            this.currentFaultData = this.currentFaultData.map((data: any) => {
+                return [(new Date(data[0])).getTime(), data[1]];
+            })
+        }
+
         this.setFaultLineChartOptions(this.currentFaultData, type);
 
+    }
+
+    private setCurrentRealTimeFaultLineChartOptions(data: any[]) {
+        this.currentRealTimeFaultLineChartOptions = {
+            series: [
+                {
+                    data: data,
+                    color: '#38EF7D',
+                    name: 'Occurences',
+                    type: 'line'
+                },
+            ],
+            chart: {
+                type: 'line',
+                backgroundColor: '#2D343D',
+                zoomType: 'x',
+                panning: true,
+                panKey: 'shift',
+                reflow: false,
+            },
+            colorAxis: [{
+                gridLineColor: '#e6e6e6'
+            }],
+            title: {
+                text: '',
+                style: {
+                    fontSize: 24,
+                    textAlign: 'left',
+                    color: 'white',
+                },
+                useHTML: true,
+                align: 'left',
+            },
+            credits: {
+                enabled: false
+            },
+            yAxis: {
+                labels: {
+                    style: {
+                        color: '#fff'
+                    },
+                },
+                title: {
+                    text: 'Occurences',
+                    style: {
+                        color: '#fff'
+                    }
+                },
+                gridLineColor: '#888',
+                gridLineWidth: 1,
+            },
+            xAxis: {
+                type: 'datetime',
+                labels: {
+                    style: {
+                        color: '#fff'
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: '#2D343D',
+                style: { color: '#fff' },
+                //@ts-ignore
+                formatter: function () {
+                    // @ts-ignore
+                    const x: any = this.x;
+                    // @ts-ignore
+                    const y: any = this.y;
+                    if (x && y) {
+                        return `<div><strong>Timestamp: </strong>${(new Date(x).toISOString())}</div><div><strong>Occurences:</strong> ${y}</div>`
+                    } else {
+                        return;
+                    }
+                },
+                useHTML: true
+            }
+        };
     }
 
     private setFaultLineChartOptions(data: any[], x_type: string) {
@@ -851,7 +938,7 @@ export class DashboardComponent implements OnInit {
                     // @ts-ignore
                     const y: any = this.y;
                     if (x && y) {
-                        return `<div><strong>Cell Index: </strong>${x}</div><div><strong>Probability:</strong> ${y}%</div>`
+                        return `<div><strong>Probability:</strong> ${y}%</div>`
                     } else {
                         return;
                     }

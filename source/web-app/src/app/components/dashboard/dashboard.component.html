@@ -317,6 +317,11 @@
             </table>
         </div>
 
+        <div *ngIf="currentRealTimeFaultData" style="height: 50%;max-height: 2%;justify-content: center;">
+            <highcharts-chart *ngIf="currentRealTimeFaultLineChartOptions" [Highcharts]="highcharts" [options]="currentRealTimeFaultLineChartOptions"
+            [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
+        </div>
+
          <div *ngIf="!currentRealTimeFaultData">
             <highcharts-chart *ngIf="faultLineChartOptions" [Highcharts]="highcharts" [options]="faultLineChartOptions"
                 [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
