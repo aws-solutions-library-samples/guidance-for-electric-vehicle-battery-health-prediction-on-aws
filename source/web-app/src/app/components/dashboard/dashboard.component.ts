@@ -428,6 +428,9 @@ export class DashboardComponent implements OnInit {
             }, 30000);
           } else {
             clearInterval(this.intervalId);
+            Object.keys(this.faultDetections).forEach((faultKey: string) => {
+                this.faultDetections[faultKey as keyof typeof this.faultDetections]["state"] = "green";
+            });
           }
     }
 
@@ -492,6 +495,11 @@ export class DashboardComponent implements OnInit {
     }
 
     getFaultDetections(VIN: string, batteryId: string) {
+        this.faultData = [];
+        Object.keys(this.faultDetections).forEach((faultKey: string) => {
+            this.faultDetections[faultKey as keyof typeof this.faultDetections]["state"] = "green";
+        });
+
         this.websocketService.receiveMessage().subscribe((message: any) => {
 
             if (message[VIN]) {
