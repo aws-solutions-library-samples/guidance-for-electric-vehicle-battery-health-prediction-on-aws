@@ -878,11 +878,11 @@ export class DashboardComponent implements OnInit {
                     data: data,
                     color: '#38EF7D',
                     name: 'Probabilities',
-                    type: 'line'
+                    type: 'column'
                 },
             ],
             chart: {
-                type: 'line',
+                type: 'column',
                 backgroundColor: '#2D343D',
                 zoomType: 'x',
                 panning: true,
