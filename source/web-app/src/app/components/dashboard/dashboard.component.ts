@@ -460,9 +460,9 @@ export class DashboardComponent implements OnInit {
         this.modules = new Array(this.battery.numberOfModules);
         this.resetBatteryInfo();
         const observables = [
-            this.dataService.getBatteryData(this.username, this.pipelineId, this.selectedBattery, 'past'),
-            this.dataService.getBatteryData(this.username, this.pipelineId, this.selectedBattery, 'predictions'),
-            this.dataService.getBatteryData(this.username, this.pipelineId, this.selectedBattery, 'actual')
+            this.dataService.getBatteryData(this.username, this.pipelineId, 'b1', 'past'),
+            this.dataService.getBatteryData(this.username, this.pipelineId, 'b1', 'predictions'),
+            this.dataService.getBatteryData(this.username, this.pipelineId, 'b1', 'actual')
         ];
         forkJoin(observables).subscribe({
             next: (responses: any[]) => {
@@ -523,6 +523,8 @@ export class DashboardComponent implements OnInit {
             this.faultData.forEach((model: { modelName: string; }) => {
                 this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
             })
+        }, () => {
+            console.log('no lithium plating data')
         });
 
         this.dataService.getThermalRunawayResults(batteryId).subscribe((data: any) => {
@@ -530,6 +532,8 @@ export class DashboardComponent implements OnInit {
             this.faultData.forEach((model: { modelName: string; }) => {
                 this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
             })
+        }, () => {
+            console.log('no thermal runaway data')
         });
     }
 

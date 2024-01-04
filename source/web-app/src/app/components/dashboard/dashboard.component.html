@@ -296,25 +296,30 @@
             <span>{{ faultDetectionTitle }} History</span>
         </div>
 
-        <div *ngIf="currentRealTimeFaultData" style="justify-content: center;display: flex;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Timestamp</th>
-                        <th>Occurances</th>
-                        <th>Last Error Duration</th>
-                        <th>Average Error Duration</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr >
-                        <td>{{ currentRealTimeFaultData.lastOccurTimestamp }}</td>
-                        <td>{{ currentRealTimeFaultData.count }}</td>
-                        <td>{{ currentRealTimeFaultData.duration }}</td>
-                        <td>{{ currentRealTimeFaultData.AverageDuration }}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div *ngIf="currentRealTimeFaultData" style="justify-content: center;display: flex;flex-direction: column;text-align: center">
+            <div *ngIf="currentRealTimeFaultData.lastOccurTimestamp">
+                <h4 style="margin-top: 0;">
+                    Current fault detected starting at {{ currentRealTimeFaultData.lastOccurTimestamp }}
+                </h4>
+            </div>
+            <div *ngIf="!currentRealTimeFaultData.lastOccurTimestamp">
+                <h4 style="margin-top: 0;">
+                    There is no current fault detected
+                </h4>
+            </div>
+            <div style="display: flex;flex-direction: column">
+                <div style="display: flex; justify-content:space-around;margin-bottom: 3%;">
+                    <div>
+                        Occurences: {{ currentRealTimeFaultData.count }}
+                    </div>
+                    <div>
+                        Last Error Duration: {{ currentRealTimeFaultData.duration }}
+                    </div>
+                    <div>
+                        Average Error Duration: {{ currentRealTimeFaultData.AverageDuration | number }}
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div *ngIf="currentRealTimeFaultData" style="height: 50%;max-height: 2%;justify-content: center;">
@@ -327,9 +332,9 @@
                 [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
         </div>
 
-        <button (click)="navigateToAnalytics()" class="analytics-button far-right">See Analytics</button>
-        <div class="retrain-action">
+        <div class="retrain-action" style="display: flex;align-items: center;justify-content: space-between;">
             <button class="upload-action-secondary" (click)="showFaultDetectionDetails = false;">Close</button>
+            <button (click)="navigateToAnalytics()" class="analytics-button" style="margin: 0;margin-right: 2%;">See Analytics</button>
         </div>
 
     </div>
