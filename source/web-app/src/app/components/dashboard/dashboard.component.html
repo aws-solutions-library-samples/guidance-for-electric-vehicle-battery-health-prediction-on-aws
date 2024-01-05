@@ -290,6 +290,14 @@
         </div>
     </div>
 </div>
+<div class="charging-target-modal" style="z-index: 1001;" *ngIf="showAnalytics">
+    <div class="charging-target-container" style="width: 80%;">
+        <app-analytics [selectedBattery]="selectedBattery" [annotationTimestamp]="annotationTimestamp"></app-analytics>
+        <div class="retrain-action" style="display: flex;align-items: center;justify-content: space-between;">
+            <button class="upload-action-secondary" (click)="showAnalytics = false;">Close</button>
+        </div>
+    </div>
+</div>
 <div class="charging-target-modal" *ngIf="showFaultDetectionDetails">
     <div class="charging-target-container fault-detection-table">
         <div class="charging-target-header">
@@ -334,7 +342,7 @@
 
         <div class="retrain-action" style="display: flex;align-items: center;justify-content: space-between;">
             <button class="upload-action-secondary" (click)="showFaultDetectionDetails = false;">Close</button>
-            <button (click)="navigateToAnalytics()" class="analytics-button" style="margin: 0;margin-right: 2%;">See Analytics</button>
+            <button (click)="navigateToAnalytics(true)" class="analytics-button" style="margin: 0;margin-right: 2%;">See Analytics</button>
         </div>
 
     </div>

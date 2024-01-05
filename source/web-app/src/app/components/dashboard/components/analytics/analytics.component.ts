@@ -1,6 +1,5 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import Highcharts from "highcharts";
-import { ActivatedRoute } from "@angular/router";
 import { DataService } from "../../../../services/data.service";
 
 interface VehicleData {
@@ -63,28 +62,22 @@ export class AnalyticsComponent implements OnInit {
   selectedVehicleOption: string = this.vehicleOptions[0];
   selectedBatteryOption: string = this.batteryOptions[0];
   selectedCellOption: string = this.cellOptions[0];
-  selectedStartTime: string = "";
-  selectedEndTime: string = "";
+  selectedStartTime = "";
+  selectedEndTime = "";
   vehicleData = [] as VehicleData[];
   batteryData = [] as BatteryData[];
   cellData = {} as CellData;
   highcharts = Highcharts;
-  annotationTimestamp: string = "";
+  @Input() annotationTimestamp = "";
   private vehicleChartRef: any;
   private batteryChartRef: any;
   private cellChartRef: any;
-  selectedBattery: string = "";
+  @Input() selectedBattery = "";
   vehicleLineChartOptions: Highcharts.Options | undefined = undefined;
   batteryLineChartOptions: Highcharts.Options | undefined = undefined;
   cellLineChartOptions: Highcharts.Options | undefined = undefined;
 
-  constructor(private route: ActivatedRoute, private dataService: DataService) {
-    this.route.params.subscribe((params: any) => {
-      this.selectedBattery = params.id ?? "";
-      this.annotationTimestamp = params.annotationTimestamp ?? "";
-      console.log(Date.parse(this.annotationTimestamp));
-    });
-  }
+  constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
     this.selectedStartTime =
@@ -244,7 +237,7 @@ export class AnalyticsComponent implements OnInit {
   }
 
   updateAllCharts() {
-    const data = this.dataService
+    this.dataService
       .getAnalytics(
         this.selectedBattery,
         this.selectedStartTime,
