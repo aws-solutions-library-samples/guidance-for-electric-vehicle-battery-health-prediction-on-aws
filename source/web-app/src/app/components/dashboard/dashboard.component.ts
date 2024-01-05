@@ -261,6 +261,8 @@ export class DashboardComponent implements OnInit {
     startHeating = false;
     anomalyModels = false;
     eolDate: Date | undefined;
+    showAnalytics = false;
+    annotationTimestamp = "";
 
     constructor(private apiService: APIService,
         private dataService: DataService,
@@ -977,13 +979,9 @@ export class DashboardComponent implements OnInit {
             }
         })
     }
-    navigateToAnalytics() {
-        const annotationTimestamp = this.faultData?.find((model: { modelName: string; }) => model.modelName === this.faultDetectionTitle)?.annotationTimestamp;
-        if(annotationTimestamp) {
-            this.router.navigate(['/analytics', this.selectedBattery, annotationTimestamp]);
-        }
-        else {
-            this.router.navigate(['/analytics', this.selectedBattery]);
-        }
+    navigateToAnalytics(withTimestamp = false) {
+        this.annotationTimestamp = withTimestamp ? 
+            this.faultData?.find((model: { modelName: string; }) => model.modelName === this.faultDetectionTitle)?.annotationTimestamp : "";
+        this.showAnalytics = true;
     }
 }

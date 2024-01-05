@@ -59,16 +59,6 @@ const routes: Routes = [
     pathMatch: "full",
     canActivate: [AuthGuard, PersonaGuard],
   },
-  {
-    path: "analytics/:id",
-    component: AnalyticsComponent,
-    canActivate: [AuthGuard, PersonaGuard],
-  },
-  {
-    path: "analytics/:id/:annotationTimestamp",
-    component: AnalyticsComponent,
-    canActivate: [AuthGuard, PersonaGuard],
-  },
 ];
 
 @NgModule({
