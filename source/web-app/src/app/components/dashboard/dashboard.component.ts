@@ -459,10 +459,12 @@ export class DashboardComponent implements OnInit {
         this.battery = this.batteryMetadata[this.selectedBattery];
         this.modules = new Array(this.battery.numberOfModules);
         this.resetBatteryInfo();
+        const batteryId = this.selectedBattery.slice(-1) % 2 === 0 ? 'b1' : 'b3';
+
         const observables = [
-            this.dataService.getBatteryData(this.username, this.pipelineId, 'b1', 'past'),
-            this.dataService.getBatteryData(this.username, this.pipelineId, 'b1', 'predictions'),
-            this.dataService.getBatteryData(this.username, this.pipelineId, 'b1', 'actual')
+            this.dataService.getBatteryData(this.username, this.pipelineId, batteryId, 'past'),
+            this.dataService.getBatteryData(this.username, this.pipelineId, batteryId, 'predictions'),
+            this.dataService.getBatteryData(this.username, this.pipelineId, batteryId, 'actual')
         ];
         forkJoin(observables).subscribe({
             next: (responses: any[]) => {
