@@ -106,6 +106,13 @@ export class DataService {
     });
   }
 
+  getAccDegResults(batteryId: string) {
+    const params = new HttpParams().set("batteryId", batteryId);
+    return this.http.get<any>(`${this.EATRON_API_URL}/acc-deg`, {
+      params: params,
+    });
+  }
+
   getAnalytics(
     batteryId: string,
     startTime: string,

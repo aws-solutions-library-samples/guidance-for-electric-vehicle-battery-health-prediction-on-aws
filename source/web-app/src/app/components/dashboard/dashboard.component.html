@@ -210,7 +210,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div style="display: flex; justify-content: space-between;font-size: 12px;">
+                        <div style="display: flex; justify-content: space-between;font-size: 12px;" *ngIf="selectedBattery === 'KNADE163966083102' || selectedBattery === 'KNADE163966083101'">
                             <span>Trigger Anomaly Models</span>
                             <app-switch (click)="toggleAnomalyModelSwitch()"
                                 [currentState]="anomalyModels"></app-switch>
@@ -335,8 +335,13 @@
             [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
         </div>
 
-         <div *ngIf="!currentRealTimeFaultData">
+        <div *ngIf="!currentRealTimeFaultData && !isAccDeg">
             <highcharts-chart *ngIf="faultLineChartOptions" [Highcharts]="highcharts" [options]="faultLineChartOptions"
+                [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
+        </div>
+
+        <div *ngIf="!currentRealTimeFaultData && isAccDeg">
+            <highcharts-chart *ngIf="accDegChartOptions" [Highcharts]="highcharts" [options]="accDegChartOptions"
                 [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
         </div>
 
