@@ -82,7 +82,7 @@ export class AnalyticsComponent implements OnInit {
   ngOnInit(): void {
     this.selectedStartTime =
       this.selectedStartTime === ""
-        ? this.getFormattedDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))
+        ? this.getFormattedDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
         : this.selectedStartTime;
     this.selectedEndTime =
       this.selectedEndTime === ""
@@ -100,7 +100,7 @@ export class AnalyticsComponent implements OnInit {
     this.cellChartRef = chart;
   };
 
-  analyticsOptionsInitialize(): Highcharts.Options {
+  analyticsOptionsInitialize(label: string): Highcharts.Options {
     return {
       chart: {
         type: "line",
@@ -141,7 +141,7 @@ export class AnalyticsComponent implements OnInit {
           },
         },
         title: {
-          text: this.selectedCellOption,
+          text: label,
           style: {
             color: "#fff",
           },
@@ -186,7 +186,7 @@ export class AnalyticsComponent implements OnInit {
           data: vehicleData,
         },
       ],
-      ...this.analyticsOptionsInitialize(),
+      ...this.analyticsOptionsInitialize(this.selectedVehicleOption),
     };
   }
 
@@ -207,7 +207,7 @@ export class AnalyticsComponent implements OnInit {
           data: batteryData,
         },
       ],
-      ...this.analyticsOptionsInitialize(),
+      ...this.analyticsOptionsInitialize(this.selectedBatteryOption),
     };
   }
 
@@ -232,7 +232,7 @@ export class AnalyticsComponent implements OnInit {
 
     this.cellLineChartOptions = {
       series: seriesEntries,
-      ...this.analyticsOptionsInitialize(),
+      ...this.analyticsOptionsInitialize(this.selectedCellOption),
     };
   }
 

@@ -114,6 +114,8 @@ export class DashboardComponent implements OnInit {
     faultRealTimeData: any = {};
     currentFaultData: any = {};
     currentRealTimeFaultData: any = {};
+    isAccDeg = false;
+    accDegChartOptions: any = {};
     faultLineChartOptions: any = {};
     faultStatistics: any = {};
     faultDetections = {
@@ -425,6 +427,12 @@ export class DashboardComponent implements OnInit {
     toggleAnomalyModelSwitch() {
         this.anomalyModels = !this.anomalyModels;
         if (this.anomalyModels) {
+            if (this.selectedBattery === 'KNADE163966083101') {
+                setTimeout(() => {
+                    this.faultDetections['AccDeg']["state"] = "danger";
+                }, 3000);
+                return;
+            }
             this.sendTriggerModelsRequest();
             this.intervalId = setInterval(() => {
               this.sendTriggerModelsRequest();
@@ -538,6 +546,15 @@ export class DashboardComponent implements OnInit {
             })
         }, () => {
             console.log('no thermal runaway data')
+        });
+
+        this.dataService.getAccDegResults(batteryId).subscribe((data: any) => {
+            this.faultData.push(data.message);
+            this.isAccDeg = true;
+            this.setAccDegChartOptions(data.message.data);
+        }, () => {
+            console.log('no acc deg data')
+            this.isAccDeg = false;
         });
     }
 
@@ -790,15 +807,139 @@ export class DashboardComponent implements OnInit {
         this.currentFaultData = this.faultData.find((model: { modelName: string; }) => model.modelName === faultKey).data;
         
         let type = 'number';
+        let isTR = false;
         if (faultKey === 'Thermal Runaway') {
             type = 'datetime';
             this.currentFaultData = this.currentFaultData.map((data: any) => {
                 return [(new Date(data[0])).getTime(), data[1]];
             })
+            isTR = true;
         }
 
-        this.setFaultLineChartOptions(this.currentFaultData, type);
+        this.setFaultLineChartOptions(this.currentFaultData, type, isTR);
+    }
 
+    private setAccDegChartOptions(data: any[]) {
+        const transformedData: { [key: string]: {x: number; y:number;}[]} = {};
+
+        data.forEach(item => {
+            const timestamp = (new Date(item.bucket)).getTime();
+            if (transformedData[item.cell_id]) {
+                transformedData[item.cell_id].push({x: timestamp, y: item.voltage});
+            } else {
+                transformedData[item.cell_id] = [{x: timestamp, y: item.voltage}];
+            }
+        });
+
+        const series = Object.keys(transformedData).map(cell_id => {
+            return {
+                name: cell_id,
+                data: transformedData[cell_id],
+                type: 'line',
+                color: cell_id === 'Cell41Volt' ? '#fc3203' : '#38EF7D'
+            };
+        });
+
+        this.accDegChartOptions = {
+            series: series,
+            chart: {
+                type: 'line',
+                backgroundColor: '#2D343D',
+                zoomType: 'x',
+                panning: true,
+                panKey: 'shift',
+                reflow: false,
+            },
+            colorAxis: [{
+                gridLineColor: '#e6e6e6'
+            }],
+            title: {
+                text: '',
+                style: {
+                    fontSize: 24,
+                    textAlign: 'left',
+                    color: 'white',
+                },
+                useHTML: true,
+                align: 'left',
+            },
+            credits: {
+                enabled: false
+            },
+            yAxis: {
+                labels: {
+                    style: {
+                        color: '#fff'
+                    },
+                },
+                title: {
+                    text: 'Voltage (V)',
+                    style: {
+                        color: '#fff'
+                    }
+                },
+                gridLineColor: '#888',
+                gridLineWidth: 1,
+            },
+            xAxis: {
+                type: 'datetime',
+                labels: {
+                    style: {
+                        color: '#fff'
+                    }
+                },
+                plotLines: [{
+                    color: 'red', // Line color
+                    width: 2,      // Line width
+                    value: Date.parse('2023-12-01T01:40:00.000Z'), 
+                    label: {
+                        text: 'AI Based', // Label text
+                        rotation: 90,            // Label rotation
+                        textAlign: 'center',    // Label text alignment
+                        // x: 10,                  // Offset from the x-axis,
+                        style: {
+                            color: 'white',
+                            fontweight: 'bold'
+                        },
+                        y: 50
+                    }
+                },
+                {
+                    color: 'blue', // Line color
+                    width: 2,      // Line width
+                    value: Date.parse('2023-12-01T02:30:00.000Z'), 
+                    label: {
+                        text: 'Threshold Based', // Label text
+                        rotation: 90,            // Label rotation
+                        textAlign: 'center',    // Label text alignment
+                        style: {
+                            color: 'white',
+                            fontweight: 'bold'
+                        },
+                        y: 50
+                    }
+                }]
+            },
+            tooltip: {
+                backgroundColor: '#2D343D',
+                style: { color: '#fff' },
+                //@ts-ignore
+                formatter: function () {
+                    // @ts-ignore
+                    const x: any = this.x;
+                    // @ts-ignore
+                    const y: any = this.y;
+                    if (x && y) {
+                        // @ts-ignore
+                        return `<div><strong>Cell Index: </strong>${this.series.name.slice(0, -4)}</div><div><strong>Timestamp: </strong>${(new Date(x).toISOString())}</div><div><strong>Voltage:</strong> ${y}</div>`
+                    } else {
+                        return;
+                    }
+                },
+                useHTML: true
+            },
+            legend:{ enabled:false }
+        };
     }
 
     private setCurrentRealTimeFaultLineChartOptions(data: any[]) {
@@ -878,8 +1019,7 @@ export class DashboardComponent implements OnInit {
         };
     }
 
-    private setFaultLineChartOptions(data: any[], x_type: string) {
-             
+    private setFaultLineChartOptions(data: any[], x_type: string, isTR: boolean) {
         this.faultLineChartOptions = {
             series: [
                 {
@@ -927,6 +1067,21 @@ export class DashboardComponent implements OnInit {
                 },
                 gridLineColor: '#888',
                 gridLineWidth: 1,
+                plotLines: isTR ? [{
+                    color: 'red',  // Line color
+                    width: 2,      // Line width
+                    value: 0.25,   // Position on the x-axis where the line will be drawn
+                    label: {
+                        text: 'Prob. Threshold',  // Label text
+                        rotation: 0,            // Label rotation
+                        textAlign: 'center',    // Label text alignment
+                        x: 50,                  // Offset from the x-axis
+                        style: {
+                            color: 'white',
+                            fontweight: 'bold'
+                        }
+                    }
+                }] : []
             },
             xAxis: {
                 type: x_type,
