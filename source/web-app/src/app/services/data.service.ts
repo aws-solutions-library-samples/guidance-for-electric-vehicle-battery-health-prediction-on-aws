@@ -93,23 +93,32 @@ export class DataService {
   }
 
   getThermalRunawayResults(batteryId: string) {
+    const apiKey = 'NVlmB7sW6hbzhyMhR1liIpPKPlny1XQM'
+    const headers = new HttpHeaders({"x-api-key": apiKey});
     const params = { batteryId: batteryId };
     return this.http.get<any>(`${this.EATRON_API_URL}/lithium-plating`, {
-      params: params,
+      headers: headers,
+      params: params
     });
   }
 
   getLithiumPlatingResults(batteryId: string) {
+    const apiKey = 'NVlmB7sW6hbzhyMhR1liIpPKPlny1XQM'
+    const headers = new HttpHeaders({"x-api-key": apiKey});
     const params = new HttpParams().set("batteryId", batteryId);
     return this.http.get<any>(`${this.EATRON_API_URL}/thermal-runaway`, {
-      params: params,
+      headers: headers,
+      params: params
     });
   }
 
   getAccDegResults(batteryId: string) {
+    const apiKey = 'NVlmB7sW6hbzhyMhR1liIpPKPlny1XQM'
+    const headers = new HttpHeaders({"x-api-key": apiKey});
     const params = new HttpParams().set("batteryId", batteryId);
     return this.http.get<any>(`${this.EATRON_API_URL}/acc-deg`, {
-      params: params,
+      headers: headers,
+      params: params
     });
   }
 
@@ -118,8 +127,11 @@ export class DataService {
     startTime: string,
     endTime: string
   ): Observable<any> {
+    const apiKey = 'NVlmB7sW6hbzhyMhR1liIpPKPlny1XQM'
+    const headers = new HttpHeaders({"x-api-key": apiKey});
     return this.http.get<any>(
-      `${this.EATRON_API_URL}/analytics/?batteryId=${batteryId}&startTime=${startTime}&endTime=${endTime}`
+      `${this.EATRON_API_URL}/analytics/?batteryId=${batteryId}&startTime=${startTime}&endTime=${endTime}`,
+      { headers: headers }
     );
   }
 
