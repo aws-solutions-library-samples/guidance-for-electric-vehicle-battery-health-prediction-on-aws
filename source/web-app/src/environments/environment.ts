@@ -29,6 +29,7 @@ export const environment = {
   NG_APP_PLUGIN_URI: "",
   development: true,
   API_GW_URL: "https://3kx2dga4fg.execute-api.us-east-1.amazonaws.com",
+  EATRON_API_KEY: "",
 };
 
 /*

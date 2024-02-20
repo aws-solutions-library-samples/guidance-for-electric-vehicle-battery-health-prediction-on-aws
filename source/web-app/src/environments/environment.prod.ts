@@ -26,4 +26,5 @@ export const environment = {
   NG_APP_PLUGIN_URI: "",
   development: false,
   API_GW_URL: "",
+  EATRON_API_KEY: "",
 };

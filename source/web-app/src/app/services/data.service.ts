@@ -23,6 +23,7 @@ import { Observable } from "rxjs";
 export class DataService {
   API_URL = "";
   EATRON_API_URL = "";
+  EATRON_API_KEY = "";
 
   constructor(private http: HttpClient) {
     if (environment.development && environment.API_GW_URL != "") {
@@ -31,6 +32,7 @@ export class DataService {
       this.API_URL = environment.NG_APP_API;
     }
 
+    this.EATRON_API_KEY = environment.EATRON_API_KEY;
     this.EATRON_API_URL = "https://cloud.us.eatron.com/api/v1";
   }
 
@@ -93,8 +95,7 @@ export class DataService {
   }
 
   getThermalRunawayResults(batteryId: string) {
-    const apiKey = 'NVlmB7sW6hbzhyMhR1liIpPKPlny1XQM'
-    const headers = new HttpHeaders({"x-api-key": apiKey});
+    const headers = new HttpHeaders({"x-api-key": this.EATRON_API_KEY});
     const params = { batteryId: batteryId };
     return this.http.get<any>(`${this.EATRON_API_URL}/lithium-plating`, {
       headers: headers,
@@ -103,8 +104,7 @@ export class DataService {
   }
 
   getLithiumPlatingResults(batteryId: string) {
-    const apiKey = 'NVlmB7sW6hbzhyMhR1liIpPKPlny1XQM'
-    const headers = new HttpHeaders({"x-api-key": apiKey});
+    const headers = new HttpHeaders({"x-api-key": this.EATRON_API_KEY});
     const params = new HttpParams().set("batteryId", batteryId);
     return this.http.get<any>(`${this.EATRON_API_URL}/thermal-runaway`, {
       headers: headers,
@@ -113,8 +113,7 @@ export class DataService {
   }
 
   getAccDegResults(batteryId: string) {
-    const apiKey = 'NVlmB7sW6hbzhyMhR1liIpPKPlny1XQM'
-    const headers = new HttpHeaders({"x-api-key": apiKey});
+    const headers = new HttpHeaders({"x-api-key": this.EATRON_API_KEY});
     const params = new HttpParams().set("batteryId", batteryId);
     return this.http.get<any>(`${this.EATRON_API_URL}/acc-deg`, {
       headers: headers,
@@ -127,8 +126,7 @@ export class DataService {
     startTime: string,
     endTime: string
   ): Observable<any> {
-    const apiKey = 'NVlmB7sW6hbzhyMhR1liIpPKPlny1XQM'
-    const headers = new HttpHeaders({"x-api-key": apiKey});
+    const headers = new HttpHeaders({"x-api-key": this.EATRON_API_KEY});
     return this.http.get<any>(
       `${this.EATRON_API_URL}/analytics/?batteryId=${batteryId}&startTime=${startTime}&endTime=${endTime}`,
       { headers: headers }
