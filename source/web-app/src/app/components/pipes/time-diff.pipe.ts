@@ -11,10 +11,6 @@ export class TimeDifferencePipe implements PipeTransform {
     const timestamp = Date.UTC(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
     const now = Date.now();
     const difference = now - timestamp;
-    
-    console.log('value', value);
-    console.log('timestamp', timestamp);
-    console.log('now', now);
 
     const seconds = Math.floor(difference / 1000);
     const minutes = Math.floor(seconds / 60);
