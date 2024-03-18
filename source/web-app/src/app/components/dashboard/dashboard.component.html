@@ -318,13 +318,13 @@
             <div style="display: flex;flex-direction: column">
                 <div style="display: flex; justify-content:space-around;margin-bottom: 3%;">
                     <div>
-                        Occurences: {{ currentRealTimeFaultData.count }}
+                        Total Occurences: {{ currentRealTimeFaultData.count }}
                     </div>
                     <div>
-                        Last Error Duration: {{ currentRealTimeFaultData.duration }}
+                        Last Error Occurence: {{ currentRealTimeFaultData.lastOccurTimestamp | timeDifference }} for {{ currentRealTimeFaultData.duration }}
                     </div>
                     <div>
-                        Average Error Duration: {{ currentRealTimeFaultData.AverageDuration | number }}
+                        Average Error Duration: {{ currentRealTimeFaultData.AverageDuration | number }} mins
                     </div>
                 </div>
             </div>

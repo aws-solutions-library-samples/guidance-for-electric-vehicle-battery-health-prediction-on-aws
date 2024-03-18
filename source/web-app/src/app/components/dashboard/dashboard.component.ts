@@ -119,16 +119,6 @@ export class DashboardComponent implements OnInit {
     faultLineChartOptions: any = {};
     faultStatistics: any = {};
     faultDetections = {
-        "AcceleratedAging": {
-            "title": "Accelerated Aging",
-            "state": "green",
-            "value": 10
-        },
-        "ExternalShortCircuit": {
-            "title": "External Short Circuit",
-            "state": "green",
-            "value": 10
-        },
         "OverTemp": {
             "title": "Over Temp",
             "state": "green",
@@ -136,26 +126,6 @@ export class DashboardComponent implements OnInit {
         },
         "Overvoltage": {
             "title": "Over Voltage",
-            "state": "green",
-            "value": 30
-        },
-        "VoltageDraft": {
-            "title": "Voltage Draft",
-            "state": "green",
-            "value": 30
-        },
-        "DeepTempCharge": {
-            "title": "Deep Temp Charge",
-            "state": "green",
-            "value": 30
-        },
-        "Internal Short Circuit": {
-            "title": "Internal Short Circuit",
-            "state": "green",
-            "value": 30
-        },
-        "DeepDischarge": {
-            "title": "Deep Discharge",
             "state": "green",
             "value": 30
         },
@@ -178,58 +148,6 @@ export class DashboardComponent implements OnInit {
             "title": "Thermal Runaway",
             "state": "green",
             "value": 30         
-        }
-    };
-    initialFaultDetections = {
-        "AcceleratedAging": {
-            "title": "Accelerated Aging",
-            "state": "green",
-            "value": 10
-        },
-        "ThermalEnergy": {
-            "title": "Thermal Energy",
-            "state": "green",
-            "value": 10
-        },
-        "ExternalShortCircuit": {
-            "title": "External Short Circuit",
-            "state": "green",
-            "value": 10
-        },
-        "OverTemp": {
-            "title": "Over Temp",
-            "state": "green",
-            "value": 10
-        },
-        "Overvoltage": {
-            "title": "Over Voltage",
-            "state": "green",
-            "value": 30
-        },
-        "VoltageDraft": {
-            "title": "Voltage Draft",
-            "state": "green",
-            "value": 30
-        },
-        "DeepTempCharge": {
-            "title": "Deep Temp Charge",
-            "state": "green",
-            "value": 30
-        },
-        "Internal Short Circuit": {
-            "title": "Internal Short Circuit",
-            "state": "green",
-            "value": 30
-        },
-        "DeepDischarge": {
-            "title": "Deep Discharge",
-            "state": "green",
-            "value": 30
-        },
-        "Overcurrent": {
-            "title": "Over Current",
-            "state": "green",
-            "value": 30
         }
     };
     currentRealTimeFaultLineChartOptions: any = {};
@@ -800,7 +718,9 @@ export class DashboardComponent implements OnInit {
         this.showFaultDetectionDetails = true;
         this.faultDetectionTitle = faultType;
         if (this.currentRealTimeFaultData) {
-            const occurencesData = this.currentRealTimeFaultData.occurenceTimestamps.map((timestamp: any, index: number) => [(new Date(timestamp)).getTime(), index + 1]);
+            const occurencesData = this.currentRealTimeFaultData.occurenceTimestamps.map((timestamp: any, index: number) => ({x: (new Date(timestamp)).getTime(),
+                                                                                                                                y: index + 1,
+                                                                                                                                extraVal: this.currentRealTimeFaultData.values[index]}));
             this.setCurrentRealTimeFaultLineChartOptions(occurencesData);
             return;
         }
@@ -1008,8 +928,10 @@ export class DashboardComponent implements OnInit {
                     const x: any = this.x;
                     // @ts-ignore
                     const y: any = this.y;
+                    // @ts-ignore
+                    const extraVal: any = this.point.extraVal;
                     if (x && y) {
-                        return `<div><strong>Timestamp: </strong>${(new Date(x).toISOString())}</div><div><strong>Occurences:</strong> ${y}</div>`
+                        return `<div><strong>Timestamp: </strong>${(new Date(x).toISOString())}</div><div><strong>Occurences:</strong> ${y}</div><div><strong>Value:</strong> ${extraVal}</div>`
                     } else {
                         return;
                     }
