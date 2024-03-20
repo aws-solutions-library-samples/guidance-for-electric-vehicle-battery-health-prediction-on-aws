@@ -18,14 +18,6 @@
   </div>
   <div class="charts-container">
     <fieldset class="graph-container">
-      <legend class="legend">Vehicle</legend>
-      <label for="analyticsDropdown1" class="label">Selected Sensor:</label>
-      <select id="analyticsDropdown1" [(ngModel)]="selectedVehicleOption" class="custom-dropdown" (change)="updateVehicleChart()">>
-        <option *ngFor="let option of vehicleOptions" [value]="option">{{ option }}</option>
-      </select>
-      <highcharts-chart *ngIf="vehicleLineChartOptions" [Highcharts]="highcharts" [options]="vehicleLineChartOptions" [callbackFunction]="vehicleChartCallback" style="display: block;"></highcharts-chart>
-    </fieldset>
-    <fieldset class="graph-container">
       <legend class="legend">Battery</legend>
       <label for="analyticsDropdown2" class="label">Selected Sensor:</label>
       <select id="analyticsDropdown2" [(ngModel)]="selectedBatteryOption" class="custom-dropdown" (change)="updateBatteryChart()">>

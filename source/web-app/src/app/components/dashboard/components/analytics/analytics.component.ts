@@ -25,15 +25,9 @@ interface BatteryData {
   charge_throughput?: number;
 }
 
-type CellDataEntry = {
-  bucket: string;
-  vehicle_id: string;
-  battery_id: string;
-  voltage: number;
-};
-
 interface CellData {
-  [cellId: string]: CellDataEntry[];
+  bucket: string;
+  voltage: number;
 }
 
 @Component({
@@ -42,13 +36,6 @@ interface CellData {
   styleUrls: ["./analytics.component.scss"],
 })
 export class AnalyticsComponent implements OnInit {
-  vehicleOptions: string[] = [
-    "lat",
-    "lng",
-    "velocity",
-    "ambient_air_temp",
-    "odom",
-  ];
   batteryOptions: string[] = [
     "current",
     "state_of_health",
@@ -59,14 +46,13 @@ export class AnalyticsComponent implements OnInit {
     "charge_throughput",
   ];
   cellOptions: string[] = ["voltage"];
-  selectedVehicleOption: string = this.vehicleOptions[0];
   selectedBatteryOption: string = this.batteryOptions[0];
   selectedCellOption: string = this.cellOptions[0];
   selectedStartTime = "";
   selectedEndTime = "";
   vehicleData = [] as VehicleData[];
   batteryData = [] as BatteryData[];
-  cellData = {} as CellData;
+  cellData = [] as CellData[];
   highcharts = Highcharts;
   @Input() annotationTimestamp = "";
   private vehicleChartRef: any;
@@ -170,26 +156,6 @@ export class AnalyticsComponent implements OnInit {
     };
   }
 
-  updateVehicleChart() {
-    const vehicleData = this.vehicleData.map(
-      (entry: { [x: string]: any; bucket: any }) => [
-        new Date(entry.bucket).getTime(),
-        entry[this.selectedVehicleOption],
-      ]
-    );
-    this.vehicleLineChartOptions = {
-      series: [
-        {
-          type: "line",
-          color: "#38EF7D",
-          name: this.selectedVehicleOption,
-          data: vehicleData,
-        },
-      ],
-      ...this.analyticsOptionsInitialize(this.selectedVehicleOption),
-    };
-  }
-
   updateBatteryChart() {
     const batteryData = this.batteryData.map(
       (entry: { [x: string]: any; bucket: any }) => [
@@ -212,26 +178,20 @@ export class AnalyticsComponent implements OnInit {
   }
 
   updateCellChart() {
-    const seriesEntries = Object.keys(this.cellData).map(
-      (cellId): Highcharts.SeriesOptionsType => {
-        const cellData = this.cellData[cellId].map(
-          (entry: { [x: string]: any; bucket: any }) => [
-            new Date(entry.bucket).getTime(),
-            entry[this.selectedCellOption],
-          ]
-        );
-
-        return {
-          data: cellData,
-          color: "#DF2A5D",
-          name: this.selectedCellOption + " (" + cellId + ")",
-          type: "line",
-        };
-      }
+    const cellData = this.cellData.map(
+      (entry: { [x: string]: any; bucket: any }) => [
+        new Date(entry.bucket).getTime(),
+        entry[this.selectedCellOption],
+      ]
     );
 
     this.cellLineChartOptions = {
-      series: seriesEntries,
+      series: [{
+        data: cellData,
+        color: "#DF2A5D",
+        name: this.selectedCellOption,
+        type: "line",
+      }],
       ...this.analyticsOptionsInitialize(this.selectedCellOption),
     };
   }
@@ -244,11 +204,9 @@ export class AnalyticsComponent implements OnInit {
         this.selectedEndTime
       )
       .subscribe((data: any) => {
-        this.vehicleData = data.message.vehicle;
         this.batteryData = data.message.battery;
         this.cellData = data.message.cell;
 
-        this.updateVehicleChart();
         this.updateBatteryChart();
         this.updateCellChart();
       });

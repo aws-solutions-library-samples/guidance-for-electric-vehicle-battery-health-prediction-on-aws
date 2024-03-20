@@ -2,7 +2,7 @@
 
 ### Introduction
 
-EV batteries, predominately lithium-ion (Li-ion) batteries, have been the bottleneck for scaling EVs, which are crucial to a net-zero economy. One challenge in the EV battery ecosystem is insufficient and inaccurate battery state of health (SOH) and remaining useful life (RUL) monitoring and prediction, resulting in shortened battery lifespan, driver frustration, lack of visibility for end-of-life processing, and wasted critical materials. Instead of the conventional static formula-based approach, this Guidance showcases how customers can use the AI/ML capabilities on AWS to easily predict SOH and RUL. Predictions of battery health will help OEMs and EV owners proactively plan for battery replacement, and most importantly, can be used to move battery into a new life and promote the overall circular economy of a battery.
+EV batteries, predominately lithium-ion (Li-ion) batteries, have been the bottleneck for scaling EVs, which are crucial to a net-zero economy. One challenge in the EV battery ecosystem is insufficient and inaccurate battery state of health (SOH) and remaining useful life (RUL) monitoring and prediction, resulting in shortened battery lifespan, driver frustration, lack of visibility for end-of-life processing, and wasted critical materials. Instead of the conventional static formula-based approach, this Guidance showcases how customers can use the AI/ML capabilities on AWS to easily predict SOH and RUL. Predictions of battery health will help OEMs and EV owners proactively plan for battery replacement, and most importantly, can be used to move battery into a new life and promote the overall circular economy of a battery. Moreover, integrating fault detection algorithms into EV battery management systems in collaboration with [Eatron Technologies](https://eatron.com/), enhances overall system resilience and contributes to the seamless operation of electric vehicles, thus advancing the sustainability goals of the automotive industry.
 
 The sample code in this project is based on the [Guidance for Electric Vehicle Battery Health Prediction on AWS](https://aws.amazon.com/solutions/guidance/electric-vehicle-battery-health-prediction-on-aws/). It deploys an event-driven ML pipeline for EV Battery health prediction using purpose-built services such as [Amazon Forecast](https://aws.amazon.com/forecast/). To simulate the data ingestion and consumption portions of the [Connected Mobility Platform](https://docs.aws.amazon.com/architecture-diagrams/latest/connected-mobility-platform-on-aws/connected-mobility-platform-on-aws.html), we build a web application, which allows you to upload battery health data and visualize battery health prediction results.
 
@@ -82,6 +82,37 @@ In the Battery Health Prediction panel to the right, the line chart shows past a
 ![Prediction](assets/prediction.png)
 
 Developer can view results from selected ML pipeline. They can click the User icon, navigate to Pipelines, select the desired pipeline, and click Connected Vehicles, which takes them to the dashboard with battery locations. For Fleet Operators, the predicted data they see are from the most recent pipeline.
+
+There is an analytics section to examine the sensor data in detail. You can reach here by clicking the See Analytics button next to the Battery ID. In this panel you can view battery and cell level data. The data is visualized in a line chart, and you can select the time range to view.
+
+![Analytics](assets/analytics.png)
+
+### Fault Detection
+
+The Fault Detection API provides real-time and historical data analysis for detecting faults in vehicles. It offers insights into various parameters such as temperature, voltage, and current, enabling users to monitor the health of their vehicles. This API is provided by Eatron Technologies, and is integrated into the web application. To access the API see the [section](#obtaining-an-api-key-for-analytics-and-fault-detection-apis) below.
+
+![Fault Detection](assets/fault_detection.png)
+
+
+##### Real-Time Anomaly Detection​
+
+Detecting off-nominal performance in an EV is challenging, because the expected performance of a single component is dependent on the overall system operation. Rule-based anomaly detection model identifies deviations from the normal behavior based on sensor readings exceeding pre-defined thresholds. ​ Anomalous behaviors are primarily ​ caused by Over Temperature, Over Current or ​ Over Voltage. ​When the Trigger Anomaly Models switch is on, anomaly detection processes run in the background.
+
+##### Accelerated Degradation (aging)​
+
+Cell level abnormal aging resulting in degraded capacity with respect to the rest of the cells in the pack. It exposes the risk of overcharging as well as reduced lifespan. The model behind the scene predicts the real-time cell voltage divergence much faster than conventional rule-based methods.​
+
+##### Lithium Plating ​Prediction
+
+Deposition of lithium ions on the anode graphite surface is forming metallic lithium and dendritic structures. ​It cccurs mostly by the fast charging in low temperatures.​
+
+##### Thermal Runaway Prediction​
+
+It is a dynamic process due to a self-sustaining increase in temperature of the battery pack and occurs due to various internal and external events such as electrode degradation, electrolyte decomposition, increased internal resistance, short circuits etc. The AI model processes daily data as batch to identify likelihood of Thermal Runaway happening within the next day for a given battery back.​
+
+### Obtaining an API Key for Analytics and Fault Detection APIs
+
+Analytics and Fault detection services are provided by Eatron Technologies. An Eatron API Key is required for the fault detection algorithms to work, please contact [Eatron Technologies](mailto:info@eatron.com). The API key should be added to the environment variables of the web application. You can do this by updating the `EATRON_API_KEY` value in [environment.ts](source/web-app/src/environments/environment.ts)(for local) and [environment.prod.ts](source/web-app/src/environments/environment.prod.ts)(for deployment) file 
 
 
 ## Security

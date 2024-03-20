@@ -52,6 +52,7 @@ import { AnalyticsComponent } from "./components/dashboard/components/analytics/
 
 import { SocketIoConfig, SocketIoModule } from "ngx-socket-io";
 import { WebsocketService } from "./services/websocket.service";
+import { TimeDifferencePipe } from "./components/pipes/time-diff.pipe";
 
 const config: SocketIoConfig = {
   url: "https://cloud.us.eatron.com",
@@ -137,6 +138,7 @@ function appInitializer(
     TabsComponent,
     PluginSelectionComponent,
     BatteryInfoComponent,
+    TimeDifferencePipe,
   ],
   imports: [
     BrowserModule,
