@@ -129,7 +129,7 @@ Imbalance in lithium-ion batteries refers to the uneven distribution of charge o
 
 An internal short circuit in lithium-ion batteries occurs when a direct electrical connection is established between the positive and negative electrodes within a cell, bypassing the normal circuit path through the external load. This results in a rapid discharge of the battery's stored energy, often accompanied by the generation of heat and potentially leading to thermal runaway and catastrophic failure.
 
-![Internal Short Circuit](assets/internal_short_circuit.png)
+![Internal Short Circuit](assets/internal_short_circuit.jpeg)
 
 ### Obtaining an API Key for Analytics and Fault Detection APIs
 
