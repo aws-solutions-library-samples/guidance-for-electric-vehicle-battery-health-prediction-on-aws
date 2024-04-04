@@ -91,7 +91,7 @@ There is an analytics section to examine the sensor data in detail. You can reac
 
 The Fault Detection API provides real-time and historical data analysis for detecting faults in vehicles. It offers insights into various parameters such as temperature, voltage, and current, enabling users to monitor the health of their vehicles. This API is provided by Eatron Technologies, and is integrated into the web application. To access the API see the [section](#obtaining-an-api-key-for-analytics-and-fault-detection-apis) below.
 
-![Fault Detection](assets/fault_detection.png)
+![Fault Detection](assets/fault_detection.jpeg)
 
 
 ##### Real-Time Anomaly Detection​
