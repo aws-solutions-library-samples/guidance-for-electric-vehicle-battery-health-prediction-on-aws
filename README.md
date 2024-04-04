@@ -110,6 +110,27 @@ Deposition of lithium ions on the anode graphite surface is forming metallic lit
 
 It is a dynamic process due to a self-sustaining increase in temperature of the battery pack and occurs due to various internal and external events such as electrode degradation, electrolyte decomposition, increased internal resistance, short circuits etc. The AI model processes daily data as batch to identify likelihood of Thermal Runaway happening within the next day for a given battery back.​
 
+##### SEI Growth Detection
+
+The term "SEI" stands for Solid Electrolyte Interphase, and it plays a crucial role in the performance and safety of lithium-ion batteries. The SEI layer forms on the surface of the lithium electrode when the battery is initially charged. It is a thin layer of solid electrolyte that acts as a barrier between the liquid electrolyte and the lithium electrode.
+
+SEI growth refers to the gradual thickening or accumulation of this layer over time as the battery undergoes charging and discharging cycles. While some degree of SEI growth is inevitable, excessive growth can have negative consequences for battery performance, such as increased internal resistance, capacity loss, and reduced cycle life. Researchers aim to develop strategies to mitigate SEI growth and improve battery performance and longevity.
+
+![Sei Growth](assets/sei_growth.jpeg)
+
+
+##### Imbalance Detection
+
+Imbalance in lithium-ion batteries refers to the uneven distribution of charge or capacity among the individual cells or modules within a battery pack. This can occur due to several factors and can have significant implications for battery performance, safety, and lifespan.
+
+![Imbalance](assets/imbalance.jpeg)
+
+##### Internal Short Circuit Detection
+
+An internal short circuit in lithium-ion batteries occurs when a direct electrical connection is established between the positive and negative electrodes within a cell, bypassing the normal circuit path through the external load. This results in a rapid discharge of the battery's stored energy, often accompanied by the generation of heat and potentially leading to thermal runaway and catastrophic failure.
+
+![Internal Short Circuit](assets/internal_short_circuit.png)
+
 ### Obtaining an API Key for Analytics and Fault Detection APIs
 
 Analytics and Fault detection services are provided by Eatron Technologies. An Eatron API Key is required for the fault detection algorithms to work, please contact [Eatron Technologies](mailto:info@eatron.com). The API key should be added to the environment variables of the web application. You can do this by updating the `EATRON_API_KEY` value in [environment.ts](source/web-app/src/environments/environment.ts)(for local) and [environment.prod.ts](source/web-app/src/environments/environment.prod.ts)(for deployment) file 

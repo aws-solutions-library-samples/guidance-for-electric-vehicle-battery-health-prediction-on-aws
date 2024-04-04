@@ -26,6 +26,7 @@ import HC_more from "highcharts/highcharts-more";
 import {Auth} from "aws-amplify";
 
 import {WebsocketService} from '../../services/websocket.service';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 AnnotationsModule(Highcharts);
 HC_more(Highcharts);
@@ -115,7 +116,15 @@ export class DashboardComponent implements OnInit {
     currentFaultData: any = {};
     currentRealTimeFaultData: any = {};
     isAccDeg = false;
+    isSeiGrowth = false;
+    isLithiumPlating = false;
+    isThermalRunaway = false;
+    isImbalance = false;
+    isShortCircuit = false;
     accDegChartOptions: any = {};
+    seiGrowthChartOptions: any = {};
+    imbalanceChartOptions: any = {};
+    shortCircuitChartOptions: any = {};
     faultLineChartOptions: any = {};
     faultStatistics: any = {};
     faultDetections = {
@@ -146,6 +155,21 @@ export class DashboardComponent implements OnInit {
         },
         "Thermal Runaway": {
             "title": "Thermal Runaway",
+            "state": "green",
+            "value": 30         
+        },
+        "SeiGrowth": {
+            "title": "Sei Growth",
+            "state": "green",
+            "value": 30
+        },
+        "Imbalance": {
+            "title": "Imbalance",
+            "state": "green",
+            "value": 30         
+        },
+        "InternalShortCircuit": {
+            "title": "Internal Short Circuit",
             "state": "green",
             "value": 30         
         }
@@ -439,7 +463,7 @@ export class DashboardComponent implements OnInit {
                     if (faultKey === "timestamp") {
                         return;
                     }
-                        const faultName: string = faultKey;
+                    const faultName: string = faultKey;
                     const fault: any = faultData[faultKey];
                     this.faultDetections[faultName as keyof typeof this.faultDetections]["state"] = fault.state;
                     this.faultRealTimeData[faultName as keyof typeof this.faultData] = fault.data;
@@ -450,20 +474,24 @@ export class DashboardComponent implements OnInit {
         
         this.dataService.getLithiumPlatingResults(batteryId).subscribe((data: any) => {
             this.faultData.push(data.message);
+            this.isLithiumPlating = true;
             this.faultData.forEach((model: { modelName: string; }) => {
                 this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
             })
         }, () => {
-            console.log('no lithium plating data')
+            console.log('no lithium plating data');
+            this.isLithiumPlating = false;
         });
 
         this.dataService.getThermalRunawayResults(batteryId).subscribe((data: any) => {
             this.faultData.push(data.message);
+            this.isThermalRunaway = true;
             this.faultData.forEach((model: { modelName: string; }) => {
                 this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
             })
         }, () => {
             console.log('no thermal runaway data')
+            this.isThermalRunaway = false;
         });
 
         this.dataService.getAccDegResults(batteryId).subscribe((data: any) => {
@@ -473,6 +501,43 @@ export class DashboardComponent implements OnInit {
         }, () => {
             console.log('no acc deg data')
             this.isAccDeg = false;
+        });
+
+        this.dataService.getSeiGrowthResults(batteryId).subscribe((data: any) => {
+            this.faultData.push(data.message);
+            this.isSeiGrowth = true;
+            this.setSeiGrowthChartOptions(data.message.data);
+            this.faultData.forEach((model: { modelName: string; }) => {
+                this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
+            })
+        }, () => {
+            console.log('no sei growth data')
+            this.isSeiGrowth = false;
+        });
+
+        this.dataService.getImbalanceResults(batteryId).subscribe((data: any) => {
+            this.faultData.push(data.message);
+            console.log(data.message)
+            this.isImbalance = true;
+            this.setImbalanceChartOptions(data.message.data);
+            this.faultData.forEach((model: { modelName: string; }) => {
+                this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
+            })
+        }, () => {
+            console.log('no imbalance data')
+            this.isImbalance = false;
+        });
+        
+        this.dataService.getShortCircuitResults(batteryId).subscribe((data: any) => {
+            this.faultData.push(data.message);
+            this.isShortCircuit = true;
+            this.setShortCircuitChartOptions(data.message.data);
+            this.faultData.forEach((model: { modelName: string; }) => {
+                this.faultDetections[model.modelName as keyof typeof this.faultDetections]["state"] = "danger";
+            })
+        }, () => {
+            console.log('no short circuit data')
+            this.isShortCircuit = false;
         });
     }
 
@@ -862,7 +927,268 @@ export class DashboardComponent implements OnInit {
         };
     }
 
+    private setSeiGrowthChartOptions(data: any[]) {
+        const voltageData: number[][] = [];
+        const seiThicknessData: number[][] = [];
+
+        data.forEach(item => {
+            voltageData.push([item[0], item[1]]);
+            seiThicknessData.push([item[0], item[2]]);
+        });
+
+        const voltageSeries = [{
+            name: ' Voltage',
+            data: voltageData,
+            type: 'line',
+            color: '#89CFF0',
+            yAxis: 0
+        }];
+        
+        const seiThicknessSeries = [{
+            name: ' SEI Thickness',
+            data: seiThicknessData,
+            type: 'line',
+            color: '#fc3203',
+            yAxis: 1
+        }];
+
+        this.seiGrowthChartOptions = {
+            series: [...voltageSeries, ...seiThicknessSeries],
+            chart: {
+                backgroundColor: '#2D343D',
+                zoomType: 'x',
+                panning: true,
+                panKey: 'shift',
+                reflow: false,
+            },
+            colorAxis: [{
+                gridLineColor: '#e6e6e6'
+            }],
+            title: {
+                text: '',
+                style: {
+                    fontSize: 24,
+                    textAlign: 'left',
+                    color: 'white',
+                },
+                useHTML: true,
+                align: 'left',
+            },
+            credits: {
+                enabled: false
+            },
+            yAxis: [{
+ 
+                labels: {
+                    style: {
+                        color: '#fff'
+                    },
+                },
+                title: {
+                    text: 'Voltage (V)',
+                    style: {
+                        color: '#fff'
+                    }
+                },
+                gridLineColor: '#888',
+                gridLineWidth: 1,
+                min: 3.7,
+                max: 4.4,
+                startOnTick: false,
+                endOnTick: false
+            },
+            {
+                labels: {
+                    style: {
+                        color: '#fff'
+                    },
+                },
+                title: {
+                    text: 'SEI Thickness',
+                    style: {
+                        color: '#fff'
+                    }
+                },
+                gridLineColor: '#888',
+                gridLineWidth: 1,
+                opposite: true
+            }],
+            xAxis: {
+                type: 'number',
+                labels: {
+                    style: {
+                        color: '#fff'
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: '#2D343D',
+                style: { color: '#fff' },
+                formatter: function () {
+                    // @ts-ignore
+                    const x: any = this.x;
+                    // @ts-ignore
+                    const y: any = this.y;
+                    // @ts-ignore
+                    const seriesName = this.series.name;
+            
+                    if (x !== undefined && y !== undefined) {
+                        let valueType = '';
+                        if (seriesName.includes('Voltage')) {
+                            valueType = 'Voltage';
+                        } else if (seriesName.includes('SEI Thickness')) {
+                            valueType = 'SEI Thickness';
+                        }
+            
+                        return `<div><strong>Cycle: </strong>${x}</div><div><strong>${valueType}:</strong> ${y}</div>`;
+                    } else {
+                        return;
+                    }
+                },
+                useHTML: true
+            },
+            legend:{ enabled:false }
+        };
+    }
+
+    private setImbalanceChartOptions(data: any[]) {
+      
+        const currentData: number[][] = [];
+        const voltageSeries = [];
+        const currentSeries = [];
+        const cellColors = [ "#2caffe", "#544fc5", "#00e272", "#fe6a35", "#6b8abc", "#d568fb"];        
+        for (let j = 1; j <= 6; j++) {
+            const voltageData: number[][] = [];
+            data.forEach(item => {
+                const timestamp = new Date(item.timestamp).getTime();
+                const voltage = item['CG_' + j + '_Volt'];
+                    voltageData.push([timestamp, voltage]);
+                });
+            voltageSeries.push({
+            marker: {
+                fillColor: 'transparent',
+                lineColor: cellColors[j-1],
+            },
+            data: voltageData
+            });
+        }
+
+        console.log(voltageSeries);
+        
+        data.forEach(item => {
+            const timestamp = new Date(item.timestamp).getTime();
+            const current = item.current;
+            currentData.push([timestamp, current]);
+        });
+        
+        currentSeries.push({
+            name: 'Current',
+            data: currentData,
+            type: 'line',
+            color: '#38EF7D',
+            yAxis: 1,
+            dashStyle: 'dash'
+        });
+
+        this.imbalanceChartOptions = {
+            series: [...voltageSeries, ...currentSeries],
+            chart: {
+                backgroundColor: '#2D343D',
+                zoomType: 'x',
+                panning: true,
+                panKey: 'shift',
+                reflow: false,
+            },
+            colorAxis: [{
+                gridLineColor: '#e6e6e6'
+            }],
+            title: {
+                text: '',
+                style: {
+                    fontSize: 24,
+                    textAlign: 'left',
+                    color: 'white',
+                },
+                useHTML: true,
+                align: 'left',
+            },
+            credits: {
+                enabled: false
+            },
+            yAxis: [{
+                min: 3,
+                max: 4.25,
+                labels: {
+                    style: {
+                        color: '#fff'
+                    },
+                },
+                title: {
+                    text: 'Voltage (V)',
+                    style: {
+                        color: '#fff'
+                    }
+                },
+                gridLineColor: '#888',
+                gridLineWidth: 1,
+            },
+            {
+                labels: {
+                    style: {
+                        color: '#fff'
+                    },
+                },
+                title: {
+                    text: 'Current (A)',
+                    style: {
+                        color: '#fff'
+                    }
+                },
+                gridLineColor: '#888',
+                gridLineWidth: 1,
+                opposite: true
+            }],
+            xAxis: {
+                type: "datetime",
+                labels: {
+                  style: {
+                    color: "#fff",
+                  },
+                  rotation: -45,
+                },
+            },
+            tooltip: {
+                backgroundColor: '#2D343D',
+                style: { color: '#fff' },
+                formatter: function () {
+                    // @ts-ignore
+                    const x: any = this.x;
+                    // @ts-ignore
+                    const y: any = this.y;
+                    // @ts-ignore
+                    const seriesName = this.series.name;
+            
+                    if (x !== undefined && y !== undefined) {
+                        let valueType = '';
+                        if (seriesName.includes('Voltage')) {
+                            valueType = 'Voltage';
+                        } else if (seriesName.includes('Current')) {
+                            valueType = 'Current';
+                        }
+            
+                        return `<div><strong>Timestamp: </strong>${new Date(x).toISOString()}</div><div><strong>${valueType}:</strong> ${y}</div>`;
+                    } else {
+                        return;
+                    }
+                },
+                useHTML: true
+            },
+            legend:{ enabled:false }
+        };
+    }
+
     private setCurrentRealTimeFaultLineChartOptions(data: any[]) {
+
         this.currentRealTimeFaultLineChartOptions = {
             series: [
                 {
@@ -938,6 +1264,125 @@ export class DashboardComponent implements OnInit {
                 },
                 useHTML: true
             }
+        };
+    }
+
+    private setShortCircuitChartOptions(data: any[]) {
+        const voltageData: number[][] = [];
+        const currentData: number[][] = [];
+
+        data.forEach(item => {
+            voltageData.push([item[0], item[1]]);
+            currentData.push([item[0], item[2]]);
+        });
+
+        const voltageSeries = [{
+            name: 'Voltage',
+            data: voltageData,
+            type: 'line',
+            color: '#fc3203',
+            yAxis: 0
+        }];
+        
+        const currentSeries = [{
+            name: 'Current',
+            data: currentData,
+            type: 'line',
+            color:'#38EF7D',
+            yAxis: 1
+        }];
+
+        this.shortCircuitChartOptions = {
+            series: [...voltageSeries, ...currentSeries],
+            chart: {
+                backgroundColor: '#2D343D',
+                zoomType: 'x',
+                panning: true,
+                panKey: 'shift',
+                reflow: false,
+            },
+            colorAxis: [{
+                gridLineColor: '#e6e6e6'
+            }],
+            title: {
+                text: '',
+                style: {
+                    fontSize: 24,
+                    textAlign: 'left',
+                    color: 'white',
+                },
+                useHTML: true,
+                align: 'left',
+            },
+            credits: {
+                enabled: false
+            },
+            yAxis: [{
+                labels: {
+                    style: {
+                        color: '#fff'
+                    },
+                },
+                title: {
+                    text: 'Voltage (V)',
+                    style: {
+                        color: '#fff'
+                    }
+                },
+                gridLineColor: '#888',
+                gridLineWidth: 1,
+            },
+            {
+                labels: {
+                    style: {
+                        color: '#fff'
+                    },
+                },
+                title: {
+                    text: 'Current (A)',
+                    style: {
+                        color: '#fff'
+                    }
+                },
+                gridLineColor: '#888',
+                gridLineWidth: 1,
+                opposite: true
+            }],
+            xAxis: {
+                type: 'number',
+                labels: {
+                    style: {
+                        color: '#fff'
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: '#2D343D',
+                style: { color: '#fff' },
+                formatter: function () {
+                    // @ts-ignore
+                    const x: any = this.x;
+                    // @ts-ignore
+                    const y: any = this.y;
+                    // @ts-ignore
+                    const seriesName = this.series.name;
+            
+                    if (x !== undefined && y !== undefined) {
+                        let valueType = '';
+                        if (seriesName.includes('Voltage')) {
+                            valueType = 'Voltage';
+                        } else if (seriesName.includes('Current')) {
+                            valueType = 'Current';
+                        }
+            
+                        return `<div><strong>Time (milliseconds): </strong>${x}</div><div><strong>${valueType}:</strong> ${y}</div>`;
+                    } else {
+                        return;
+                    }
+                },
+                useHTML: true
+            },
+            legend:{ enabled:false }
         };
     }
 
