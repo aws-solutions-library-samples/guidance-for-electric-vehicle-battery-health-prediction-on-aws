@@ -102,13 +102,21 @@ Detecting off-nominal performance in an EV is challenging, because the expected 
 
 Cell level abnormal aging resulting in degraded capacity with respect to the rest of the cells in the pack. It exposes the risk of overcharging as well as reduced lifespan. The model behind the scene predicts the real-time cell voltage divergence much faster than conventional rule-based methods.​
 
+![Accelerated Degradation](assets/acc_deg.jpeg)
+
+
 ##### Lithium Plating ​Prediction
 
-Deposition of lithium ions on the anode graphite surface is forming metallic lithium and dendritic structures. ​It cccurs mostly by the fast charging in low temperatures.​
+Deposition of lithium ions on the anode graphite surface is forming metallic lithium and dendritic structures. ​It cccurs mostly by the fast charging in low temperatures.
+
+![Lithium Plating](assets/lithium_plating.jpeg)
+​
 
 ##### Thermal Runaway Prediction​
 
 It is a dynamic process due to a self-sustaining increase in temperature of the battery pack and occurs due to various internal and external events such as electrode degradation, electrolyte decomposition, increased internal resistance, short circuits etc. The AI model processes daily data as batch to identify likelihood of Thermal Runaway happening within the next day for a given battery back.​
+
+![Thermal Runaway](assets/thermal_runaway.jpeg)
 
 ##### SEI Growth Detection
 
