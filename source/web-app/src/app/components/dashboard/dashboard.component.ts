@@ -805,17 +805,22 @@ export class DashboardComponent implements OnInit {
     }
 
     private setAccDegChartOptions(data: any[]) {
-        const transformedData: { [key: string]: {x: number; y:number;}[]} = {};
+        const transformedData: { [key: string]: number[][]} = {};
 
         data.forEach(item => {
-            const timestamp = (new Date(item.bucket)).getTime();
+            const time = (new Date(item.timestamp)).getTime();
             if (transformedData[item.cell_id]) {
-                transformedData[item.cell_id].push({x: timestamp, y: item.voltage});
+                transformedData[item.cell_id].push([time, item.voltage]);
             } else {
-                transformedData[item.cell_id] = [{x: timestamp, y: item.voltage}];
+                transformedData[item.cell_id] = [[time,item.voltage]];
             }
         });
-
+        const series1 = [{
+                name: 'cell_id',
+                data: [[1712310995000,2], [1712313995000,4], [1712315995000,6]],
+                type: 'line',
+                color:'#fc3203'
+        }]
         const series = Object.keys(transformedData).map(cell_id => {
             return {
                 name: cell_id,
@@ -824,7 +829,6 @@ export class DashboardComponent implements OnInit {
                 color: cell_id === 'Cell41Volt' ? '#fc3203' : '#38EF7D'
             };
         });
-
         this.accDegChartOptions = {
             series: series,
             chart: {
@@ -876,7 +880,7 @@ export class DashboardComponent implements OnInit {
                 plotLines: [{
                     color: 'red', // Line color
                     width: 2,      // Line width
-                    value: Date.parse('2023-12-01T01:40:00.000Z'), 
+                    value: Date.parse('2023-11-30T22:25:00.000Z'), 
                     label: {
                         text: 'AI Based', // Label text
                         rotation: 90,            // Label rotation
@@ -892,7 +896,7 @@ export class DashboardComponent implements OnInit {
                 {
                     color: 'blue', // Line color
                     width: 2,      // Line width
-                    value: Date.parse('2023-12-01T02:30:00.000Z'), 
+                    value: Date.parse('2023-11-30T23:12:00.000Z'), 
                     label: {
                         text: 'Threshold Based', // Label text
                         rotation: 90,            // Label rotation
@@ -1072,8 +1076,6 @@ export class DashboardComponent implements OnInit {
             data: voltageData
             });
         }
-
-        console.log(voltageSeries);
         
         data.forEach(item => {
             const timestamp = new Date(item.timestamp).getTime();
@@ -1269,11 +1271,11 @@ export class DashboardComponent implements OnInit {
 
     private setShortCircuitChartOptions(data: any[]) {
         const voltageData: number[][] = [];
-        const currentData: number[][] = [];
+        const temperatureData: number[][] = [];
 
         data.forEach(item => {
             voltageData.push([item[0], item[1]]);
-            currentData.push([item[0], item[2]]);
+            temperatureData.push([item[0], item[2]]);
         });
 
         const voltageSeries = [{
@@ -1284,16 +1286,16 @@ export class DashboardComponent implements OnInit {
             yAxis: 0
         }];
         
-        const currentSeries = [{
-            name: 'Current',
-            data: currentData,
+        const temperatureSeries = [{
+            name: 'Temperature',
+            data: temperatureData,
             type: 'line',
             color:'#38EF7D',
             yAxis: 1
         }];
 
         this.shortCircuitChartOptions = {
-            series: [...voltageSeries, ...currentSeries],
+            series: [...voltageSeries, ...temperatureSeries],
             chart: {
                 backgroundColor: '#2D343D',
                 zoomType: 'x',
@@ -1339,7 +1341,7 @@ export class DashboardComponent implements OnInit {
                     },
                 },
                 title: {
-                    text: 'Current (A)',
+                    text: 'Temperature (C°)',
                     style: {
                         color: '#fff'
                     }
@@ -1371,8 +1373,8 @@ export class DashboardComponent implements OnInit {
                         let valueType = '';
                         if (seriesName.includes('Voltage')) {
                             valueType = 'Voltage';
-                        } else if (seriesName.includes('Current')) {
-                            valueType = 'Current';
+                        } else if (seriesName.includes('Temperature')) {
+                            valueType = 'Temperature';
                         }
             
                         return `<div><strong>Time (milliseconds): </strong>${x}</div><div><strong>${valueType}:</strong> ${y}</div>`;
