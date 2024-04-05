@@ -121,6 +121,33 @@ export class DataService {
     });
   }
 
+  getSeiGrowthResults(batteryId: string) {
+    const headers = new HttpHeaders({"x-api-key": this.EATRON_API_KEY});
+    const params = new HttpParams().set("batteryId", batteryId);
+    return this.http.get<any>(`${this.EATRON_API_URL}/sei-growth`, {
+      headers: headers,
+      params: params
+    });
+  }
+
+  getShortCircuitResults(batteryId: string) {
+    const headers = new HttpHeaders({"x-api-key": this.EATRON_API_KEY});
+    const params = new HttpParams().set("batteryId", batteryId);
+    return this.http.get<any>(`${this.EATRON_API_URL}/short-circuit`, {
+      headers: headers,
+      params: params
+    });
+  }
+
+  getImbalanceResults(batteryId: string) {
+    const headers = new HttpHeaders({"x-api-key": this.EATRON_API_KEY});
+    const params = new HttpParams().set("batteryId", batteryId);
+    return this.http.get<any>(`${this.EATRON_API_URL}/imbalance`, {
+      headers: headers,
+      params: params
+    });
+  }
+
   getAnalytics(
     batteryId: string,
     startTime: string,

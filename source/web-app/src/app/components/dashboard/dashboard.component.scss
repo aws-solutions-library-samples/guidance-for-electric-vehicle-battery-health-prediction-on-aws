@@ -427,7 +427,7 @@
 
             .highchart-groups {
               display: grid;
-              grid-template-columns: 25% 25% 25% 25%;
+              grid-template-columns: 33% 33% 33%;
               grid-row-gap: 1em;
               padding: 1.5em 0;
 
@@ -459,7 +459,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-around;
-            width: 30%;
+            width: 40%;
 
             button {
               border-radius: 14px;
