@@ -199,7 +199,7 @@
                                 [currentState]="startHeating"></app-switch>
                         </div>
                     </div>
-                    <div class="fault-detection" style="padding: 1.5em">
+                    <div class="fault-detection" style="padding: 2em">
                         <h4 style="display: flex; justify-content: space-between"><span>Fault Detection</span>
                         </h4>
                         <div class="highchart-groups">
@@ -335,13 +335,28 @@
             [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
         </div>
 
-        <div *ngIf="!currentRealTimeFaultData && !isAccDeg">
+        <div *ngIf="!currentRealTimeFaultData && isLithiumPlating || isThermalRunaway">
             <highcharts-chart *ngIf="faultLineChartOptions" [Highcharts]="highcharts" [options]="faultLineChartOptions"
                 [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
         </div>
 
         <div *ngIf="!currentRealTimeFaultData && isAccDeg">
             <highcharts-chart *ngIf="accDegChartOptions" [Highcharts]="highcharts" [options]="accDegChartOptions"
+                [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
+        </div>
+
+        <div *ngIf="!currentRealTimeFaultData && isSeiGrowth && faultDetectionTitle=='Sei Growth'">
+            <highcharts-chart *ngIf="seiGrowthChartOptions" [Highcharts]="highcharts" [options]="seiGrowthChartOptions"
+                [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
+        </div>
+
+        <div *ngIf="!currentRealTimeFaultData && isImbalance && faultDetectionTitle=='Imbalance'">
+            <highcharts-chart *ngIf="imbalanceChartOptions" [Highcharts]="highcharts" [options]="imbalanceChartOptions"
+                [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
+        </div>
+
+        <div *ngIf="!currentRealTimeFaultData && isShortCircuit && faultDetectionTitle=='Internal Short Circuit'">
+            <highcharts-chart *ngIf="shortCircuitChartOptions" [Highcharts]="highcharts" [options]="shortCircuitChartOptions"
                 [callbackFunction]="chartCallback" style="display: block;"></highcharts-chart>
         </div>
 
